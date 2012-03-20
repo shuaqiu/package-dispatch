@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+   http://www.springframework.org/schema/tx 
+   http://www.springframework.org/schema/tx/spring-tx-3.1.xsd 
+   http://www.springframework.org/schema/jee 
+   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd 
+   http://www.springframework.org/schema/context 
+   http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <context:annotation-config />
+
+    <context:component-scan
+        base-package="com.qiuq.packagedispatch.service,com.qiuq.packagedispatch.repository" />
+
+<!--     <aop:aspectj-autoproxy /> -->
+
+
+    <!-- <bean id="propertyConfigurer" -->
+    <!-- class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> -->
+    <!-- <property name="locations"> -->
+    <!-- <list> -->
+    <!-- <value>classpath*:/jdbc.properties</value> -->
+    <!-- </list> -->
+    <!-- </property> -->
+    <!-- </bean> -->
+
+    <!--服务调用公共数据源 -->
+
+    <!--服务独立创建数据源 除独立部署外 请勿打开此配置！ -->
+    <!-- <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+        destroy-method="close"> <property name="dataSourceName"> <value>hmsweb</value> 
+        </property> <property name="driverClass"> <value>${datasource.driverClassName}</value> 
+        </property> <property name="jdbcUrl"> <value>${datasource.url}</value> </property> 
+        <property name="user"> <value>${datasource.username}</value> </property> 
+        <property name="password"> <value>${datasource.password}</value> </property> 
+        <property name="acquireIncrement"> <value>${c3p0.acquireIncrement}</value> 
+        </property> <property name="minPoolSize"> <value>${c3p0.minPoolSize}</value> 
+        </property> <property name="maxPoolSize"> <value>${c3p0.maxPoolSize}</value> 
+        </property> <property name="maxStatements"> <value>${c3p0.maxStatements}</value> 
+        </property> <property name="initialPoolSize"> <value>${c3p0.initialPoolSize}</value> 
+        </property> <property name="idleConnectionTestPeriod"> <value>${c3p0.idleConnectionTestPeriod}</value> 
+        </property> <property name="maxIdleTime"> <value>${c3p0.maxIdleTime}</value> 
+        </property> <property name="numHelperThreads"> <value>${c3p0.numHelperThreads}</value> 
+        </property> </bean> -->
+
+    <!-- 配置事务管理器bean,使用HibernateTransactionManager事务管理器 -->
+    <!-- <bean id="transactionManager" -->
+    <!-- class="org.springframework.orm.hibernate3.HibernateTransactionManager"> -->
+    <!-- 为事务管理器注入sessionFactory" -->
+    <!-- <property name="sessionFactory" ref="sessionFactory" /> -->
+    <!-- </bean> -->
+
+    <!-- <bean id="daoSupport" class="com.comba.hms.common.dao.hibernate.HibernateDaoSupportImpl"> -->
+    <!-- <property name="sessionFactory" ref="sessionFactory" /> -->
+    <!-- </bean> -->
+
+    <!-- <bean id="jdbcSupport" class="com.comba.hms.common.dao.jdbc.JdbcDaoSupportImpl"> -->
+    <!-- <property name="dataSource" ref="dataSource" /> -->
+    <!-- </bean> -->
+
+    <!-- <tx:annotation-driven transaction-manager="transactionManager"/> -->
+</beans>
+
