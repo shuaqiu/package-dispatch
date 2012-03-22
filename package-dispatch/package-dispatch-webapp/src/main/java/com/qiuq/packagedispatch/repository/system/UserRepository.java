@@ -3,6 +3,9 @@
  */
 package com.qiuq.packagedispatch.repository.system;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import com.qiuq.packagedispatch.bean.system.User;
@@ -25,6 +28,25 @@ public class UserRepository {
         user.setCode(usercode);
         user.setName(usercode);
         return user;
+    }
+
+    /**
+     * @param usercode
+     * @return
+     * @author qiushaohua 2012-3-21
+     */
+    public List<User> getReceiverList(String usercode) {
+        List<User> list = new ArrayList<User>();
+
+        User user = new User();
+        user.setName("u1");
+        user.setTel("1111");
+        user.setAddress("add1");
+        user.setCompany("com1");
+        user.setDepartment("dep1");
+
+        list.add(user);
+        return list;
     }
 
 }

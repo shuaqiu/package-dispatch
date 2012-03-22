@@ -7,10 +7,10 @@
   <div data-dojo-type="dijit.MenuBarItem">订单查询</div>
   <div data-dojo-type="dijit.MenuBarItem">收件人管理</div>
   <div data-dojo-type="dijit.PopupMenuBarItem">
-    <span>test12112</span>
+    <span>系统管理</span>
     <div data-dojo-type="dijit.DropDownMenu">
-      <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){alert('test1')}">test1</div>
-      <div data-dojo-type="dijit.MenuItem">test2</div>
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){alert('test1')}">修改密码</div>
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){require(['qiuq/system/login'], function(login){login.doLogout()})}">注销</div>
     </div>
   </div>
   <div data-dojo-type="dijit.MenuBarItem">Help</div>

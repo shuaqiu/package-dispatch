@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qiuq.common.ErrCode;
@@ -23,6 +25,7 @@ import com.qiuq.packagedispatch.service.system.UserService;
  * @version 0.0.1
  */
 @Controller
+@RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LoginController {
     private static final Map<String, Object> LOGINED = new HashMap<String, Object>();
 
@@ -34,11 +37,12 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/{usercode}", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> login(@RequestParam String usercode, @RequestParam String password) {
+    public Map<String, Object> login(@PathVariable String usercode, @RequestBody Map<String, String> req) {
         Map<String, Object> rmap = new HashMap<String, Object>();
 
+        String password = req.get("password");
         if (!StringUtils.hasText(usercode) || !StringUtils.hasText(password)) {
             rmap.put("ok", false);
             rmap.put("errCode", ErrCode.NULL);
@@ -64,5 +68,11 @@ public class LoginController {
 
     private String generateLoginCredit(String usercode) {
         return usercode + System.currentTimeMillis();
+    }
+
+    @RequestMapping(value = "/{credit}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public void logout(@PathVariable String credit) {
+        LOGINED.remove(credit);
     }
 }

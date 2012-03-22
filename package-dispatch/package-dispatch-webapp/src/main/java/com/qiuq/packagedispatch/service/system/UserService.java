@@ -3,6 +3,8 @@
  */
 package com.qiuq.packagedispatch.service.system;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,4 +38,7 @@ public class UserService {
         return userRepository.query(usercode, password);
     }
 
+    public List<User> getReceiverList(String usercode) {
+        return userRepository.getReceiverList(usercode);
+    }
 }

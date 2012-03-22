@@ -10,7 +10,6 @@ function(dojo, lang, array){
     dojo.registerModulePath("app",path);
     require(["dojo/_base/html","dojox/app/main", "dojo/text!./config", "dojo/json"],
 	function(dojo,Application,config, json){
-    	console.info(config);
-    	app = Application(json.parse(config));
+    	app = Application(eval("(" + config + ")"));
     });
 });

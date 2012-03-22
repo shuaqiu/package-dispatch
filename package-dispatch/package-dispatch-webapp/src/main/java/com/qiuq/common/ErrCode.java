@@ -12,5 +12,7 @@ public enum ErrCode {
 
     NULL,
 
-    NOT_FOUND;
+    NOT_FOUND,
+
+    INVALID;
 }

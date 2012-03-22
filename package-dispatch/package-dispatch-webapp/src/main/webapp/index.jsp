@@ -60,15 +60,9 @@ html,body {
         })
     });
 
-    function loadModule(module, conf) {
-        require([ module ], function(aModule) {
-            aModule.init(conf);
-        });
-    }
-
-    function showMenu(conf, moduleArr, id) {
+    function showMenu(moduleArr, conf, id) {
         require([ "qiuq/system/menu" ], function(menu) {
-            menu.show(conf, moduleArr, id);
+            menu.show(moduleArr, conf, id);
         });
     }
 </script>
@@ -87,7 +81,7 @@ html,body {
       </div>
       <%@ include file="menu.jsp"%>
     </div>
-    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div>
+<!--     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div> -->
     <div id="tab" data-dojo-type="dijit.layout.TabContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
       <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About'">
 
@@ -104,7 +98,7 @@ html,body {
 
       </div>
     </div>
-    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'">bottom</div>
+    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">版权所有, 惠信企业 @copy 2012-2012</div>
   </div>
 </body>
 </html>

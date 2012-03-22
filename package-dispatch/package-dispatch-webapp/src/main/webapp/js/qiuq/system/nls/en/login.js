@@ -7,6 +7,6 @@ define({
 	"inputUsername" : "Input your username please",
 	"inputPassword" : "Input your password please",
 
-    "err.1" : "username or password is null",
-    "err.2" : "not such user, or the password is incorrect"
+    "err.NULL" : "username or password is null",
+    "err.NOT_FOUND" : "not such user, or the password is incorrect"
 });

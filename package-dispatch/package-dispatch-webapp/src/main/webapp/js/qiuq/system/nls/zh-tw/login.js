@@ -7,6 +7,6 @@ define({
 	"inputUsername" : "請輸入用戶名",
 	"inputPassword" : "請輸入密碼",
 
-    "err.1" : "用戶名或密碼為空",
-    "err.2" : "沒有這個用戶, 或者密碼錯誤"
+    "err.NULL" : "用戶名或密碼為空",
+    "err.NOT_FOUND" : "沒有這個用戶, 或者密碼錯誤"
 });

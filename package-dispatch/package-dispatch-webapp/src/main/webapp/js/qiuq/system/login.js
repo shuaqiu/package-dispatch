@@ -1,17 +1,27 @@
-define([ "dijit/Dialog", "dijit/layout/ContentPane", "dijit/form/TextBox", "dijit/form/Button", "dojo/dom",
-        "dojo/_base/Deferred", "dojo/_base/xhr", "dojo/i18n!./nls/login", "dojo/string", "../ErrCode" ], function(
-        Dialog, ContentPane, TextBox, Button, dom, Deferred, xhr, message, string, ErrCode) {
+define([
+        "dijit/Dialog",
+        "dijit/layout/ContentPane",
+        "dijit/form/TextBox",
+        "dijit/form/Button",
+        "dojo/_base/Deferred",
+        "dojo/_base/xhr",
+        "dojo/i18n!./nls/login",
+        "dojo/string",
+        "dijit/registry",
+        "../widget/MessageDialog" ], function(Dialog, ContentPane, TextBox, Button, Deferred, xhr, message, string,
+        registry, MessageDialog) {
 
     var id = {
-        dialogContent : "dialogContent",
-        usercode : "usercode",
-        password : "password",
-        buttonPane : "buttonPane"
+        dialogId : "login.dialog",
+        dialogContent : "login.dialogContent",
+        usercode : "login.usercode",
+        password : "login.password",
+        buttonPane : "login.buttonPane"
     };
 
     function doLogin() {
         var dialog = new Dialog({
-            "id" : "dialog",
+            "id" : id.dialogId,
             // Dialog title
             "title" : message["title"],
             // Create Dialog content
@@ -26,10 +36,10 @@ define([ "dijit/Dialog", "dijit/layout/ContentPane", "dijit/form/TextBox", "diji
         loginButton.onClick = function() {
             _login().then(function(result) {
                 if (result.ok) {
-                    dialog.destroy();
+                    dialog.destroyRecursive();
                     deferred.resolve();
                 } else {
-                    showErr(result.errCode);
+                    MessageDialog.error(message["err." + result.errCode]);
                 }
             });
         };
@@ -88,25 +98,17 @@ define([ "dijit/Dialog", "dijit/layout/ContentPane", "dijit/form/TextBox", "diji
         return loginButton;
     }
 
-    function showErr(errCode) {
-        new Dialog({
-            "title" : message["title"],
-            "content" : message["err." + errCode]
-        }).show();
-    }
-
     function _login() {
-        var usercode = dom.byId(id.usercode).value;
-        var password = dom.byId(id.password).value;
+        var usercode = registry.byId(id.usercode).get("value");
+        var password = registry.byId(id.password).get("value");
         if (string.trim(usercode) == "" || string.trim(password) == "") {
-            showErr(ErrCode.NULL);
+            MessageDialog.error(message["err.NULL"]);
             return new Deferred();
         }
 
         return xhr.post({
-            "url" : "web/login",
+            "url" : "web/login/" + usercode,
             "content" : {
-                "usercode" : usercode,
                 "password" : password
             },
             "handleAs" : "json"
@@ -114,8 +116,8 @@ define([ "dijit/Dialog", "dijit/layout/ContentPane", "dijit/form/TextBox", "diji
     }
 
     function _reset() {
-        dom.byId(id.usercode).value = "";
-        dom.byId(id.password).value = "";
+        registry.byId(id.usercode).reset();
+        registry.byId(id.password).reset();
     }
 
     function isLogined() {
@@ -134,8 +136,18 @@ define([ "dijit/Dialog", "dijit/layout/ContentPane", "dijit/form/TextBox", "diji
         return deferred;
     }
 
+    function doLogout() {
+        xhr.del({
+            "url" : "web/login",
+            "handleAs" : "json"
+        }).then(function(json) {
+            doLogin();
+        });
+    }
+
     return {
         "doLogin" : doLogin,
-        "isLogined" : isLogined
+        "isLogined" : isLogined,
+        "doLogout" : doLogout
     };
 });
