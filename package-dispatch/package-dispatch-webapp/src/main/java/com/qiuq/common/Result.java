@@ -12,8 +12,10 @@ public class Result {
     public static final Result OK = new Result(true);
 
     private boolean isOk;
+    
+    private Object obj;
 
-    private int errCode;
+    private ErrCode errCode;
 
     private String message;
 
@@ -26,19 +28,13 @@ public class Result {
         this.isOk = true;
     }
 
-    public Result(int errCode, String message) {
-        isOk = errCode == 0;
+    public Result(ErrCode errCode, String message) {
+        isOk = errCode == ErrCode.OK;
         this.errCode = errCode;
         this.message = message;
     }
 
-    public Result(ErrCode errCode, String message) {
-        isOk = errCode == ErrCode.OK;
-        this.errCode = errCode.ordinal();
-        this.message = message;
-    }
-
-    public Result(int errCode, String message, Exception exception) {
+    public Result(ErrCode errCode, String message, Exception exception) {
         this(errCode, message);
         this.exception = exception;
     }
@@ -49,7 +45,7 @@ public class Result {
         }
 
         isOk = false;
-        errCode = exception.hashCode();
+        // errCode = exception.hashCode();
         message = exception.getMessage();
         this.exception = exception;
     }
@@ -64,11 +60,21 @@ public class Result {
     public void setOk(boolean isOk) {
         this.isOk = isOk;
     }
+    
+    /** @author qiushaohua 2012-3-23*/
+    public Object getObj() {
+        return obj;
+    }
+    
+    /** @author qiushaohua 2012-3-23*/
+    public void setObj(Object obj) {
+        this.obj = obj;
+    }
 
     /**
      * @return the errCode
      */
-    public int getErrCode() {
+    public ErrCode getErrCode() {
         return errCode;
     }
 
@@ -76,7 +82,7 @@ public class Result {
      * @param errCode
      *            the errCode to set
      */
-    public void setErrCode(int errCode) {
+    public void setErrCode(ErrCode errCode) {
         this.errCode = errCode;
     }
 
