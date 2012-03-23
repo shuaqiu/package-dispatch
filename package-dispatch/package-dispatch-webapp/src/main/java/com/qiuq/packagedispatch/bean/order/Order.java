@@ -14,7 +14,7 @@ public class Order {
     private int id;
 
     // 寄件人信息
-    private int consignerId;
+    private int senderId;
     private String senderCode;
     private String senderName;
     private String senderTel;
@@ -68,6 +68,7 @@ public class Order {
     // 调度员信息
     private int schedulerId;
     private String schedulerName;
+    private String schedulerTel;
     private Date scheduleTime;
 
     /**
@@ -88,13 +89,13 @@ public class Order {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getConsignerId() {
-        return consignerId;
+    public int getSenderId() {
+        return senderId;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setConsignerId(int consignerId) {
-        this.consignerId = consignerId;
+    public void setSenderId(int senderId) {
+        this.senderId = senderId;
     }
 
     /** @author qiushaohua 2012-3-19 */
@@ -345,6 +346,16 @@ public class Order {
     /** @author qiushaohua 2012-3-19 */
     public void setSchedulerName(String schedulerName) {
         this.schedulerName = schedulerName;
+    }
+
+    /** @author qiushaohua 2012-3-23 */
+    public String getSchedulerTel() {
+        return schedulerTel;
+    }
+
+    /** @author qiushaohua 2012-3-23 */
+    public void setSchedulerTel(String schedulerTel) {
+        this.schedulerTel = schedulerTel;
     }
 
     /** @author qiushaohua 2012-3-19 */

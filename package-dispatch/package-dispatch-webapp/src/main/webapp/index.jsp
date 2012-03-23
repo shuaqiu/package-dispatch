@@ -47,18 +47,38 @@ html,body {
 </script>
 <script src="js/dojo-1.7.2/dojo/dojo.js"></script>
 <script type="text/javascript">
-    require([ "dijit/layout/BorderContainer", "dijit/layout/TabContainer", "dijit/MenuBar", "dijit/MenuBarItem",
-            "dijit/PopupMenuBarItem", "dijit/DropDownMenu", "dijit/MenuItem" ], function() {
+    require([
+            "dijit/layout/BorderContainer",
+            "dijit/layout/TabContainer",
+            "dijit/MenuBar",
+            "dijit/MenuBarItem",
+            "dijit/PopupMenuBarItem",
+            "dijit/DropDownMenu",
+            "dijit/MenuItem" ], function() {
     });
 
-    require([ "qiuq/system/login", "dojo/dom", "dojo/domReady!" ], function(login, dom) {
-        login.isLogined().then(function() {
-        }, function() {
-            login.doLogin().then(function(json) {
-                dom.byId("showusername").innerHTML = json.username;
+    require([ "qiuq/system/login", "dojo/dom", "dojo/_base/xhr", "dijit/layout/ContentPane", "dojo/domReady!" ],
+            function(login, dom, xhr, ContentPane) {
+                login.isLogined().then(function() {
+                    fetchMenu();
+                }, function() {
+                    login.doLogin().then(function(json) {
+                        dom.byId("showusername").innerHTML = json.user.name;
+                        fetchMenu();
+                    });
+                })
+
+                function fetchMenu() {
+                    xhr.get({
+                        "url" : "web/menu"
+                    }).then(function(content) {
+                        dom.byId("nav").innerHTML = "";
+                        new ContentPane({
+                            "content" : content
+                        }).placeAt("nav").startup();
+                    });
+                }
             });
-        })
-    });
 
     function showMenu(moduleArr, conf, id) {
         require([ "qiuq/system/menu" ], function(menu) {
@@ -73,15 +93,12 @@ html,body {
       <div id="showusername"></div>
       <div class="searchInputColumn">
         <div class="searchInputColumnInner">
-          <input id="searchTerms" placeholder="search terms">
+          <input id="searchTerms" placeholder="search terms"><button id="searchBtn">Search</button>
         </div>
       </div>
-      <div class="searchButtonColumn">
-        <button id="searchBtn">Search</button>
-      </div>
-      <%@ include file="menu.jsp"%>
+      <div id="nav">&nbsp;</div>
     </div>
-<!--     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div> -->
+    <!--     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div> -->
     <div id="tab" data-dojo-type="dijit.layout.TabContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
       <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About'">
 

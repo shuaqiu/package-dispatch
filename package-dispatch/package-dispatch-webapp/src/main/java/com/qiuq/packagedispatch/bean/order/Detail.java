@@ -24,12 +24,12 @@ public class Detail {
     /**
      * 处理顺序
      */
-    private int index;
+    private int handle_index;
 
     // 处理人信息
     private int handlerId;
-    private int handlerName;
-    private int handlerTel;
+    private String handlerName;
+    private String handlerTel;
 
     private String memo;
 
@@ -71,13 +71,13 @@ public class Detail {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getIndex() {
-        return index;
+    public int getHandle_index() {
+        return handle_index;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setIndex(int index) {
-        this.index = index;
+    public void setHandle_index(int index) {
+        this.handle_index = index;
     }
 
     /** @author qiushaohua 2012-3-19 */
@@ -91,22 +91,22 @@ public class Detail {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getHandlerName() {
+    public String getHandlerName() {
         return handlerName;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setHandlerName(int handlerName) {
+    public void setHandlerName(String handlerName) {
         this.handlerName = handlerName;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getHandlerTel() {
+    public String getHandlerTel() {
         return handlerTel;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setHandlerTel(int handlerTel) {
+    public void setHandlerTel(String handlerTel) {
         this.handlerTel = handlerTel;
     }
 

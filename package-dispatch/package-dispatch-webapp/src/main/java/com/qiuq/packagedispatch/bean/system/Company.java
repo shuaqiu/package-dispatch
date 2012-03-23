@@ -20,6 +20,10 @@ public class Company implements Type {
      */
     private String fullId;
 
+    /**
+     * @see Type#TYPE_SELF
+     * @see Type#TYPE_CUSTOMER
+     */
     private int type;
 
     /** @author qiushaohua 2012-3-19 */
@@ -82,12 +86,20 @@ public class Company implements Type {
         this.fullId = fullId;
     }
 
-    /** @author qiushaohua 2012-3-19 */
+    /**
+     * @author qiushaohua 2012-3-19
+     * @see Type#TYPE_SELF
+     * @see Type#TYPE_CUSTOMER
+     */
     public int getType() {
         return type;
     }
 
-    /** @author qiushaohua 2012-3-19 */
+    /**
+     * @author qiushaohua 2012-3-19
+     * @see Type#TYPE_SELF
+     * @see Type#TYPE_CUSTOMER
+     */
     public void setType(int type) {
         this.type = type;
     }

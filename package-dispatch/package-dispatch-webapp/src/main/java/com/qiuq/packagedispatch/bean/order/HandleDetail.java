@@ -12,7 +12,7 @@ import java.util.Date;
 public class HandleDetail extends Detail {
 
     private Date handleTime;
-    private String desc;
+    private String description;
 
     /** @author qiushaohua 2012-3-19 */
     public Date getHandleTime() {
@@ -25,13 +25,13 @@ public class HandleDetail extends Detail {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String desc) {
+        this.description = desc;
     }
 
 }

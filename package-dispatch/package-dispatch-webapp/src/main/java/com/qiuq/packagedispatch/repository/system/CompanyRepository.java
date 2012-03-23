@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.qiuq.packagedispatch.bean.system.Company;
+
 /**
  * @author qiushaohua 2012-3-18
  * @version 0.0.1
@@ -31,6 +33,14 @@ public class CompanyRepository {
         list.add(aCom);
 
         return list;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-3-24
+     */
+    public List<Company> getCustomerCompanys() {
+        return null;
     }
 
 }

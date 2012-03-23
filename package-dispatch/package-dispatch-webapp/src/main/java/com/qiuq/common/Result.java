@@ -12,7 +12,7 @@ public class Result {
     public static final Result OK = new Result(true);
 
     private boolean isOk;
-    
+
     private Object obj;
 
     private ErrCode errCode;
@@ -60,13 +60,13 @@ public class Result {
     public void setOk(boolean isOk) {
         this.isOk = isOk;
     }
-    
-    /** @author qiushaohua 2012-3-23*/
+
+    /** @author qiushaohua 2012-3-23 */
     public Object getObj() {
         return obj;
     }
-    
-    /** @author qiushaohua 2012-3-23*/
+
+    /** @author qiushaohua 2012-3-23 */
     public void setObj(Object obj) {
         this.obj = obj;
     }

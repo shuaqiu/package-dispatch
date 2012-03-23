@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.repository.system.CompanyRepository;
 
 /**
@@ -27,7 +28,20 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public List<Map<String, Object>> getAll() {
+    /**
+     * @return
+     * @author qiushaohua 2012-3-18
+     */
+    public List<Map<String, Object>> getReceiverCompanys() {
         return companyRepository.getAll();
     }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-3-24
+     */
+    public List<Company> getCustomerCompanys() {
+        return companyRepository.getCustomerCompanys();
+    }
+
 }
