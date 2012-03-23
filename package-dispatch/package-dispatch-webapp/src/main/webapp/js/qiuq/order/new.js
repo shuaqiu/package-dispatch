@@ -93,7 +93,7 @@ define([
     function popupReceiverList() {
         initReceiverTable({}, false).then(function(html) {
             new Dialog({
-                "title" : "Receiver",
+                "title" : message["receiver"],
                 "content" : html,
                 style : {
                     width : "600px",
