@@ -46,6 +46,7 @@ public class LoginController {
         if (!StringUtils.hasText(usercode) || !StringUtils.hasText(password)) {
             rmap.put("ok", false);
             rmap.put("errCode", ErrCode.NULL);
+            rmap.put("message", "the username and the password can't be empty");
             return rmap;
         }
 
@@ -53,6 +54,7 @@ public class LoginController {
         if (user == null) {
             rmap.put("ok", false);
             rmap.put("errCode", ErrCode.NOT_FOUND);
+            rmap.put("message", "not such user, or the password is incorrect");
             return rmap;
         }
 

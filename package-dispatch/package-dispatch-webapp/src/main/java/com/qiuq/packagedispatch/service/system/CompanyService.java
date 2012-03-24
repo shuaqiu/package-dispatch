@@ -4,7 +4,6 @@
 package com.qiuq.packagedispatch.service.system;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,10 @@ public class CompanyService {
     /**
      * @return
      * @author qiushaohua 2012-3-18
+     * @param userId
      */
-    public List<Map<String, Object>> getReceiverCompanys() {
-        return companyRepository.getAll();
+    public List<Company> getReceiverCompanys(int userId) {
+        return companyRepository.getReceiverCompanys(userId);
     }
 
     /**

@@ -37,10 +37,11 @@ public class User implements Type {
     private String name;
     private String alias;
     private String password;
+    private String salt;
 
     private String tel;
 
-    private int groupId;
+    private int companyId;
     private String company;
     private String department;
 
@@ -119,6 +120,16 @@ public class User implements Type {
         this.password = password;
     }
 
+    /** @author qiushaohua 2012-3-24 */
+    public String getSalt() {
+        return salt;
+    }
+
+    /** @author qiushaohua 2012-3-24 */
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
     /** @author qiushaohua 2012-3-19 */
     public String getTel() {
         return tel;
@@ -130,13 +141,13 @@ public class User implements Type {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getGroupId() {
-        return groupId;
+    public int getCompanyId() {
+        return companyId;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
+    public void setCompanyId(int groupId) {
+        this.companyId = groupId;
     }
 
     /** @author qiushaohua 2012-3-19 */

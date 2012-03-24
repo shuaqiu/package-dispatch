@@ -15,6 +15,8 @@ import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.service.system.CompanyService;
 
 /**
+ * Manage the company for customers
+ * 
  * @author qiushaohua 2012-3-24
  * @version 0.0.1
  */

@@ -15,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.system.UserService;
+import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
  * @author qiushaohua 2012-3-23
@@ -37,7 +38,7 @@ public class MenuController {
 
         Object role = req.getAttribute("role", RequestAttributes.SCOPE_SESSION);
         if (role == null) {
-            User user = (User) req.getAttribute("user", RequestAttributes.SCOPE_SESSION);
+            User user = HttpSessionUtil.getLoginedUser(req);
             if (user == null) {
                 return "error";
             }

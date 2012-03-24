@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.qiuq.common.Result;
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.order.Order;
 
 /**
@@ -22,9 +22,9 @@ public class OrderController {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Result save(@RequestBody Order order) {
+    public OperateResult save(@RequestBody Order order) {
         System.err.println(order);
 
-        return Result.OK;
+        return OperateResult.OK;
     }
 }

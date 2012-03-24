@@ -44,8 +44,8 @@ public class UserService {
      * @return
      * @author qiushaohua 2012-3-22
      */
-    public List<User> getReceiverList(String usercode) {
-        return userRepository.getReceiverList(usercode);
+    public List<User> getReceiverList(int userId) {
+        return userRepository.getReceiverList(userId);
     }
 
     /**

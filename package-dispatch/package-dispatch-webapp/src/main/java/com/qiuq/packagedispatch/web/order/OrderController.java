@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
-import com.qiuq.common.Result;
+import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.order.Order;
+import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.system.CompanyService;
 import com.qiuq.packagedispatch.service.system.UserService;
+import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
  * @author qiushaohua 2012-3-18
@@ -36,7 +38,6 @@ public class OrderController {
 
     private UserService userService;
 
-
     @Autowired
     public void setCompanyService(CompanyService companyService) {
         this.companyService = companyService;
@@ -48,10 +49,15 @@ public class OrderController {
         this.userService = userService;
     }
 
-    @RequestMapping(value="/new", method=RequestMethod.GET)
-    public Map<String, Object> create() {
+    @RequestMapping(value = "/new", method = RequestMethod.GET)
+    public Map<String, Object> create(WebRequest req) {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("company", getReceiverCompany());
+        User loginedUser = HttpSessionUtil.getLoginedUser(req);
+        if (loginedUser != null) {
+            Map<Object, Object> receiverCompany = getReceiverCompany(loginedUser.getId());
+            map.put("company", receiverCompany);
+        }
+
         return map;
     }
 
@@ -59,12 +65,12 @@ public class OrderController {
      * @return
      * @author qiushaohua 2012-3-21
      */
-    private Map<Object, Object> getReceiverCompany() {
+    private Map<Object, Object> getReceiverCompany(int userId) {
         Map<Object, Object> company = new LinkedHashMap<Object, Object>();
 
-        List<Map<String, Object>> allCompany = companyService.getAll();
-        for (Map<String, Object> aCom : allCompany) {
-            company.put(aCom.get("id"), aCom.get("name"));
+        List<Company> allCompany = companyService.getReceiverCompanys(userId);
+        for (Company aCom : allCompany) {
+            company.put(aCom.getId(), aCom.getName());
         }
         return company;
     }
@@ -76,17 +82,16 @@ public class OrderController {
         if (user == null) {
             return null;
         }
-        return userService.getReceiverList(user.getCode());
+        return userService.getReceiverList(user.getId());
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Result save(@RequestBody Map<String, Object> map) {
-
+    public OperateResult save(@RequestBody Map<String, Object> map) {
         Order order = Converter.mapToBean(map, Order.class);
         System.err.println(order);
 
-        Result result = Result.OK;
+        OperateResult result = OperateResult.OK;
 
         return result;
     }
