@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.OperateResult;
@@ -78,7 +77,7 @@ public class OrderController {
     @RequestMapping(value = "/receiver", method = RequestMethod.GET)
     @ResponseBody
     public List<User> getReceiver(WebRequest req) {
-        User user = (User) req.getAttribute("user", RequestAttributes.SCOPE_SESSION);
+        User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
             return null;
         }

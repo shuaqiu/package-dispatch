@@ -6,22 +6,8 @@
 <meta charset="UTF-8">
 <title>惠信企业配送服务系统</title>
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" />
-<style type="text/css">
-.tundra .dijitDialogUnderlay {
-    background: #000;
-}
-
-html,body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    padding: 0;
-}
-
-#appLayout {
-    height: 100%;
-}
-</style>
+<link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/resources/tundraGrid.css" />
+<link rel="stylesheet" href="style.css" />
 <script type="text/javascript">
     var dojoConfig = {
         async : true,
@@ -57,14 +43,14 @@ html,body {
             "dijit/MenuItem" ], function() {
     });
 
-    require([ "qiuq/system/login", "dojo/dom", "dojo/_base/xhr", "dijit/layout/ContentPane", "dojo/domReady!" ],
+    require([ "qiuq/login", "dojo/dom", "dojo/_base/xhr", "dijit/layout/ContentPane", "dojo/domReady!" ],
             function(login, dom, xhr, ContentPane) {
                 login.isLogined().then(function() {
                     fetchMenu();
                 }, function() {
                     login.doLogin().then(function(json) {
-                        dom.byId("showusername").innerHTML = json.user.name;
                         fetchMenu();
+                        dom.byId("showusername").innerHTML = json.user.name;
                     });
                 })
 
@@ -80,9 +66,12 @@ html,body {
                 }
             });
 
-    function showMenu(moduleArr, conf, id) {
-        require([ "qiuq/system/menu" ], function(menu) {
-            menu.show(moduleArr, conf, id);
+    function showTab(moduleArr, conf, id, callback) {
+        require(["dojo/_base/lang", "qiuq/tab" ], function(lang, tab) {
+            var deferred = tab.show(moduleArr, conf, id);
+            if(callback && lang.isFunction(callback)){
+                deferred.then(callback);
+            }
         });
     }
 </script>

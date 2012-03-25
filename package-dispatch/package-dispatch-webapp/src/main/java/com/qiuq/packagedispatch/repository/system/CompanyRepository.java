@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import com.qiuq.packagedispatch.bean.system.Company;
+import com.qiuq.packagedispatch.bean.system.Type;
 
 /**
  * @author qiushaohua 2012-3-18
@@ -28,6 +30,7 @@ public class CompanyRepository {
      * @version 0.0.1
      */
     private final class CompanyRowMapper implements RowMapper<Company> {
+        @Override
         public Company mapRow(ResultSet rs, int rowNum) throws SQLException {
             Company com = new Company();
 
@@ -70,14 +73,97 @@ public class CompanyRepository {
      * @author qiushaohua 2012-3-24
      */
     public List<Company> getReceiverCompanys(int userId) {
-
-        String sql = "select com.* from sys_company com" + " left join sys_user user on com.id = user.company_id"
-                + " left join sys_sender_receiver relation on user.id = relation.receiver_id"
+        String sql = "select com.* from sys_company com left join sys_user usr on com.id = usr.company_id"
+                + " left join sys_sender_receiver relation on usr.id = relation.receiver_id"
                 + " where relation.sender_id = :senderId";
 
         SqlParameterSource paramMap = new MapSqlParameterSource("senderId", userId);
+
         List<Company> companyList = jdbcTemplate.query(sql, paramMap, new CompanyRowMapper());
         return companyList;
+    }
+
+    /**
+     * @param com
+     * @author qiushaohua 2012-3-25
+     * @return
+     */
+    public boolean insert(Company com) {
+        String sql = "insert into sys_company(code, name, address, parent_id, full_id, type)"
+                + " values(:code, :name, :address, :parent_id, :full_id, :type)";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("code", com.getCode());
+        paramMap.addValue("name", com.getName());
+        paramMap.addValue("address", com.getAddress());
+        paramMap.addValue("parent_id", -1);
+        paramMap.addValue("full_id", -1);
+        paramMap.addValue("type", Type.TYPE_CUSTOMER);
+
+        try {
+            int update = jdbcTemplate.update(sql, paramMap);
+            return update == 1;
+        } catch (DataAccessException e) {
+        }
+        return false;
+    }
+
+    /**
+     * @param id
+     * @return
+     * @author qiushaohua 2012-3-26
+     */
+    public Company query(int id) {
+        String sql = "select * from sys_company where id = :id";
+        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
+
+        try {
+            Company com = jdbcTemplate.queryForObject(sql, paramMap, new CompanyRowMapper());
+            return com;
+        } catch (DataAccessException e) {
+        }
+        return null;
+    }
+
+    /**
+     * @param id
+     * @return
+     * @author qiushaohua 2012-3-26
+     */
+    public boolean delete(int id) {
+        String sql = "delete from sys_company where id = :id";
+        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
+
+        try {
+            int update = jdbcTemplate.update(sql, paramMap);
+            return update == 1;
+        } catch (DataAccessException e) {
+        }
+
+        return false;
+    }
+
+    /**
+     * @param id
+     * @param com
+     * @return
+     * @author qiushaohua 2012-3-26
+     */
+    public boolean update(int id, Company com) {
+        String sql = "update sys_company set code = :code, name = :name, address = :address where id = :id";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("code", com.getCode());
+        paramMap.addValue("name", com.getName());
+        paramMap.addValue("address", com.getAddress());
+        paramMap.addValue("id", id);
+
+        try {
+            int update = jdbcTemplate.update(sql, paramMap);
+            return update == 1;
+        } catch (DataAccessException e) {
+        }
+        return false;
     }
 
 }

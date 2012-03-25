@@ -53,7 +53,6 @@ public class LoginController {
     @RequestMapping(value = "/{usercode}", method = RequestMethod.POST)
     @ResponseBody
     public OperateResult login(@PathVariable String usercode, @RequestParam String password, WebRequest req) {
-
         if (!StringUtils.hasText(usercode) || !StringUtils.hasText(password)) {
             return new OperateResult(ErrCode.NULL, "username or password is empty");
         }

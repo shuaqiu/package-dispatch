@@ -61,6 +61,7 @@ public class UserRepository {
     }
 
     /** @author qiushaohua 2012-3-24 */
+    @Autowired
     public void setPasswordDecorder(PasswordEncoder passwordDecorder) {
         this.passwordDecorder = passwordDecorder;
     }
@@ -72,7 +73,6 @@ public class UserRepository {
      * @author qiushaohua 2012-3-20
      */
     public User query(String usercode, String password) {
-
         String sql = "select * from sys_user where code = :code";
 
         SqlParameterSource paramMap = new MapSqlParameterSource("code", usercode);
@@ -83,7 +83,7 @@ public class UserRepository {
             return null;
         }
 
-        if (user.getState() != User.STATE_VALID) {
+        if (user == null || user.getState() != User.STATE_VALID) {
             return null;
         }
 
@@ -101,8 +101,8 @@ public class UserRepository {
      * @author qiushaohua 2012-3-21
      */
     public List<User> getReceiverList(int userId) {
-        String sql = "select user.* from sys_user user"
-                + " left join sys_sender_receiver relation on user.user_id = relation.receiver_id"
+        String sql = "select usr.* from sys_user usr"
+                + " left join sys_sender_receiver relation on usr.user_id = relation.receiver_id"
                 + " where relation.sender_id = :senderId";
 
         SqlParameterSource paramMap = new MapSqlParameterSource("senderId", userId);

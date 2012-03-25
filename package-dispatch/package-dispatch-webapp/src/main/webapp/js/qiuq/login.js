@@ -8,7 +8,7 @@ define([
         "dojo/i18n!./nls/login",
         "dojo/string",
         "dijit/registry",
-        "../widget/MessageDialog" ], function(Dialog, ContentPane, TextBox, Button, Deferred, xhr, message, string,
+        "./widget/MessageDialog" ], function(Dialog, ContentPane, TextBox, Button, Deferred, xhr, message, string,
         registry, MessageDialog) {
 
     var id = {
@@ -37,7 +37,7 @@ define([
             _login().then(function(result) {
                 if (result.ok) {
                     dialog.destroyRecursive();
-                    deferred.resolve();
+                    deferred.resolve(result);
                 } else {
                     MessageDialog.error(message["err." + result.errCode]);
                 }

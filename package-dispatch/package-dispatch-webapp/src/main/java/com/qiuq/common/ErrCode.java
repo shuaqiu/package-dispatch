@@ -14,5 +14,11 @@ public enum ErrCode {
 
     NOT_FOUND,
 
-    INVALID;
+    INVALID,
+
+    INSERT_FAIL,
+
+    UPDATE_FAIL,
+
+    DELETE_FAIL;
 }

@@ -44,4 +44,41 @@ public class CompanyService {
         return companyRepository.getCustomerCompanys();
     }
 
+    /**
+     * @param com
+     * @author qiushaohua 2012-3-25
+     * @return
+     */
+    public boolean insert(Company com) {
+        return companyRepository.insert(com);
+    }
+
+    /**
+     * @param id
+     * @return
+     * @author qiushaohua 2012-3-26
+     */
+    public Company query(int id) {
+        return companyRepository.query(id);
+    }
+
+    /**
+     * @param id
+     * @return
+     * @author qiushaohua 2012-3-26
+     */
+    public boolean delete(int id) {
+        return companyRepository.delete(id);
+    }
+
+    /**
+     * @param id
+     * @param com
+     * @return
+     * @author qiushaohua 2012-3-26
+     */
+    public boolean update(int id, Company com) {
+        return companyRepository.update(id, com);
+    }
+
 }
