@@ -14,9 +14,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.Type;
+import com.qiuq.packagedispatch.repository.SqlServerSqlUtil;
 
 /**
  * @author qiushaohua 2012-3-18
@@ -57,11 +59,29 @@ public class CompanyRepository {
     /**
      * @return
      * @author qiushaohua 2012-3-24
+     * @param sort
+     * @param query
      */
-    public List<Company> getCustomerCompanys() {
+    public List<Company> query(String sort, String query) {
         String sql = "select * from sys_company where id > 0";
 
+        if (StringUtils.hasText(query)) {
+            sql += " and (code like :query or name like :query or address like :query)";
+        }
+
+        if (StringUtils.hasText(sort) && sort.length() > 1) {
+            if (sort.startsWith("+") || sort.startsWith(" ")) {
+                sql += " order by " + sort.substring(1);
+            } else if (sort.startsWith("-")) {
+                sql += " order by " + sort.substring(1) + " desc";
+            }
+        }
+
         SqlParameterSource paramMap = null;
+        if (StringUtils.hasText(query)) {
+            query = SqlServerSqlUtil.escapeLikeCondition(query);
+            paramMap = new MapSqlParameterSource("query", "%" + query + "%");
+        }
         List<Company> companyList = jdbcTemplate.query(sql, paramMap, new CompanyRowMapper());
 
         return companyList;

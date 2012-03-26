@@ -2,6 +2,10 @@
     background: #000;
 }
 
+.tundra .dijitSplitContainer-child,.tundra .dijitBorderContainer-child {
+    border: none;
+}
+
 html,body {
     height: 100%;
     margin: 0;

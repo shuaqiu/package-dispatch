@@ -50,8 +50,9 @@ public class CompanyController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public List<Company> getCustomerCompanys(@RequestParam(required = false, defaultValue = "+id") String sort) {
-        List<Company> coms = companyService.getCustomerCompanys();
+    public List<Company> query(@RequestParam(defaultValue = "+id") String sort,
+            @RequestParam(required = false) String query) {
+        List<Company> coms = companyService.query(sort, query);
         return coms;
     }
 

@@ -39,9 +39,11 @@ public class CompanyService {
     /**
      * @return
      * @author qiushaohua 2012-3-24
+     * @param sort
+     * @param query
      */
-    public List<Company> getCustomerCompanys() {
-        return companyRepository.getCustomerCompanys();
+    public List<Company> query(String sort, String query) {
+        return companyRepository.query(sort, query);
     }
 
     /**
