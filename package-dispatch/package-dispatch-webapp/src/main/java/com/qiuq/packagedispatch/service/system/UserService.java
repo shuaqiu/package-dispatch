@@ -11,15 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.User;
+import com.qiuq.packagedispatch.repository.ResourceRepository;
 import com.qiuq.packagedispatch.repository.system.UserRepository;
+import com.qiuq.packagedispatch.service.AbstractResourceService;
 
 /**
  * @author qiushaohua 2012-3-20
  * @version 0.0.1
  */
 @Service
-@Transactional
-public class UserService {
+public class UserService extends AbstractResourceService<User> {
 
     private UserRepository userRepository;
 
@@ -35,8 +36,9 @@ public class UserService {
      * @return
      * @author qiushaohua 2012-3-20
      */
-    public User query(String usercode, String password) {
-        return userRepository.query(usercode, password);
+    @Transactional(readOnly = true)
+    public User getLoginUser(String usercode, String password) {
+        return userRepository.getLoginUser(usercode, password);
     }
 
     /**
@@ -44,6 +46,7 @@ public class UserService {
      * @return
      * @author qiushaohua 2012-3-22
      */
+    @Transactional(readOnly = true)
     public List<User> getReceiverList(int userId) {
         return userRepository.getReceiverList(userId);
     }
@@ -53,7 +56,24 @@ public class UserService {
      * @return
      * @author qiushaohua 2012-3-23
      */
+    @Transactional(readOnly = true)
     public List<Role> getUserRoles(User user) {
         return null;
+    }
+
+    /**
+     * @param sort
+     * @param query
+     * @return
+     * @author qiushaohua 2012-3-27
+     */
+    @Transactional(readOnly = true)
+    public List<User> query(String sort, String query) {
+        return userRepository.query(sort, query);
+    }
+
+    @Override
+    protected ResourceRepository<User> getRepository() {
+        return userRepository;
     }
 }

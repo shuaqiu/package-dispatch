@@ -8,17 +8,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.qiuq.common.ErrCode;
-import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.system.Company;
+import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.system.CompanyService;
+import com.qiuq.packagedispatch.web.AbstractResourceController;
 
 /**
  * Manage the company for customers
@@ -28,7 +26,7 @@ import com.qiuq.packagedispatch.service.system.CompanyService;
  */
 @Controller
 @RequestMapping(value = "/company")
-public class CompanyController {
+public class CompanyController extends AbstractResourceController<Company> {
 
     private CompanyService companyService;
 
@@ -56,43 +54,49 @@ public class CompanyController {
         return coms;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
-    public OperateResult insert(@RequestBody Company com) {
-        boolean isInserted = companyService.insert(com);
-        if (isInserted) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.INSERT_FAIL, "add new company fail");
-        }
-    }
+    //
+    // @RequestMapping(method = RequestMethod.POST)
+    // @ResponseBody
+    // public OperateResult insert(@RequestBody Company com) {
+    // boolean isInserted = companyService.insert(com);
+    // if (isInserted) {
+    // return OperateResult.OK;
+    // } else {
+    // return new OperateResult(ErrCode.INSERT_FAIL, "add new company fail");
+    // }
+    // }
+    //
+    // @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    // @ResponseBody
+    // public Company query(@PathVariable int id) {
+    // Company com = companyService.query(id);
+    // return com;
+    // }
+    //
+    // @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    // @ResponseBody
+    // public OperateResult update(@PathVariable int id, @RequestBody Company com) {
+    // boolean isUpdated = companyService.update(id, com);
+    // if (isUpdated) {
+    // return OperateResult.OK;
+    // } else {
+    // return new OperateResult(ErrCode.UPDATE_FAIL, "update fail");
+    // }
+    // }
+    //
+    // @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    // @ResponseBody
+    // public OperateResult delete(@PathVariable int id) {
+    // boolean isDeleted = companyService.delete(id);
+    // if (isDeleted) {
+    // return OperateResult.OK;
+    // } else {
+    // return new OperateResult(ErrCode.DELETE_FAIL, "delete fail");
+    // }
+    // }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public Company query(@PathVariable int id) {
-        Company com = companyService.query(id);
-        return com;
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @ResponseBody
-    public OperateResult update(@PathVariable int id, @RequestBody Company com) {
-        boolean isUpdated = companyService.update(id, com);
-        if (isUpdated) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.UPDATE_FAIL, "update fail");
-        }
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public OperateResult delete(@PathVariable int id) {
-        boolean isDeleted = companyService.delete(id);
-        if (isDeleted) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.DELETE_FAIL, "delete fail");
-        }
+    @Override
+    protected ResourceService<Company> getService() {
+        return companyService;
     }
 }

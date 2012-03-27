@@ -45,11 +45,11 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
     <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder">
         <constructor-arg value="MD5" />
         <!-- <property name="iterations" value="2"/> -->
     </bean>
-
-    <tx:annotation-driven transaction-manager="transactionManager" />
 </beans>
 

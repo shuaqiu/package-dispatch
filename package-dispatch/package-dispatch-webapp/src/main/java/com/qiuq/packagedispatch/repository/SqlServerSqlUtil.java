@@ -3,13 +3,17 @@
  */
 package com.qiuq.packagedispatch.repository;
 
+import org.springframework.stereotype.Component;
+
 /**
  * @author qiushaohua 2012-3-26
  * @version 0.0.1
  */
-public class SqlServerSqlUtil {
+@Component
+public class SqlServerSqlUtil implements SqlUtil {
 
-    public static String escapeLikeCondition(String likeValue) {
+    @Override
+    public String escapeLikeValue(String likeValue) {
         likeValue = likeValue.replaceAll("'", "''");
         likeValue = likeValue.replaceAll("\\[", "[[]");
         likeValue = likeValue.replaceAll("%", "[%]");
