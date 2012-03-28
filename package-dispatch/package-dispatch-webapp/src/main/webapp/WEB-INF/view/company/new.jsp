@@ -10,7 +10,7 @@
         <table class="formTable">
           <tr>
             <td class="labelCell"><em>*</em><label for="company_new_code">编码: </label></td>
-            <td><input id="company_new_code" name="code" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeholder: '客户公司的编码', required: true" /></td>
+            <td><input id="company_new_code" name="code" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '客户公司的编码', required: true" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="company_new_name">公司名称: </label></td>
@@ -26,7 +26,7 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/company'], function(company){company.save()})}" /></td>
+        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/company'], function(company){company.save();});}" /></td>
       </tr>
     </table>
   </form>

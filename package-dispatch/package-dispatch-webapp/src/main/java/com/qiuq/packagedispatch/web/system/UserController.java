@@ -13,24 +13,33 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.qiuq.packagedispatch.bean.system.Company;
+import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.system.CompanyService;
+import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 
 /**
- * Manage the company for customers
+ * Manage the user
  * 
- * @author qiushaohua 2012-3-24
+ * @author qiushaohua 2012-3-27
  * @version 0.0.1
  */
 @Controller
-@RequestMapping(value = "/company")
-public class CompanyController extends AbstractResourceController<Company> {
+@RequestMapping(value = "/user")
+public class UserController extends AbstractResourceController<User> {
+
+    private UserService userService;
 
     private CompanyService companyService;
 
-    /** @author qiushaohua 2012-3-24 */
+    /** @author qiushaohua 2012-3-27 */
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    /** @author qiushaohua 2012-3-29 */
     @Autowired
     public void setCompanyService(CompanyService companyService) {
         this.companyService = companyService;
@@ -43,19 +52,20 @@ public class CompanyController extends AbstractResourceController<Company> {
 
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     public Map<String, Object> create() {
+        companyService.query("+id", "");
         return null;
     }
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public List<Company> query(@RequestParam(defaultValue = "+id") String sort,
+    public List<User> query(@RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query) {
-        List<Company> coms = companyService.query(sort, query);
+        List<User> coms = userService.query(sort, query);
         return coms;
     }
 
     @Override
-    protected ResourceService<Company> getService() {
-        return companyService;
+    protected ResourceService<User> getService() {
+        return userService;
     }
 }

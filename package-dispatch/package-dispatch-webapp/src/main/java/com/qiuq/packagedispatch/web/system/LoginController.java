@@ -70,7 +70,8 @@ public class LoginController {
 
             result = new OperateResult(true, user);
         } else {
-            result = new OperateResult(ErrCode.valueOf((String) rmap.get("errCode")), (String) rmap.get("message"));
+            ErrCode errCode = ErrCode.valueOf((String) rmap.get("errCode"));
+            result = new OperateResult(errCode, (String) rmap.get("message"));
         }
 
         return result;

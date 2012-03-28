@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,10 +32,18 @@ public class LoginController {
 
     private UserService userService;
 
+    private PasswordEncoder passwordEncoder;
+
     /** @author qiushaohua 2012-3-20 */
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    /** @author qiushaohua 2012-3-27 */
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @RequestMapping(value = "/{usercode}", method = RequestMethod.POST)
@@ -50,7 +59,7 @@ public class LoginController {
             return rmap;
         }
 
-        User user = userService.query(usercode, password);
+        User user = userService.getLoginUser(usercode, password);
         if (user == null) {
             rmap.put("ok", false);
             rmap.put("errCode", ErrCode.NOT_FOUND);
@@ -69,7 +78,7 @@ public class LoginController {
     }
 
     private String generateLoginCredit(String usercode) {
-        return usercode + System.currentTimeMillis();
+        return passwordEncoder.encodePassword(usercode, System.currentTimeMillis());
     }
 
     @RequestMapping(value = "/{credit}", method = RequestMethod.DELETE)

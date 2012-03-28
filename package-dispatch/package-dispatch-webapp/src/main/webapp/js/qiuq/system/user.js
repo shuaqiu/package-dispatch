@@ -2,10 +2,11 @@ define([
         "dojo/_base/xhr",
         "dojo/dom-form",
         "dijit/registry",
+        "dijit/Dialog",
         "../tab",
         "../widget/MessageDialog",
         "../ErrCode",
-        "dojo/i18n!./nls/company",
+        "dojo/i18n!./nls/user",
         "dojo/data/ObjectStore",
         "dojo/store/JsonRest",
         "dojo/store/Memory",
@@ -15,19 +16,31 @@ define([
         "dijit/MenuBarItem",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
-        "dijit/form/Button" ], function(xhr, domform, registry, tab, MessageDialog, ErrCode, message) {
+        "dijit/form/Select",
+        "dijit/form/Button" ], function(xhr, domform, registry, Dialog, tab, MessageDialog, ErrCode, message) {
 
     var id = {
-        listGrid : "company_list_grid",
-        creationTab : "company_creation_tab",
-        form : "company"
+        listGrid : "user_list_grid",
+        creationDialog : "user_creation_dialog",
+        form : "user"
     };
 
     function create() {
         tab.show([], {
             "title" : message["creation"],
-            "href" : "web/company/new"
+            "href" : "web/user/new"
         }, id.creationTab);
+    }
+
+    function showCompany() {
+        xhr.get({
+            "url" : "web/company/list"
+        }).then(function(content){
+            new Dialog({
+                "title" : "Company",
+                "content" : content
+            }).show();
+        });
     }
 
     function save() {
@@ -54,6 +67,7 @@ define([
 
     return {
         "create" : create,
+        "showCompany" : showCompany,
         "save" : save,
         "del" : del
     };

@@ -7,25 +7,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.Type;
-import com.qiuq.packagedispatch.repository.SqlServerSqlUtil;
+import com.qiuq.packagedispatch.repository.AbstractRepository;
+import com.qiuq.packagedispatch.repository.ResourceRepository;
 
 /**
  * @author qiushaohua 2012-3-18
  * @version 0.0.1
  */
 @Repository
-public class CompanyRepository {
+public class CompanyRepository extends AbstractRepository implements ResourceRepository<Company> {
 
     /**
      * @author qiushaohua 2012-3-24
@@ -48,14 +47,6 @@ public class CompanyRepository {
         }
     }
 
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    /** @author qiushaohua 2012-3-24 */
-    @Autowired
-    public void setJdbcTemplate(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     /**
      * @return
      * @author qiushaohua 2012-3-24
@@ -64,24 +55,17 @@ public class CompanyRepository {
      */
     public List<Company> query(String sort, String query) {
         String sql = "select * from sys_company where id > 0";
+        SqlParameterSource paramMap = null;
 
         if (StringUtils.hasText(query)) {
             sql += " and (code like :query or name like :query or address like :query)";
-        }
 
-        if (StringUtils.hasText(sort) && sort.length() > 1) {
-            if (sort.startsWith("+") || sort.startsWith(" ")) {
-                sql += " order by " + sort.substring(1);
-            } else if (sort.startsWith("-")) {
-                sql += " order by " + sort.substring(1) + " desc";
-            }
-        }
-
-        SqlParameterSource paramMap = null;
-        if (StringUtils.hasText(query)) {
-            query = SqlServerSqlUtil.escapeLikeCondition(query);
+            query = sqlUtil.escapeLikeValue(query);
             paramMap = new MapSqlParameterSource("query", "%" + query + "%");
         }
+
+        sql += orderBy(sort);
+
         List<Company> companyList = jdbcTemplate.query(sql, paramMap, new CompanyRowMapper());
 
         return companyList;
@@ -108,6 +92,7 @@ public class CompanyRepository {
      * @author qiushaohua 2012-3-25
      * @return
      */
+    @Override
     public boolean insert(Company com) {
         String sql = "insert into sys_company(code, name, address, parent_id, full_id, type)"
                 + " values(:code, :name, :address, :parent_id, :full_id, :type)";
@@ -133,6 +118,7 @@ public class CompanyRepository {
      * @return
      * @author qiushaohua 2012-3-26
      */
+    @Override
     public Company query(int id) {
         String sql = "select * from sys_company where id = :id";
         SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
@@ -150,6 +136,7 @@ public class CompanyRepository {
      * @return
      * @author qiushaohua 2012-3-26
      */
+    @Override
     public boolean delete(int id) {
         String sql = "delete from sys_company where id = :id";
         SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
@@ -169,6 +156,7 @@ public class CompanyRepository {
      * @return
      * @author qiushaohua 2012-3-26
      */
+    @Override
     public boolean update(int id, Company com) {
         String sql = "update sys_company set code = :code, name = :name, address = :address where id = :id";
 

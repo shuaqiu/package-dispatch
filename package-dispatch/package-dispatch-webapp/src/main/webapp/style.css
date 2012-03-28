@@ -27,6 +27,7 @@ html,body {
 .formTable .labelCell {
     text-align: right;
     width: 35%;
+    white-space: nowrap;
 }
 
 em {

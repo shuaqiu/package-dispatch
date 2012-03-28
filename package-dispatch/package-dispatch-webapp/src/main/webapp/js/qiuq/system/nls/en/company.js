@@ -1,5 +1,9 @@
 define({
     "code" : "Company Code",
     "name" : "Company Name",
-    "address" : "Address"
+    "address" : "Address",
+    
+    "creation" : "Create Company",
+    
+    "err.INVALID" : "Input company infomation please!"
 });
