@@ -16,6 +16,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -144,10 +145,23 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     @Override
     public boolean insert(User user) {
+<<<<<<< HEAD
         String sql = "insert into sys_user(code, name, password, salt, tel, company_id, company, department, address, type, customer_type, state)"
                 + " values(:code, :name, :password, :salt, :tel, :company_id, :company, :department, :address, :type, :customer_type, :state)";
 
         SqlParameterSource paramMap = mapObject(user);
+=======
+        String sql = "insert into sys_user(code, name, address, parent_id, full_id, type)"
+                + " values(:code, :name, :address, :parent_id, :full_id, :type)";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        // paramMap.addValue("code", com.getCode());
+        // paramMap.addValue("name", com.getName());
+        // paramMap.addValue("address", com.getAddress());
+        // paramMap.addValue("parent_id", -1);
+        // paramMap.addValue("full_id", -1);
+        paramMap.addValue("type", Type.TYPE_CUSTOMER);
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
 
         try {
             int update = jdbcTemplate.update(sql, paramMap);
@@ -157,6 +171,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         return false;
     }
 
+<<<<<<< HEAD
     /**
      * @param user
      * @return
@@ -186,6 +201,8 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         return paramMap;
     }
 
+=======
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     @Override
     public boolean delete(int id) {
         String sql = "delete from sys_user where id = :id";

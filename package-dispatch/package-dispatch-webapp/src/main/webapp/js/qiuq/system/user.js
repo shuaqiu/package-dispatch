@@ -3,10 +3,16 @@ define([
         "dojo/dom-form",
         "dijit/registry",
         "dijit/Dialog",
+<<<<<<< HEAD
         "../tab",
         "../widget/MessageDialog",
         "../ErrCode",
         "dojo/i18n!./nls/user",
+=======
+        "../widget/MessageDialog",
+        "../ErrCode",
+        "dojo/i18n!./nls/company",
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
         "dojo/data/ObjectStore",
         "dojo/store/JsonRest",
         "dojo/store/Memory",
@@ -16,6 +22,7 @@ define([
         "dijit/MenuBarItem",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
+<<<<<<< HEAD
         "dijit/form/Select",
         "dijit/form/Button" ], function(xhr, domform, registry, Dialog, tab, MessageDialog, ErrCode, message) {
 
@@ -49,6 +56,21 @@ define([
         var dijitForm = registry.byId(form.id);
         if (dijitForm.isValid() == false) {
             MessageDialog.error(message["err.INVALID"]);
+=======
+        "dijit/form/Button" ], function(xhr, domform, registry, Dialog, MessageDialog, ErrCode, message) {
+
+    var id = {
+        listGrid : "company_list_grid",
+        creationDialog : "company_creation_dialog"
+    };
+
+    function save() {
+        var form = document.forms["company"];
+
+        var dijitForm = registry.byId(form.id);
+        if (dijitForm.isValid() == false) {
+            MessageDialog.error(message["err." + ErrCode.INVALID]);
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
             return;
         }
 
@@ -56,7 +78,19 @@ define([
         grid.store.newItem(domform.toObject(form));
         grid.store.save();
 
+<<<<<<< HEAD
         tab.close(id.creationTab);
+=======
+        registry.byId(id.creationDialog).destroyRecursive();
+    }
+
+    function create() {
+        new Dialog({
+            "id" : id.creationDialog,
+            "title" : "Create Company",
+            "href" : "web/company/new"
+        }).show();
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     }
 
     function del() {
@@ -66,9 +100,14 @@ define([
     }
 
     return {
+<<<<<<< HEAD
         "create" : create,
         "showCompany" : showCompany,
         "save" : save,
+=======
+        "save" : save,
+        "create" : create,
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
         "del" : del
     };
 });

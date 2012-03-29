@@ -54,6 +54,50 @@ public class CompanyController extends AbstractResourceController<Company> {
         return coms;
     }
 
+<<<<<<< HEAD
+=======
+    //
+    // @RequestMapping(method = RequestMethod.POST)
+    // @ResponseBody
+    // public OperateResult insert(@RequestBody Company com) {
+    // boolean isInserted = companyService.insert(com);
+    // if (isInserted) {
+    // return OperateResult.OK;
+    // } else {
+    // return new OperateResult(ErrCode.INSERT_FAIL, "add new company fail");
+    // }
+    // }
+    //
+    // @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    // @ResponseBody
+    // public Company query(@PathVariable int id) {
+    // Company com = companyService.query(id);
+    // return com;
+    // }
+    //
+    // @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    // @ResponseBody
+    // public OperateResult update(@PathVariable int id, @RequestBody Company com) {
+    // boolean isUpdated = companyService.update(id, com);
+    // if (isUpdated) {
+    // return OperateResult.OK;
+    // } else {
+    // return new OperateResult(ErrCode.UPDATE_FAIL, "update fail");
+    // }
+    // }
+    //
+    // @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    // @ResponseBody
+    // public OperateResult delete(@PathVariable int id) {
+    // boolean isDeleted = companyService.delete(id);
+    // if (isDeleted) {
+    // return OperateResult.OK;
+    // } else {
+    // return new OperateResult(ErrCode.DELETE_FAIL, "delete fail");
+    // }
+    // }
+
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     @Override
     protected ResourceService<Company> getService() {
         return companyService;

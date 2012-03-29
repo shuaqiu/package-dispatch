@@ -2,7 +2,11 @@ define([
         "dojo/_base/xhr",
         "dojo/dom-form",
         "dijit/registry",
+<<<<<<< HEAD
         "../tab",
+=======
+        "dijit/Dialog",
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
         "../widget/MessageDialog",
         "../ErrCode",
         "dojo/i18n!./nls/company",
@@ -15,6 +19,7 @@ define([
         "dijit/MenuBarItem",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
+<<<<<<< HEAD
         "dijit/form/Button" ], function(xhr, domform, registry, tab, MessageDialog, ErrCode, message) {
 
     var id = {
@@ -29,6 +34,14 @@ define([
             "href" : "web/company/new"
         }, id.creationTab);
     }
+=======
+        "dijit/form/Button" ], function(xhr, domform, registry, Dialog, MessageDialog, ErrCode, message) {
+
+    var id = {
+        listGrid : "company_list_grid",
+        creationDialog : "company_creation_dialog"
+    };
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
 
     function save() {
         var form = document.forms[id.form];
@@ -43,9 +56,23 @@ define([
         grid.store.newItem(domform.toObject(form));
         grid.store.save();
 
+<<<<<<< HEAD
         tab.close(id.creationTab);
     }
 
+=======
+        registry.byId(id.creationDialog).destroyRecursive();
+    }
+
+    function create() {
+        new Dialog({
+            "id" : id.creationDialog,
+            "title" : "Create Company",
+            "href" : "web/company/new"
+        }).show();
+    }
+
+>>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     function del() {
         var grid = registry.byId(id.listGrid);
         grid.removeSelectedRows();
@@ -55,6 +82,7 @@ define([
     return {
         "create" : create,
         "save" : save,
+        "create" : create,
         "del" : del
     };
 });
