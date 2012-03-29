@@ -33,14 +33,14 @@
         onApplyEdit: function(){this.store.save();}">
         <thead>
           <tr>
-            <th width="150px" editable="true" field="code">登录账户</th>
+            <th width="150px" field="code">登录账户</th>
             <th width="150px" editable="true" field="name">姓名</th>
             <th width="100px" editable="true" field="tel">电话</th>
             <th width="200px" editable="true" field="company">公司</th>
             <th width="150px" editable="true" field="department">部门</th>
             <th width="250px" editable="true" field="address">地址</th>
-            <th width="100px" editable="true" field="type" cellType="gridCellsDijit.Select" options="['惠信员工', '客户']">类型</th>
-            <th width="100px" editable="true" field="customerType" cellType="gridCellsDijit.Select" options="['客户管理员', '普通客户']">客户类型</th>
+            <th width="100px" editable="true" field="type" cellType="dojox.grid.cells.Select" values="1,2" options="惠信员工,客户">类型</th>
+            <th width="100px" editable="true" field="customerType" cellType="dojox.grid.cells.Select" values="1,0" options="客户管理员,普通客户">客户类型</th>
           </tr>
         </thead>
       </table>

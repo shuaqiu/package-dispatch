@@ -55,6 +55,11 @@ public class UserController extends AbstractResourceController<User> {
         companyService.query("+id", "");
         return null;
     }
+    
+    @RequestMapping(value = "/company", method = RequestMethod.GET)
+    public Map<String, Object> company(){
+        return null;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody

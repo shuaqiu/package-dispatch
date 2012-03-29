@@ -21,8 +21,9 @@ define([
 
     var id = {
         listGrid : "user_list_grid",
-        creationDialog : "user_creation_dialog",
-        form : "user"
+        creationTab : "user_creation_tab",
+        companyDialog : "user_creation_company_dialog",
+        form : "user_creation"
     };
 
     function create() {
@@ -33,14 +34,23 @@ define([
     }
 
     function showCompany() {
-        xhr.get({
-            "url" : "web/company/list"
-        }).then(function(content){
-            new Dialog({
-                "title" : "Company",
-                "content" : content
-            }).show();
-        });
+        var dialog = registry.byId(id.companyDialog);
+        if (!dialog) {
+            dialog = new Dialog({
+                "id" : id.companyDialog,
+                "title" : message["company"],
+                "href" : "web/user/company"
+            });
+        }
+        dialog.show();
+    }
+
+    function selectCompany(companyId, company) {
+        var form = document.forms[id.form];
+        form["companyId"].value = companyId;
+        form["company"].value = company;
+        
+        registry.byId(id.companyDialog).hide();
     }
 
     function save() {
@@ -68,6 +78,7 @@ define([
     return {
         "create" : create,
         "showCompany" : showCompany,
+        "selectCompany" : selectCompany,
         "save" : save,
         "del" : del
     };

@@ -16,7 +16,6 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -148,7 +147,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         String sql = "insert into sys_user(code, name, password, salt, tel, company_id, company, department, address, type, customer_type, state)"
                 + " values(:code, :name, :password, :salt, :tel, :company_id, :company, :department, :address, :type, :customer_type, :state)";
 
-        SqlParameterSource paramMap = mapObject(user);
+        SqlParameterSource paramMap = mapObject(user, true);
 
         try {
             int update = jdbcTemplate.update(sql, paramMap);
@@ -160,19 +159,13 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     /**
      * @param user
+     * @param forInsert
      * @return
      * @author qiushaohua 2012-3-28
      */
-    private SqlParameterSource mapObject(User user) {
+    private MapSqlParameterSource mapObject(User user, boolean forInsert) {
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
-        paramMap.addValue("code", user.getCode());
         paramMap.addValue("name", user.getName());
-
-        String salt = System.currentTimeMillis() + "";
-        String password = passwordDecorder.encodePassword(user.getPassword(), salt);
-
-        paramMap.addValue("password", password);
-        paramMap.addValue("salt", salt);
 
         paramMap.addValue("tel", user.getTel());
         paramMap.addValue("company_id", user.getCompanyId());
@@ -183,7 +176,16 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         paramMap.addValue("type", user.getType());
         paramMap.addValue("customer_type", user.getCustomerType());
 
-        paramMap.addValue("state", User.STATE_VALID);
+        if (forInsert) {
+            paramMap.addValue("code", user.getCode());
+
+            String salt = System.currentTimeMillis() + "";
+            String password = passwordDecorder.encodePassword(user.getPassword(), salt);
+            paramMap.addValue("password", password);
+            paramMap.addValue("salt", salt);
+
+            paramMap.addValue("state", User.STATE_VALID);
+        }
         return paramMap;
     }
 
@@ -203,12 +205,9 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     @Override
     public boolean update(int id, User user) {
-        String sql = "update sys_user set code = :code, name = :name, address = :address where id = :id";
+        String sql = "update sys_user set name = :name, tel = :tel, company_id = :company_id, company = :company, department = :department, address = :address, type = :type, customer_type = :customer_type where id = :id";
 
-        MapSqlParameterSource paramMap = new MapSqlParameterSource();
-        // paramMap.addValue("code", com.getCode());
-        // paramMap.addValue("name", com.getName());
-        // paramMap.addValue("address", com.getAddress());
+        MapSqlParameterSource paramMap = mapObject(user, false);
         paramMap.addValue("id", id);
 
         try {
