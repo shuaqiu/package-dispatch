@@ -5,7 +5,6 @@
 <body>
   <form name="user" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
     <fieldset>
-<<<<<<< HEAD
       <legend>用户信息</legend>
       <div>
         <table class="formTable">
@@ -50,22 +49,6 @@
                 <option value="0">普通客户</option>
                 <option value="1">客户管理员</option>
             </select></td>
-=======
-      <legend>客户公司信息</legend>
-      <div>
-        <table class="formTable">
-          <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_code">编码: </label></td>
-            <td><input id="user_new_code" name="code" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '客户公司的编码', required: true" /></td>
-          </tr>
-          <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_name">公司名称: </label></td>
-            <td><input id="user_new_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '客户公司的名称', required: true" /></td>
-          </tr>
-          <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_address">地址: </label></td>
-            <td><input id="user_new_address" name="address" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '客户公司的地址', required: true" /></td>
->>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
           </tr>
         </table>
       </div>
@@ -73,11 +56,7 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-<<<<<<< HEAD
         <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/user'], function(user){user.save();});}" /></td>
-=======
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/user'], function(user){user.save()})}" /></td>
->>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
       </tr>
     </table>
   </form>

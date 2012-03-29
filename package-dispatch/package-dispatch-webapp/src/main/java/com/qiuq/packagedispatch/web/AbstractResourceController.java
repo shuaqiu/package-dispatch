@@ -17,18 +17,11 @@ import com.qiuq.packagedispatch.service.ResourceService;
  * @author qiushaohua 2012-3-27
  * @version 0.0.1
  */
-<<<<<<< HEAD
 public abstract class AbstractResourceController<T> implements ResourceController<T> {
 
     protected abstract ResourceService<T> getService();
 
     @Override
-=======
-public abstract class AbstractResourceController<T> {
-
-    protected abstract ResourceService<T> getService();
-
->>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public T query(@PathVariable int id) {
@@ -36,10 +29,7 @@ public abstract class AbstractResourceController<T> {
         return t;
     }
 
-<<<<<<< HEAD
     @Override
-=======
->>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public OperateResult insert(@RequestBody T t) {
@@ -51,10 +41,7 @@ public abstract class AbstractResourceController<T> {
         }
     }
 
-<<<<<<< HEAD
     @Override
-=======
->>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseBody
     public OperateResult update(@PathVariable int id, @RequestBody T t) {
@@ -66,10 +53,7 @@ public abstract class AbstractResourceController<T> {
         }
     }
 
-<<<<<<< HEAD
     @Override
-=======
->>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public OperateResult delete(@PathVariable int id) {

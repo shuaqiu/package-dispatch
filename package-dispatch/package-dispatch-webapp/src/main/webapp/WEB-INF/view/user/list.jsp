@@ -33,7 +33,6 @@
         onApplyEdit: function(){this.store.save();}">
         <thead>
           <tr>
-<<<<<<< HEAD
             <th width="150px" editable="true" field="code">登录账户</th>
             <th width="150px" editable="true" field="name">姓名</th>
             <th width="100px" editable="true" field="tel">电话</th>
@@ -42,11 +41,6 @@
             <th width="250px" editable="true" field="address">地址</th>
             <th width="100px" editable="true" field="type" cellType="gridCellsDijit.Select" options="['惠信员工', '客户']">类型</th>
             <th width="100px" editable="true" field="customerType" cellType="gridCellsDijit.Select" options="['客户管理员', '普通客户']">客户类型</th>
-=======
-            <th width="150px" editable="true" field="code">编码</th>
-            <th width="250px" editable="true" field="name">公司名称</th>
-            <th width="350px" editable="true" field="address">地址</th>
->>>>>>> e4d080920acc1d9281b9de272d984c1d9c99c60d
           </tr>
         </thead>
       </table>
