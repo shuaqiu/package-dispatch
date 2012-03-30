@@ -1,5 +1,6 @@
 define([
         "dojo/_base/xhr",
+        "dojo/dom",
         "dojo/dom-form",
         "dijit/registry",
         "dijit/Dialog",
@@ -17,13 +18,14 @@ define([
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
         "dijit/form/Select",
-        "dijit/form/Button" ], function(xhr, domform, registry, Dialog, tab, MessageDialog, ErrCode, message) {
+        "dijit/form/Button" ], function(xhr, dom, domform, registry, Dialog, tab, MessageDialog, ErrCode, message) {
 
     var id = {
         listGrid : "user_list_grid",
         creationTab : "user_creation_tab",
         companyDialog : "user_creation_company_dialog",
-        form : "user_creation"
+        form : "user_creation",
+        customerTypeRow : "user_new_customerType_row"
     };
 
     function create() {
@@ -52,6 +54,16 @@ define([
         
         registry.byId(id.companyDialog).hide();
     }
+    
+    function typeChanged(){
+        var customerTypeRow = dom.byId(id.customerTypeRow);
+        var val = registry.byId("user_new_type").get("value");
+        if(val == 1){
+            customerTypeRow.style.display = "none";
+        }else{
+            customerTypeRow.style.display = "";
+        }
+    }
 
     function save() {
         var form = document.forms[id.form];
@@ -63,8 +75,23 @@ define([
         }
 
         var grid = registry.byId(id.listGrid);
-        grid.store.newItem(domform.toObject(form));
-        grid.store.save();
+        if(grid) {
+            grid.store.newItem(domform.toObject(form));
+            grid.store.save();
+        }else{
+            xhr.post({
+                "url" : "web/user",
+                "postData" : domform.toJson(form),
+                "handleAs" : "json",
+                "contentType" : "application/json"
+            }).then(function(result) {
+                if (result.ok) {
+
+                } else {
+                    MessageDialog.error(message["err." + result.errCode]);
+                }
+            });
+        }
 
         tab.close(id.creationTab);
     }
@@ -79,6 +106,7 @@ define([
         "create" : create,
         "showCompany" : showCompany,
         "selectCompany" : selectCompany,
+        "typeChanged" : typeChanged,
         "save" : save,
         "del" : del
     };

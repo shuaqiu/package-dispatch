@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <form name="order" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+  <form name="order_creation" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
     <fieldset>
       <legend>寄件人信息</legend>
       <div>
@@ -36,8 +36,8 @@
           <tr>
             <td class="labelCell"><em>*</em><label for="order_new_receiverName">姓名: </label></td>
             <td><input id="order_new_receiverName" name="receiverName" data-dojo-type="dijit.form.TextBox"
-              data-dojo-props="placeholder: '收件人的姓名', required: true, onKeyUp: function(event){require(['qiuq/order/new'], function(order){order.showSuggestReceiver(event.target)})}" />
-              <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/order/new'], function(order){order.popupReceiverList()})}" /></td>
+              data-dojo-props="placeholder: '收件人的姓名', required: true, onKeyUp: function(event){require(['qiuq/order/order'], function(order){order.showSuggestReceiver(event.target)})}" />
+              <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/order/order'], function(order){order.showReceiver()})}" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="order_new_receiverTel">电话号码: </label></td>
@@ -65,7 +65,7 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '下单', onClick : function(){require(['qiuq/order/new'], function(order){order.save()})}" /></td>
+        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '下单', onClick : function(){require(['qiuq/order/order'], function(order){order.save()})}" /></td>
       </tr>
     </table>
   </form>

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <div id="menuBar" data-dojo-type="dijit.MenuBar">
-  <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/new'], {title: '自主下单', href: 'web/order/new'}, this.id);}">自主下单</div>
+  <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/order'], {title: '自主下单', href: 'web/order/new'}, this.id);}">自主下单</div>
   <div data-dojo-type="dijit.MenuBarItem">订单查询</div>
   <div data-dojo-type="dijit.MenuBarItem">收件人管理</div>
   <div data-dojo-type="dijit.PopupMenuBarItem">

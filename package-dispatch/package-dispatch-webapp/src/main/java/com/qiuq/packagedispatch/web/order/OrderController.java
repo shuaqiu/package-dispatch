@@ -75,13 +75,18 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/receiver", method = RequestMethod.GET)
+    public Map<String, Object> receiver() {
+        return null;
+    }
+
+    @RequestMapping(value = "/receiverd", method = RequestMethod.GET)
     @ResponseBody
     public List<User> getReceiver(WebRequest req) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
             return null;
         }
-        return userService.getReceiverList(user.getId());
+        return userService.getReceiver(user.getId());
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")

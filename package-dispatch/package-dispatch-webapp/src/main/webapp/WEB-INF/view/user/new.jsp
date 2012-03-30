@@ -22,7 +22,7 @@
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="user_new_tel">电话: </label></td>
-            <td><input id="user_new_tel" name="tel" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '用户的手机号码或电话号码', required: true" /></td>
+            <td><input id="user_new_tel" name="tel" maxlength="20" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '用户的手机号码或电话号码', required: true" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="user_new_company">公司: </label></td>
@@ -39,12 +39,13 @@
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="user_new_type">用户类型: </label></td>
-            <td><select id="user_new_type" name="type" data-dojo-type="dijit.form.Select" data-dojo-props="placeholder: '用户类型', required: true">
+            <td><select id="user_new_type" name="type" data-dojo-type="dijit.form.Select"
+              data-dojo-props="placeholder: '用户类型', required: true, onChange: function(){console.info('change');require(['qiuq/system/user'], function(user){user.typeChanged();});}">
                 <option value="1">惠信员工</option>
                 <option value="2">客户</option>
             </select></td>
           </tr>
-          <tr>
+          <tr id="user_new_customerType_row" style="display: none;">
             <td class="labelCell"><label for="user_new_customerType">客户类型: </label></td>
             <td><select id="user_new_customerType" name="customerType" data-dojo-type="dijit.form.Select" data-dojo-props="placeholder: '客户类型'">
                 <option value="0">普通客户</option>

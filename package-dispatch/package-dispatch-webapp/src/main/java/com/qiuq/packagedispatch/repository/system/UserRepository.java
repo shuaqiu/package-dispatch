@@ -5,6 +5,7 @@ package com.qiuq.packagedispatch.repository.system;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -95,9 +97,9 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
      * @return
      * @author qiushaohua 2012-3-21
      */
-    public List<User> getReceiverList(int userId) {
+    public List<User> getReceiver(int userId) {
         String sql = "select usr.* from sys_user usr"
-                + " left join sys_sender_receiver relation on usr.user_id = relation.receiver_id"
+                + " left join sys_sender_receiver relation on usr.id = relation.receiver_id"
                 + " where relation.sender_id = :senderId";
 
         SqlParameterSource paramMap = new MapSqlParameterSource("senderId", userId);
@@ -174,7 +176,11 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         paramMap.addValue("address", user.getAddress());
 
         paramMap.addValue("type", user.getType());
-        paramMap.addValue("customer_type", user.getCustomerType());
+        if (user.getType() == Type.TYPE_CUSTOMER) {
+            paramMap.addValue("customer_type", user.getCustomerType());
+        } else {
+            paramMap.addValue("customer_type", null, Types.INTEGER);
+        }
 
         if (forInsert) {
             paramMap.addValue("code", user.getCode());
@@ -205,7 +211,9 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     @Override
     public boolean update(int id, User user) {
-        String sql = "update sys_user set name = :name, tel = :tel, company_id = :company_id, company = :company, department = :department, address = :address, type = :type, customer_type = :customer_type where id = :id";
+        String sql = "update sys_user set name = :name, tel = :tel, company_id = :company_id, company = :company,"
+                + " department = :department, address = :address, type = :type, customer_type = :customer_type"
+                + " where id = :id";
 
         MapSqlParameterSource paramMap = mapObject(user, false);
         paramMap.addValue("id", id);
