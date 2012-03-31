@@ -22,7 +22,6 @@ import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.system.CompanyService;
-import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
@@ -35,17 +34,9 @@ public class OrderController {
 
     private CompanyService companyService;
 
-    private UserService userService;
-
     @Autowired
     public void setCompanyService(CompanyService companyService) {
         this.companyService = companyService;
-    }
-
-    /** @author qiushaohua 2012-3-21 */
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 
     @RequestMapping(value = "/new", method = RequestMethod.GET)
@@ -77,16 +68,6 @@ public class OrderController {
     @RequestMapping(value = "/receiver", method = RequestMethod.GET)
     public Map<String, Object> receiver() {
         return null;
-    }
-
-    @RequestMapping(value = "/receiverd", method = RequestMethod.GET)
-    @ResponseBody
-    public List<User> getReceiver(WebRequest req) {
-        User user = HttpSessionUtil.getLoginedUser(req);
-        if (user == null) {
-            return null;
-        }
-        return userService.getReceiver(user.getId());
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")

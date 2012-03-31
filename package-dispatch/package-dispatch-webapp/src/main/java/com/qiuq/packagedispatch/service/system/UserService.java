@@ -42,16 +42,6 @@ public class UserService extends AbstractResourceService<User> {
     }
 
     /**
-     * @param usercode
-     * @return
-     * @author qiushaohua 2012-3-22
-     */
-    @Transactional(readOnly = true)
-    public List<User> getReceiver(int userId) {
-        return userRepository.getReceiver(userId);
-    }
-
-    /**
      * @param user
      * @return
      * @author qiushaohua 2012-3-23

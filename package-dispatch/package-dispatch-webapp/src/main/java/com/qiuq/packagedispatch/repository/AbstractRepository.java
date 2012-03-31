@@ -4,14 +4,20 @@
 package com.qiuq.packagedispatch.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.util.StringUtils;
+
+import com.qiuq.packagedispatch.repository.ResourceMapper.SqlSourceType;
 
 /**
  * @author qiushaohua 2012-3-27
  * @version 0.0.1
  */
-public class AbstractRepository {
+public abstract class AbstractRepository {
 
     protected NamedParameterJdbcTemplate jdbcTemplate;
     protected SqlUtil sqlUtil;
@@ -45,4 +51,79 @@ public class AbstractRepository {
         return "";
     }
 
+    /**
+     * @param table
+     * @param id
+     * @param rowMapper
+     * @return
+     * @author qiushaohua 2012-3-31
+     */
+    protected <T> T doQuery(String table, int id, RowMapper<T> rowMapper) {
+        String sql = "select * from " + table + " where id = :id";
+        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
+
+        try {
+            T t = jdbcTemplate.queryForObject(sql, paramMap, rowMapper);
+            return t;
+        } catch (DataAccessException e) {
+        }
+        return null;
+    }
+
+    /**
+     * @param table
+     * @param id
+     * @return
+     * @author qiushaohua 2012-3-31
+     */
+    protected boolean doDelete(String table, int id) {
+        String sql = "delete from " + table + " where id = :id";
+        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
+
+        try {
+            int update = jdbcTemplate.update(sql, paramMap);
+            return update == 1;
+        } catch (DataAccessException e) {
+        }
+
+        return false;
+    }
+
+    /**
+     * @param sql
+     * @param user
+     * @param mapper
+     * @return
+     * @author qiushaohua 2012-3-31
+     */
+    protected <T> boolean doInsert(String sql, T t, ResourceMapper<T> mapper) {
+        MapSqlParameterSource paramMap = mapper.mapObject(t, SqlSourceType.INSERT);
+
+        try {
+            int update = jdbcTemplate.update(sql, paramMap);
+            return update == 1;
+        } catch (DataAccessException e) {
+        }
+        return false;
+    }
+
+    /**
+     * @param sql
+     * @param id
+     * @param user
+     * @param mapper
+     * @return
+     * @author qiushaohua 2012-3-31
+     */
+    protected <T> boolean doUpdate(String sql, int id, T t, ResourceMapper<T> mapper) {
+        MapSqlParameterSource paramMap = mapper.mapObject(t, SqlSourceType.UPDATE);
+        paramMap.addValue("id", id);
+
+        try {
+            int update = jdbcTemplate.update(sql, paramMap);
+            return update == 1;
+        } catch (DataAccessException e) {
+        }
+        return false;
+    }
 }

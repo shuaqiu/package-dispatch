@@ -1,12 +1,10 @@
 define([
         "dojo/_base/xhr",
         "dojo/dom-form",
-        "dojo/store/Memory",
         "dojo/_base/Deferred",
         "dijit/registry",
         "dijit/Dialog",
         "../widget/MessageDialog",
-        "../ErrCode",
         "dojo/i18n!./nls/order",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
@@ -15,8 +13,7 @@ define([
         "dijit/form/ComboBox",
         "dojo/data/ObjectStore",
         "dojo/store/JsonRest",
-        "dojox/grid/DataGrid" ], function(xhr, domform, Memory, Deferred, registry, Dialog, MessageDialog, ErrCode,
-        message) {
+        "dojox/grid/DataGrid" ], function(xhr, domform, Deferred, registry, Dialog, MessageDialog, message) {
 
     var id = {
         form : "order_creation",
@@ -24,11 +21,11 @@ define([
     };
 
     function save() {
-        var form = document.forms["order"];
+        var form = document.forms[id.form];
 
         var dijitForm = registry.byId(form.id);
         if (dijitForm.isValid() == false) {
-            MessageDialog.error(message["err." + ErrCode.INVALID]);
+            MessageDialog.error(message["err.INVALID"]);
             return;
         }
 

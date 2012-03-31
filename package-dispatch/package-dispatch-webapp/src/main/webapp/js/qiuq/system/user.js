@@ -6,7 +6,6 @@ define([
         "dijit/Dialog",
         "../tab",
         "../widget/MessageDialog",
-        "../ErrCode",
         "dojo/i18n!./nls/user",
         "dojo/data/ObjectStore",
         "dojo/store/JsonRest",
@@ -18,7 +17,7 @@ define([
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
         "dijit/form/Select",
-        "dijit/form/Button" ], function(xhr, dom, domform, registry, Dialog, tab, MessageDialog, ErrCode, message) {
+        "dijit/form/Button" ], function(xhr, dom, domform, registry, Dialog, tab, MessageDialog, message) {
 
     var id = {
         listGrid : "user_list_grid",

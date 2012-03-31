@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -17,6 +16,7 @@ import org.springframework.util.StringUtils;
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
+import com.qiuq.packagedispatch.repository.ResourceMapper;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
 /**
@@ -45,6 +45,25 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
 
             return com;
         }
+    }
+
+    private final class CompanyResourceMapper implements ResourceMapper<Company> {
+
+        @Override
+        public MapSqlParameterSource mapObject(Company com, SqlSourceType sourceType) {
+            MapSqlParameterSource paramMap = new MapSqlParameterSource();
+            paramMap.addValue("code", com.getCode());
+            paramMap.addValue("name", com.getName());
+            paramMap.addValue("address", com.getAddress());
+
+            if (sourceType == SqlSourceType.INSERT) {
+                paramMap.addValue("parent_id", -1);
+                paramMap.addValue("full_id", -1);
+                paramMap.addValue("type", Type.TYPE_CUSTOMER);
+            }
+            return paramMap;
+        }
+
     }
 
     /**
@@ -88,47 +107,13 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     }
 
     /**
-     * @param com
-     * @author qiushaohua 2012-3-25
-     * @return
-     */
-    @Override
-    public boolean insert(Company com) {
-        String sql = "insert into sys_company(code, name, address, parent_id, full_id, type)"
-                + " values(:code, :name, :address, :parent_id, :full_id, :type)";
-
-        MapSqlParameterSource paramMap = new MapSqlParameterSource();
-        paramMap.addValue("code", com.getCode());
-        paramMap.addValue("name", com.getName());
-        paramMap.addValue("address", com.getAddress());
-        paramMap.addValue("parent_id", -1);
-        paramMap.addValue("full_id", -1);
-        paramMap.addValue("type", Type.TYPE_CUSTOMER);
-
-        try {
-            int update = jdbcTemplate.update(sql, paramMap);
-            return update == 1;
-        } catch (DataAccessException e) {
-        }
-        return false;
-    }
-
-    /**
      * @param id
      * @return
      * @author qiushaohua 2012-3-26
      */
     @Override
     public Company query(int id) {
-        String sql = "select * from sys_company where id = :id";
-        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
-
-        try {
-            Company com = jdbcTemplate.queryForObject(sql, paramMap, new CompanyRowMapper());
-            return com;
-        } catch (DataAccessException e) {
-        }
-        return null;
+        return doQuery("sys_company", id, new CompanyRowMapper());
     }
 
     /**
@@ -138,16 +123,20 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
      */
     @Override
     public boolean delete(int id) {
-        String sql = "delete from sys_company where id = :id";
-        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
+        return doDelete("sys_company", id);
+    }
 
-        try {
-            int update = jdbcTemplate.update(sql, paramMap);
-            return update == 1;
-        } catch (DataAccessException e) {
-        }
+    /**
+     * @param com
+     * @author qiushaohua 2012-3-25
+     * @return
+     */
+    @Override
+    public boolean insert(Company com) {
+        String sql = "insert into sys_company(code, name, address, parent_id, full_id, type)"
+                + " values(:code, :name, :address, :parent_id, :full_id, :type)";
 
-        return false;
+        return doInsert(sql, com, new CompanyResourceMapper());
     }
 
     /**
@@ -160,18 +149,7 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     public boolean update(int id, Company com) {
         String sql = "update sys_company set code = :code, name = :name, address = :address where id = :id";
 
-        MapSqlParameterSource paramMap = new MapSqlParameterSource();
-        paramMap.addValue("code", com.getCode());
-        paramMap.addValue("name", com.getName());
-        paramMap.addValue("address", com.getAddress());
-        paramMap.addValue("id", id);
-
-        try {
-            int update = jdbcTemplate.update(sql, paramMap);
-            return update == 1;
-        } catch (DataAccessException e) {
-        }
-        return false;
+        return doUpdate(sql, id, com, new CompanyResourceMapper());
     }
 
 }

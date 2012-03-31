@@ -40,11 +40,26 @@ create table sys_user_role(
 )
 alter table sys_user_role add constraint pk_sys_user_role primary key (user_id, role_id)
 
-create table sys_sender_receiver(
-    sender_id int not null,
-    receiver_id int not null
+
+create table customer_receiver_company(
+    id int not null identity(1,1),
+    user_id int,
+    name varchar(255),
+    address varchar(255)
 )
-alter table sys_sender_receiver add constraint pk_sys_sender_receiver primary key (sender_id, receiver_id)
+alter table customer_receiver_company add constraint pk_customer_receiver_company primary key (id)
+
+create table customer_receiver(
+    id int not null identity(1,1),
+    user_id int,
+    name varchar(255),
+    tel varchar(20),
+    company_id int,
+    company varchar(255),
+    address varchar(255)
+)
+alter table customer_receiver add constraint pk_customer_receiver primary key (id)
+
 
 create table dispatch_order(
     id int not null identity(1,1),

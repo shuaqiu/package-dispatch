@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
+import com.qiuq.packagedispatch.repository.ResourceMapper;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
 /**
@@ -52,6 +53,47 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
             user.setCustomerType(rs.getInt("customer_type"));
             user.setState(rs.getInt("state"));
             return user;
+        }
+    }
+
+    private final class UserResourceMapper implements ResourceMapper<User> {
+
+        /**
+         * @param user
+         * @param forInsert
+         * @return
+         * @author qiushaohua 2012-3-28
+         */
+        @Override
+        public MapSqlParameterSource mapObject(User user, SqlSourceType sourceType) {
+            MapSqlParameterSource paramMap = new MapSqlParameterSource();
+
+            paramMap.addValue("name", user.getName());
+
+            paramMap.addValue("tel", user.getTel());
+            paramMap.addValue("company_id", user.getCompanyId());
+            paramMap.addValue("company", user.getCompany());
+            paramMap.addValue("department", user.getDepartment());
+            paramMap.addValue("address", user.getAddress());
+
+            paramMap.addValue("type", user.getType());
+            if (user.getType() == Type.TYPE_CUSTOMER) {
+                paramMap.addValue("customer_type", user.getCustomerType());
+            } else {
+                paramMap.addValue("customer_type", null, Types.INTEGER);
+            }
+
+            if (sourceType == SqlSourceType.INSERT) {
+                paramMap.addValue("code", user.getCode());
+
+                String salt = System.currentTimeMillis() + "";
+                String password = passwordDecorder.encodePassword(user.getPassword(), salt);
+                paramMap.addValue("password", password);
+                paramMap.addValue("salt", salt);
+
+                paramMap.addValue("state", User.STATE_VALID);
+            }
+            return paramMap;
         }
     }
 
@@ -93,21 +135,6 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     /**
-     * @param usercode
-     * @return
-     * @author qiushaohua 2012-3-21
-     */
-    public List<User> getReceiver(int userId) {
-        String sql = "select usr.* from sys_user usr"
-                + " left join sys_sender_receiver relation on usr.id = relation.receiver_id"
-                + " where relation.sender_id = :senderId";
-
-        SqlParameterSource paramMap = new MapSqlParameterSource("senderId", userId);
-        List<User> receiverList = jdbcTemplate.query(sql, paramMap, new UserRowMapper());
-        return receiverList;
-    }
-
-    /**
      * @param sort
      * @param query
      * @return
@@ -133,15 +160,12 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     @Override
     public User query(int id) {
-        String sql = "select * from sys_user where id = :id";
-        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
+        return doQuery("sys_user", id, new UserRowMapper());
+    }
 
-        try {
-            User user = jdbcTemplate.queryForObject(sql, paramMap, new UserRowMapper());
-            return user;
-        } catch (DataAccessException e) {
-        }
-        return null;
+    @Override
+    public boolean delete(int id) {
+        return doDelete("sys_user", id);
     }
 
     @Override
@@ -149,64 +173,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         String sql = "insert into sys_user(code, name, password, salt, tel, company_id, company, department, address, type, customer_type, state)"
                 + " values(:code, :name, :password, :salt, :tel, :company_id, :company, :department, :address, :type, :customer_type, :state)";
 
-        SqlParameterSource paramMap = mapObject(user, true);
-
-        try {
-            int update = jdbcTemplate.update(sql, paramMap);
-            return update == 1;
-        } catch (DataAccessException e) {
-        }
-        return false;
-    }
-
-    /**
-     * @param user
-     * @param forInsert
-     * @return
-     * @author qiushaohua 2012-3-28
-     */
-    private MapSqlParameterSource mapObject(User user, boolean forInsert) {
-        MapSqlParameterSource paramMap = new MapSqlParameterSource();
-        paramMap.addValue("name", user.getName());
-
-        paramMap.addValue("tel", user.getTel());
-        paramMap.addValue("company_id", user.getCompanyId());
-        paramMap.addValue("company", user.getCompany());
-        paramMap.addValue("department", user.getDepartment());
-        paramMap.addValue("address", user.getAddress());
-
-        paramMap.addValue("type", user.getType());
-        if (user.getType() == Type.TYPE_CUSTOMER) {
-            paramMap.addValue("customer_type", user.getCustomerType());
-        } else {
-            paramMap.addValue("customer_type", null, Types.INTEGER);
-        }
-
-        if (forInsert) {
-            paramMap.addValue("code", user.getCode());
-
-            String salt = System.currentTimeMillis() + "";
-            String password = passwordDecorder.encodePassword(user.getPassword(), salt);
-            paramMap.addValue("password", password);
-            paramMap.addValue("salt", salt);
-
-            paramMap.addValue("state", User.STATE_VALID);
-        }
-        return paramMap;
-    }
-
-    @Override
-    public boolean delete(int id) {
-        String sql = "delete from sys_user where id = :id";
-        SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
-
-        try {
-            int update = jdbcTemplate.update(sql, paramMap);
-            return update == 1;
-        } catch (DataAccessException e) {
-        }
-
-        return false;
+        return doInsert(sql, user, new UserResourceMapper());
     }
 
     @Override
@@ -215,15 +182,8 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
                 + " department = :department, address = :address, type = :type, customer_type = :customer_type"
                 + " where id = :id";
 
-        MapSqlParameterSource paramMap = mapObject(user, false);
-        paramMap.addValue("id", id);
-
-        try {
-            int update = jdbcTemplate.update(sql, paramMap);
-            return update == 1;
-        } catch (DataAccessException e) {
-        }
-        return false;
+        return doUpdate(sql, id, user, new UserResourceMapper());
     }
+
 
 }

@@ -4,7 +4,6 @@ define([
         "dijit/registry",
         "../tab",
         "../widget/MessageDialog",
-        "../ErrCode",
         "dojo/i18n!./nls/company",
         "dojo/data/ObjectStore",
         "dojo/store/JsonRest",
@@ -15,7 +14,7 @@ define([
         "dijit/MenuBarItem",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
-        "dijit/form/Button" ], function(xhr, domform, registry, tab, MessageDialog, ErrCode, message) {
+        "dijit/form/Button" ], function(xhr, domform, registry, tab, MessageDialog, message) {
 
     var id = {
         listGrid : "company_list_grid",
@@ -40,8 +39,23 @@ define([
         }
 
         var grid = registry.byId(id.listGrid);
-        grid.store.newItem(domform.toObject(form));
-        grid.store.save();
+        if(grid){
+            grid.store.newItem(domform.toObject(form));
+            grid.store.save();
+        }else{
+            xhr.post({
+                "url" : "web/company",
+                "postData" : domform.toJson(form),
+                "handleAs" : "json",
+                "contentType" : "application/json"
+            }).then(function(result) {
+                if (result.ok) {
+
+                } else {
+                    MessageDialog.error(message["err." + result.errCode]);
+                }
+            });
+        }
 
         tab.close(id.creationTab);
     }
