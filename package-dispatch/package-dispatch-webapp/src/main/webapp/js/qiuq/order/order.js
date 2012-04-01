@@ -5,6 +5,7 @@ define([
         "dijit/registry",
         "dijit/Dialog",
         "../widget/MessageDialog",
+        "../widget/DataSelectionDialog",
         "dojo/i18n!./nls/order",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
@@ -13,7 +14,8 @@ define([
         "dijit/form/ComboBox",
         "dojo/data/ObjectStore",
         "dojo/store/JsonRest",
-        "dojox/grid/DataGrid" ], function(xhr, domform, Deferred, registry, Dialog, MessageDialog, message) {
+        "dojox/grid/DataGrid" ], function(xhr, domform, Deferred, registry, Dialog, MessageDialog, DataSelectionDialog,
+        message) {
 
     var id = {
         form : "order_creation",
@@ -46,10 +48,34 @@ define([
     function showReceiver() {
         var dialog = registry.byId(id.receiverDialog);
         if (!dialog) {
-            dialog = new Dialog({
-                "id" : id.receiverDialog,
-                "title" : message["receiver"],
-                "href" : "web/order/receiver"
+            dialog = new DataSelectionDialog({
+                id : id.receiverDialog,
+                store : new dojo.data.ObjectStore({
+                    objectStore : new dojo.store.JsonRest({
+                        target : 'web/receiver/',
+                        sortParam : 'sort'
+                    })
+                }),
+                structure : [ {
+                    name : "姓名",
+                    field : "name",
+                    width : "100px"
+                }, {
+                    name : "电话",
+                    field : "tel",
+                    width : "100px"
+                }, {
+                    name : "公司",
+                    field : "company",
+                    width : "200px"
+                }, {
+                    name : "地址",
+                    field : "address",
+                    width : "200px"
+                } ],
+                onRowClick : function(item, idx) {
+                    selectReceiver(item);
+                }
             });
         }
         dialog.show();
@@ -57,12 +83,10 @@ define([
 
     function selectReceiver(item) {
         var form = document.forms[id.form];
-        form["receiverName"].value = item["name"];
-        form["receiverTel"].value = item["tel"];
-        form["receiverAddress"].value = item["address"];
-        form["receiverCompany"].value = item["company"] + item["department"];
-
-        registry.byId(id.companyDialog).hide();
+        registry.byId(form["receiverName"].id).set("value", item["name"]);
+        registry.byId(form["receiverTel"].id).set("value", item["tel"]);
+        registry.byId(form["receiverAddress"].id).set("value", item["address"]);
+        registry.byId(form["receiverCompany"].id).set("value", item["company"]);
     }
 
     function showSuggestReceiver(obj) {

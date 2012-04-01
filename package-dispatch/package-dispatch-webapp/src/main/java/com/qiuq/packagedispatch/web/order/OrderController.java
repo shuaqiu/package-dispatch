@@ -18,10 +18,10 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
+import com.qiuq.packagedispatch.bean.customer.ReceiverCompany;
 import com.qiuq.packagedispatch.bean.order.Order;
-import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.User;
-import com.qiuq.packagedispatch.service.system.CompanyService;
+import com.qiuq.packagedispatch.service.customer.ReceiverCompanyService;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
@@ -32,11 +32,12 @@ import com.qiuq.packagedispatch.web.HttpSessionUtil;
 @RequestMapping("/order")
 public class OrderController {
 
-    private CompanyService companyService;
+    private ReceiverCompanyService receiverCompanyService;
 
+    /** @author qiushaohua 2012-4-1 */
     @Autowired
-    public void setCompanyService(CompanyService companyService) {
-        this.companyService = companyService;
+    public void setReceiverCompanyService(ReceiverCompanyService receiverCompanyService) {
+        this.receiverCompanyService = receiverCompanyService;
     }
 
     @RequestMapping(value = "/new", method = RequestMethod.GET)
@@ -58,8 +59,8 @@ public class OrderController {
     private Map<Object, Object> getReceiverCompany(int userId) {
         Map<Object, Object> company = new LinkedHashMap<Object, Object>();
 
-        List<Company> allCompany = companyService.getReceiverCompanys(userId);
-        for (Company aCom : allCompany) {
+        List<ReceiverCompany> allCompany = receiverCompanyService.query(userId, null, null);
+        for (ReceiverCompany aCom : allCompany) {
             company.put(aCom.getId(), aCom.getName());
         }
         return company;

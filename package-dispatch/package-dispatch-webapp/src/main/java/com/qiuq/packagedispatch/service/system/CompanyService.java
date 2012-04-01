@@ -29,24 +29,14 @@ public class CompanyService extends AbstractResourceService<Company> {
     }
 
     /**
-     * @return
-     * @author qiushaohua 2012-3-24
      * @param sort
      * @param query
+     * @return
+     * @author qiushaohua 2012-3-24
      */
     @Transactional(readOnly = true)
     public List<Company> query(String sort, String query) {
         return companyRepository.query(sort, query);
-    }
-
-    /**
-     * @return
-     * @author qiushaohua 2012-3-18
-     * @param userId
-     */
-    @Transactional(readOnly = true)
-    public List<Company> getReceiverCompanys(int userId) {
-        return companyRepository.getReceiverCompanys(userId);
     }
 
     @Override

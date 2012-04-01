@@ -91,22 +91,6 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     }
 
     /**
-     * @param userId
-     * @return
-     * @author qiushaohua 2012-3-24
-     */
-    public List<Company> getReceiverCompanys(int userId) {
-        String sql = "select com.* from sys_company com left join sys_user usr on com.id = usr.company_id"
-                + " left join sys_sender_receiver relation on usr.id = relation.receiver_id"
-                + " where relation.sender_id = :senderId";
-
-        SqlParameterSource paramMap = new MapSqlParameterSource("senderId", userId);
-
-        List<Company> companyList = jdbcTemplate.query(sql, paramMap, new CompanyRowMapper());
-        return companyList;
-    }
-
-    /**
      * @param id
      * @return
      * @author qiushaohua 2012-3-26

@@ -4,6 +4,7 @@
 <html>
 <body>
   <form name="user_creation" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+    <input type="hidden" name="companyId" />
     <fieldset>
       <legend>用户信息</legend>
       <div>
@@ -26,8 +27,8 @@
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="user_new_company">公司: </label></td>
-            <td><input type="hidden" name="companyId" /> <input id="user_new_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
-              data-dojo-props="placeholder: '用户的公司', required: true, onClick: function(){require(['qiuq/system/user'], function(user){user.showCompany();});}" /></td>
+            <td><input id="user_new_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
+                data-dojo-props="placeholder: '用户的公司', required: true, onClick: function(){require(['qiuq/system/user'], function(user){user.showCompany();});}" /></td>
           </tr>
           <tr>
             <td class="labelCell"><label for="user_new_department">部门: </label></td>
