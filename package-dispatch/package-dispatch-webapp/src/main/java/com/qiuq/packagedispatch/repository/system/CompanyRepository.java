@@ -67,27 +67,24 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     }
 
     /**
-     * @return
-     * @author qiushaohua 2012-3-24
      * @param sort
      * @param query
+     * @param range
+     * @return
+     * @author qiushaohua 2012-3-24
      */
-    public List<Company> query(String sort, String query) {
-        String sql = "select * from sys_company where id > 0";
+    public List<Company> query(String sort, String query, long[] range) {
+        String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from sys_company where id > 0";
         SqlParameterSource paramMap = null;
 
         if (StringUtils.hasText(query)) {
             sql += " and (code like :query or name like :query or address like :query)";
-
-            query = sqlUtil.escapeLikeValue(query);
-            paramMap = new MapSqlParameterSource("query", "%" + query + "%");
+            paramMap = new MapSqlParameterSource("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
         }
 
-        sql += orderBy(sort);
-
-        List<Company> companyList = jdbcTemplate.query(sql, paramMap, new CompanyRowMapper());
-
-        return companyList;
+        String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
+        List<Company> list = jdbcTemplate.query(rangeQuerySql, paramMap, new CompanyRowMapper());
+        return list;
     }
 
     /**

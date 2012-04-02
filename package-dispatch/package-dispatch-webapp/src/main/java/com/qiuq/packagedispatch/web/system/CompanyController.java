@@ -4,10 +4,10 @@
 package com.qiuq.packagedispatch.web.system;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,22 +36,11 @@ public class CompanyController extends AbstractResourceController<Company> {
         this.companyService = companyService;
     }
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Map<String, Object> list() {
-        return null;
-    }
-
-    @RequestMapping(value = "/new", method = RequestMethod.GET)
-    public Map<String, Object> create() {
-        return null;
-    }
-
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public List<Company> query(@RequestParam(defaultValue = "+id") String sort,
-            @RequestParam(required = false) String query) {
-        List<Company> coms = companyService.query(sort, query);
-        return coms;
+            @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
+        return companyService.query(sort, query, range(range));
     }
 
     @Override

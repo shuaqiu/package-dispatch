@@ -3,7 +3,5 @@ define({
     "name" : "Company Name",
     "address" : "Address",
     
-    "creation" : "Create Company",
-    
-    "err.INVALID" : "Input company infomation please!"
+    "creation" : "Create Company"
 });

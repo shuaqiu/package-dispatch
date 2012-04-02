@@ -3,6 +3,10 @@
  */
 package com.qiuq.packagedispatch.web;
 
+import java.util.Map;
+
+import org.springframework.util.NumberUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,5 +67,50 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         } else {
             return new OperateResult(ErrCode.DELETE_FAIL, "delete resource fail");
         }
+    }
+
+    /**
+     * @param range
+     * @return
+     * @author qiushaohua 2012-4-2
+     */
+    protected long[] range(String range) {
+        if (StringUtils.hasText(range) && range.length() > 1) {
+            // items=0-24
+            String[] arr = range.split("=");
+            if (arr.length != 2) {
+                return null;
+            }
+
+            arr = arr[1].split("-");
+            if (arr.length != 2) {
+                return null;
+            }
+            Long b = NumberUtils.parseNumber(arr[0], Long.class);
+            Long e = NumberUtils.parseNumber(arr[1], Long.class);
+            return new long[] {
+                    b + 1, e + 1
+            };
+        }
+
+        return null;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-4-3
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public Map<String, Object> list() {
+        return null;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-4-3
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public Map<String, Object> edit() {
+        return null;
     }
 }

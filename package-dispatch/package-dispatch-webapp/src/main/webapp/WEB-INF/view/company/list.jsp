@@ -28,7 +28,7 @@
       <table id="company_list_grid" data-dojo-type="dojox.grid.DataGrid"
         data-dojo-props="
         store: new dojo.data.ObjectStore({
-            objectStore: new dojo.store.Cache(new dojo.store.JsonRest({target: 'web/company/', sortParam: 'sort'}), new dojo.store.Memory())
+            objectStore: new dojo.store.JsonRest({target: 'web/company/', sortParam: 'sort'})
         }),
         onApplyEdit: function(){this.store.save();}">
         <thead>

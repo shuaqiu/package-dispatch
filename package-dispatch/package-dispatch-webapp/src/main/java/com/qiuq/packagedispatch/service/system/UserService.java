@@ -54,12 +54,13 @@ public class UserService extends AbstractResourceService<User> {
     /**
      * @param sort
      * @param query
+     * @param range
      * @return
      * @author qiushaohua 2012-3-27
      */
     @Transactional(readOnly = true)
-    public List<User> query(String sort, String query) {
-        return userRepository.query(sort, query);
+    public List<User> query(String sort, String query, long[] range) {
+        return userRepository.query(sort, query, range);
     }
 
     @Override

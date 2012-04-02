@@ -31,12 +31,13 @@ public class CompanyService extends AbstractResourceService<Company> {
     /**
      * @param sort
      * @param query
+     * @param range
      * @return
      * @author qiushaohua 2012-3-24
      */
     @Transactional(readOnly = true)
-    public List<Company> query(String sort, String query) {
-        return companyRepository.query(sort, query);
+    public List<Company> query(String sort, String query, long[] range) {
+        return companyRepository.query(sort, query, range);
     }
 
     @Override

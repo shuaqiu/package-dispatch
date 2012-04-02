@@ -20,4 +20,19 @@ public class SqlServerSqlUtil implements SqlUtil {
         likeValue = likeValue.replaceAll("\\_", "[_]");
         return likeValue;
     }
+
+    /**
+     * @param sql
+     * @param range
+     * @return
+     * @author qiushaohua 2012-4-2
+     */
+    @Override
+    public String toRangeQuerySql(String sql, long[] range) {
+        if (range != null && range.length >= 2) {
+            // sql = "select t.* from (" + sql + ") t where t.rownum between " + range[0] + " and " + range[1];
+            sql = "with t as (" + sql + ") select t.* from t where t.rownum between " + range[0] + " and " + range[1];
+        }
+        return sql;
+    }
 }

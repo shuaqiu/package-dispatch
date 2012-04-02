@@ -137,25 +137,21 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     /**
      * @param sort
      * @param query
+     * @param range
      * @return
      * @author qiushaohua 2012-3-27
      */
-    public List<User> query(String sort, String query) {
-        String sql = "select * from sys_user where id > 0";
+    public List<User> query(String sort, String query, long[] range) {
+        String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from sys_user where id > 0";
         SqlParameterSource paramMap = null;
 
         if (StringUtils.hasText(query)) {
             sql += " and (code like :query or name like :query or address like :query)";
-
-            query = sqlUtil.escapeLikeValue(query);
-            paramMap = new MapSqlParameterSource("query", "%" + query + "%");
+            paramMap = new MapSqlParameterSource("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
         }
 
-        sql += orderBy(sort);
-
-        List<User> list = jdbcTemplate.query(sql, paramMap, new UserRowMapper());
-
-        return list;
+        String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
+        return jdbcTemplate.query(rangeQuerySql, paramMap, new UserRowMapper());
     }
 
     @Override
