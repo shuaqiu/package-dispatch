@@ -66,8 +66,7 @@ public class ReceiverCompanyRepository extends AbstractRepository implements Res
         }
 
         String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
-        List<ReceiverCompany> list = jdbcTemplate.query(rangeQuerySql, paramMap, new ReceiverCompanyRowMapper());
-        return list;
+        return jdbcTemplate.query(rangeQuerySql, paramMap, new ReceiverCompanyRowMapper());
     }
 
     @Override

@@ -28,6 +28,11 @@ public class CompanyService extends AbstractResourceService<Company> {
         this.companyRepository = companyRepository;
     }
 
+    @Override
+    protected ResourceRepository<Company> getRepository() {
+        return companyRepository;
+    }
+
     /**
      * @param sort
      * @param query
@@ -40,8 +45,13 @@ public class CompanyService extends AbstractResourceService<Company> {
         return companyRepository.query(sort, query, range);
     }
 
-    @Override
-    protected ResourceRepository<Company> getRepository() {
-        return companyRepository;
+    /**
+     * @param query
+     * @return
+     * @author qiushaohua 2012-4-3
+     */
+    @Transactional(readOnly = true)
+    public long matchedRecordCount(String query) {
+        return companyRepository.matchedRecordCount(query);
     }
 }

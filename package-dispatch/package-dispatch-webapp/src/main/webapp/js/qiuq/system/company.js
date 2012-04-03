@@ -1,4 +1,10 @@
-define([ "dojo/_base/lang", "../resource", "dojo/i18n!./nls/company" ], function(lang, resource, message) {
+define([
+        "dojo/_base/lang",
+        "../resource",
+        "dojo/i18n!./nls/company",
+        "../widget/ResourceList",
+        "dojox/grid/EnhancedGrid",
+        "dojox/grid/enhanced/plugins/Pagination" ], function(lang, resource, message) {
 
     return lang.mixin({}, resource, {
         resourceUrl : "web/company",

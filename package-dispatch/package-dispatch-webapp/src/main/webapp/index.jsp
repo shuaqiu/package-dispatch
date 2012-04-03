@@ -6,7 +6,8 @@
 <meta charset="UTF-8">
 <title>惠信企业配送服务系统</title>
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" />
-<link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/resources/tundraGrid.css" />
+<!-- <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/resources/tundraGrid.css" /> -->
+<link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" />
 <link rel="stylesheet" href="style.css" />
 <script type="text/javascript">
     var dojoConfig = {
@@ -43,33 +44,33 @@
             "dijit/MenuItem" ], function() {
     });
 
-    require([ "qiuq/login", "dojo/dom", "dojo/_base/xhr", "dijit/layout/ContentPane", "dojo/domReady!" ],
-            function(login, dom, xhr, ContentPane) {
-                login.isLogined().then(function() {
-                    fetchMenu();
-                }, function() {
-                    login.doLogin().then(function(json) {
-                        fetchMenu();
-                        dom.byId("showusername").innerHTML = json.user.name;
-                    });
-                })
-
-                function fetchMenu() {
-                    xhr.get({
-                        "url" : "web/menu"
-                    }).then(function(content) {
-                        dom.byId("nav").innerHTML = "";
-                        new ContentPane({
-                            "content" : content
-                        }).placeAt("nav").startup();
-                    });
-                }
+    require([ "qiuq/login", "dojo/dom", "dojo/_base/xhr", "dijit/layout/ContentPane", "dojo/domReady!" ], function(
+            login, dom, xhr, ContentPane) {
+        login.isLogined().then(function() {
+            fetchMenu();
+        }, function() {
+            login.doLogin().then(function(json) {
+                fetchMenu();
+                dom.byId("showusername").innerHTML = json.user.name;
             });
+        })
+
+        function fetchMenu() {
+            xhr.get({
+                "url" : "web/menu"
+            }).then(function(content) {
+                dom.byId("nav").innerHTML = "";
+                new ContentPane({
+                    "content" : content
+                }).placeAt("nav").startup();
+            });
+        }
+    });
 
     function showTab(moduleArr, conf, id, callback) {
-        require(["dojo/_base/lang", "qiuq/tab" ], function(lang, tab) {
+        require([ "dojo/_base/lang", "qiuq/tab" ], function(lang, tab) {
             var deferred = tab.show(moduleArr, conf, id);
-            if(callback && lang.isFunction(callback)){
+            if (callback && lang.isFunction(callback)) {
                 deferred.then(callback);
             }
         });
@@ -82,20 +83,15 @@
       <div id="showusername"></div>
       <div class="searchInputColumn">
         <div class="searchInputColumnInner">
-          <input id="searchTerms" placeholder="search terms"><button id="searchBtn">Search</button>
+          <input id="searchTerms" placeholder="search terms">
+          <button id="searchBtn">Search</button>
         </div>
       </div>
       <div id="nav">&nbsp;</div>
     </div>
     <!--     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div> -->
     <div id="tab" data-dojo-type="dijit.layout.TabContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
-      <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About'">
-
-        <h2>Flickr keyword photo search</h2>
-        <p>Each search creates a new tab with the results as thumbnails</p>
-        <p>Click on any thumbnail to view the larger image</p>
-
-      </div>
+      <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About'"></div>
       <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About2'">
 
         <h2>Flickr keyword photo searchddadfafa</h2>

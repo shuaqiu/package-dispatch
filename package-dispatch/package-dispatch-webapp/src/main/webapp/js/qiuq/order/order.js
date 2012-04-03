@@ -50,12 +50,7 @@ define([
         if (!dialog) {
             dialog = new DataSelectionDialog({
                 id : id.receiverDialog,
-                store : new dojo.data.ObjectStore({
-                    objectStore : new dojo.store.JsonRest({
-                        target : 'web/receiver/',
-                        sortParam : 'sort'
-                    })
-                }),
+                storeTarget : 'web/receiver/',
                 structure : [ {
                     name : "姓名",
                     field : "name",

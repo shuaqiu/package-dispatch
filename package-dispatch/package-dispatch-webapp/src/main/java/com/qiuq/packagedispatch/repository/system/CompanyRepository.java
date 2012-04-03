@@ -83,8 +83,24 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
         }
 
         String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
-        List<Company> list = jdbcTemplate.query(rangeQuerySql, paramMap, new CompanyRowMapper());
-        return list;
+        return jdbcTemplate.query(rangeQuerySql, paramMap, new CompanyRowMapper());
+    }
+
+    /**
+     * @param query
+     * @return
+     * @author qiushaohua 2012-4-3
+     */
+    public long matchedRecordCount(String query) {
+        String sql = "select count(*) from sys_company where id > 0";
+        SqlParameterSource paramMap = null;
+
+        if (StringUtils.hasText(query)) {
+            sql += " and (code like :query or name like :query or address like :query)";
+            paramMap = new MapSqlParameterSource("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
+        }
+
+        return jdbcTemplate.queryForLong(sql, paramMap);
     }
 
     /**

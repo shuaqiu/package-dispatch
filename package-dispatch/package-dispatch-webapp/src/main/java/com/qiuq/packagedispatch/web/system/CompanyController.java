@@ -6,12 +6,13 @@ package com.qiuq.packagedispatch.web.system;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.service.ResourceService;
@@ -37,10 +38,20 @@ public class CompanyController extends AbstractResourceController<Company> {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
-    public List<Company> query(@RequestParam(defaultValue = "+id") String sort,
+    public HttpEntity<List<Company>> query(@RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
-        return companyService.query(sort, query, range(range));
+        long[] rangeArr = range(range);
+
+        HttpHeaders header = new HttpHeaders();
+        if (rangeArr != null) {
+            long count = companyService.matchedRecordCount(query);
+            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
+        }
+
+        List<Company> list = companyService.query(sort, query, rangeArr);
+        HttpEntity<List<Company>> entity = new HttpEntity<List<Company>>(list, header);
+
+        return entity;
     }
 
     @Override

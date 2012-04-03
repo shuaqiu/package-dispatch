@@ -1,10 +1,11 @@
 define([
         "dojo/_base/lang",
+        "dojo/dom",
         "dijit/registry",
         "../resource",
         "../widget/DataSelectionDialog",
         "dojo/i18n!./nls/user",
-        "dijit/form/Select" ], function(lang, registry, resource, DataSelectionDialog, message) {
+        "dijit/form/Select" ], function(lang, dom, registry, resource, DataSelectionDialog, message) {
 
     return lang.mixin({}, resource, {
         resourceUrl : "web/user",
@@ -23,12 +24,7 @@ define([
             if (!dialog) {
                 dialog = new DataSelectionDialog({
                     id : this.companyDialog,
-                    store : new dojo.data.ObjectStore({
-                        objectStore : new dojo.store.JsonRest({
-                            target : 'web/user/company',
-                            sortParam : 'sort'
-                        })
-                    }),
+                    storeTarget : 'web/company',
                     structure : [ {
                         name : "编码",
                         field : "code",
@@ -42,17 +38,15 @@ define([
                         field : "address",
                         width : "250px"
                     } ],
-                    onRowClick : function(item, idx) {
-                        selectCompany(item);
-                    }
+                    onRowClick : lang.hitch(this, this.selectCompany)
                 });
             }
             dialog.show();
         },
 
-        selectCompany : function(companyId, company) {
+        selectCompany : function(item) {
             var form = document.forms[this.creationForm];
-            registry.byId(form["companyId"].id).set("value", item["id"]);
+            form["companyId"].value = item["id"];
             registry.byId(form["company"].id).set("value", item["name"]);
         },
 

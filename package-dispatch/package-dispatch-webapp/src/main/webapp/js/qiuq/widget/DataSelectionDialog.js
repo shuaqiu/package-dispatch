@@ -5,15 +5,18 @@ define([
         "dijit/Dialog",
         "dijit/form/TextBox",
         "dijit/form/Button",
-        "dojox/grid/DataGrid",
+        "dojox/grid/EnhancedGrid",
+        "dojo/data/ObjectStore",
+        "dojo/store/JsonRest",
         "dojo/i18n!./nls/DataSelectionDialog",
-        "dojo/text!./templates/DataSelectionDialog.html" ], function(declare, _WidgetBase, _TemplatedMixin, Dialog,
-        TextBox, Button, DataGrid, message, template) {
+        "dojo/text!./templates/DataSelectionDialog.html",
+        "dojox/grid/enhanced/plugins/Pagination" ], function(declare, _WidgetBase, _TemplatedMixin, Dialog, TextBox,
+        Button, EnhancedGrid, ObjectStore, JsonRest, message, template) {
 
     return declare("qiuq.widget.DataSelectionDialog", [ _WidgetBase, _TemplatedMixin ], {
         templateString : template,
 
-        store : null,
+        storeTarget : null,
         structure : null,
 
         width : "600px",
@@ -29,11 +32,19 @@ define([
         _dialog : null,
 
         postCreate : function() {
-            this._grid = new DataGrid({
-                store : this.store,
+            this._grid = new EnhancedGrid({
+                store : new ObjectStore({
+                    objectStore : new JsonRest({
+                        target : this.storeTarget,
+                        sortParam : 'sort'
+                    })
+                }),
                 structure : this.structure,
                 width : this.width,
-                height : this.height
+                height : this.height,
+                plugins : {
+                    pagination : true
+                }
             }, this.gridNode);
 
             this.connect(this._grid, "onRowDblClick", this._onRowDblClick);
@@ -78,9 +89,9 @@ define([
             this.onRowClick(item, idx);
             this.hide();
         },
-        
-        onRowClick : function(item, idx){
-            
+
+        onRowClick : function(item, idx) {
+
         },
 
         _onQuery : function() {

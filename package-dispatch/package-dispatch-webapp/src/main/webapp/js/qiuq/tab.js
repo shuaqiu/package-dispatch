@@ -46,19 +46,9 @@ define([
 
     return {
         "show" : function(moduleArr, conf, specId) {
-            var deferred = new Deferred();
-
-            if (lang.isArray(moduleArr)) {
-                require(moduleArr, function() {
-                    show(conf, specId);
-                    deferred.resolve();
-                });
-            } else {
-                show(moduleArr, conf);
-                deferred.resolve();
-            }
-
-            return deferred;
+            require(moduleArr, function() {
+                show(conf, specId);
+            });
         },
         "close" : close
     };
