@@ -3,12 +3,13 @@ define([
         "dojo/dom",
         "dijit/registry",
         "../resource",
+        "../selection",
         "../widget/DataSelectionDialog",
         "dojo/i18n!./nls/user",
         "dijit/form/Select",
-        "../widget/ResourceGrid" ], function(lang, dom, registry, resource, DataSelectionDialog, message) {
+        "../widget/ResourceGrid" ], function(lang, dom, registry, resource, selection, DataSelectionDialog, message) {
 
-    return lang.mixin({}, resource, {
+    return lang.mixin({}, resource, selection, {
         resourceUrl : "web/user",
         listGrid : "user_list_grid",
 
@@ -17,37 +18,24 @@ define([
         editingTab : "user_editing_tab",
         editingForm : "user_editing_form",
 
-        companyDialog : "user_editing_company_dialog",
         customerTypeRow : "user_editing_customerType_row",
-        userTypeId : "user_new_type",
+        userTypeId : "user_editing_type",
 
-        showSelectionDialog : function() {
-            var dialog = registry.byId(this.companyDialog);
-            if (!dialog) {
-                var doSelect = lang.hitch(this, this.doSelect);
-                dialog = new DataSelectionDialog({
-                    id : this.companyDialog,
-                    storeTarget : 'web/company',
-                    structure : [ {
-                        name : "编码",
-                        field : "code",
-                        width : "150px"
-                    }, {
-                        name : "名称",
-                        field : "name",
-                        width : "200px"
-                    }, {
-                        name : "地址",
-                        field : "address",
-                        width : "250px"
-                    } ],
-                    onRowClick : function(item) {
-                        doSelect(item);
-                    }
-                });
-            }
-            dialog.show();
-        },
+        selectionDialog : "user_editing_company_dialog",
+        selectionStoreTarget : "web/company",
+        selectionStructure : [ {
+            name : "编码",
+            field : "code",
+            width : "150px"
+        }, {
+            name : "名称",
+            field : "name",
+            width : "200px"
+        }, {
+            name : "地址",
+            field : "address",
+            width : "250px"
+        } ],
 
         doSelect : function(item) {
             var form = document.forms[this.editingForm];

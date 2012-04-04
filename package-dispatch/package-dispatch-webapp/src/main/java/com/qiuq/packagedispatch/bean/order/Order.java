@@ -15,19 +15,17 @@ public class Order {
 
     // 寄件人信息
     private int senderId;
-    private String senderCode;
     private String senderName;
     private String senderTel;
-    private String senderAddress;
     private String senderCompany;
+    private String senderAddress;
 
     // 收件人信息
     private int receiverId;
-    private String receiverCode;
     private String receiverName;
     private String receiverTel;
-    private String receiverAddress;
     private String receiverCompany;
+    private String receiverAddress;
 
     // 单信息
     /**
@@ -41,7 +39,7 @@ public class Order {
     /**
      * 数量
      */
-    private int quantity;
+    private String quantity;
 
     /**
      * 条形码
@@ -66,7 +64,7 @@ public class Order {
     private Date endTime;
 
     // 调度员信息
-    private int schedulerId;
+    private Integer schedulerId;
     private String schedulerName;
     private String schedulerTel;
     private Date scheduleTime;
@@ -99,16 +97,6 @@ public class Order {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public String getSenderCode() {
-        return senderCode;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
-    public void setSenderCode(String senderCode) {
-        this.senderCode = senderCode;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
     public String getSenderName() {
         return senderName;
     }
@@ -129,16 +117,6 @@ public class Order {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public String getSenderAddress() {
-        return senderAddress;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
-    public void setSenderAddress(String senderAddress) {
-        this.senderAddress = senderAddress;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
     public String getSenderCompany() {
         return senderCompany;
     }
@@ -149,6 +127,16 @@ public class Order {
     }
 
     /** @author qiushaohua 2012-3-19 */
+    public String getSenderAddress() {
+        return senderAddress;
+    }
+
+    /** @author qiushaohua 2012-3-19 */
+    public void setSenderAddress(String senderAddress) {
+        this.senderAddress = senderAddress;
+    }
+
+    /** @author qiushaohua 2012-3-19 */
     public int getReceiverId() {
         return receiverId;
     }
@@ -156,16 +144,6 @@ public class Order {
     /** @author qiushaohua 2012-3-19 */
     public void setReceiverId(int receiverId) {
         this.receiverId = receiverId;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
-    public String getReceiverCode() {
-        return receiverCode;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
-    public void setReceiverCode(String receiverCode) {
-        this.receiverCode = receiverCode;
     }
 
     /** @author qiushaohua 2012-3-19 */
@@ -189,16 +167,6 @@ public class Order {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public String getReceiverAddress() {
-        return receiverAddress;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
-    public void setReceiverAddress(String receiverAddress) {
-        this.receiverAddress = receiverAddress;
-    }
-
-    /** @author qiushaohua 2012-3-19 */
     public String getReceiverCompany() {
         return receiverCompany;
     }
@@ -206,6 +174,16 @@ public class Order {
     /** @author qiushaohua 2012-3-19 */
     public void setReceiverCompany(String receiverCompany) {
         this.receiverCompany = receiverCompany;
+    }
+
+    /** @author qiushaohua 2012-3-19 */
+    public String getReceiverAddress() {
+        return receiverAddress;
+    }
+
+    /** @author qiushaohua 2012-3-19 */
+    public void setReceiverAddress(String receiverAddress) {
+        this.receiverAddress = receiverAddress;
     }
 
     /** @author qiushaohua 2012-3-19 */
@@ -229,12 +207,12 @@ public class Order {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setQuantity(int quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 
@@ -329,12 +307,12 @@ public class Order {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getSchedulerId() {
+    public Integer getSchedulerId() {
         return schedulerId;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setSchedulerId(int schedulerId) {
+    public void setSchedulerId(Integer schedulerId) {
         this.schedulerId = schedulerId;
     }
 

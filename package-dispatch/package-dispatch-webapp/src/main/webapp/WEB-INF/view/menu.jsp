@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <div id="menuBar" data-dojo-type="dijit.MenuBar">
   <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/order'], {title: '自主下单', href: 'web/order/edit'}, this.id);}">自主下单</div>
-  <div data-dojo-type="dijit.MenuBarItem">订单查询</div>
+  <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/order'], {title: '订单查询', href: 'web/order/list'}, this.id);}">订单查询</div>
   <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/customer/receiver'], {title: '收件人管理', href: 'web/receiver/list'}, this.id);}">收件人管理</div>
   <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/customer/receivercompany'], {title: '收件公司管理', href: 'web/receivercompany/list'}, this.id);}">收件公司管理</div>
   <div data-dojo-type="dijit.PopupMenuBarItem">

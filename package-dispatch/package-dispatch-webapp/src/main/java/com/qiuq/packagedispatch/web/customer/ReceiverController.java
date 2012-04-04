@@ -39,6 +39,11 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
         this.receiverService = receiverService;
     }
 
+    @Override
+    protected ResourceService<Receiver> getService() {
+        return receiverService;
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public HttpEntity<List<Receiver>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
@@ -60,10 +65,5 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
         HttpEntity<List<Receiver>> entity = new HttpEntity<List<Receiver>>(list, header);
 
         return entity;
-    }
-
-    @Override
-    protected ResourceService<Receiver> getService() {
-        return receiverService;
     }
 }

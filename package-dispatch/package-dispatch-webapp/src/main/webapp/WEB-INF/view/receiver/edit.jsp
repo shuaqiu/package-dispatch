@@ -12,21 +12,21 @@
       <div>
         <table class="formTable">
           <tr>
-            <td class="labelCell"><em>*</em><label for="receiver_new_name">姓名: </label></td>
-            <td><input id="receiver_new_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '收件人的姓名', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="receiver_editing_name">姓名: </label></td>
+            <td><input id="receiver_editing_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '收件人的姓名', required: true" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="receiver_new_tel">电话: </label></td>
-            <td><input id="receiver_new_tel" name="tel" maxlength="20" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '收件人的手机号码或电话号码', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="receiver_editing_tel">电话: </label></td>
+            <td><input id="receiver_editing_tel" name="tel" maxlength="20" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '收件人的手机号码或电话号码', required: true" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="receiver_new_company">公司: </label></td>
-            <td><input id="receiver_new_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
-                data-dojo-props="placeholder: '收件人的公司', required: true, onClick: function(){require(['qiuq/customer/receiver'], function(receiver){receiver.showSelectionDialog();});}" /></td>
+            <td class="labelCell"><em>*</em><label for="receiver_editing_company">公司: </label></td>
+            <td><input id="receiver_editing_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
+                data-dojo-props="placeHolder: '收件人的公司', required: true, onClick: function(){require(['qiuq/customer/receiver'], function(selection){selection.showSelectionDialog();});}" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="receiver_new_address">地址: </label></td>
-            <td><input id="receiver_new_address" name="address" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '收件人的地址', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="receiver_editing_address">地址: </label></td>
+            <td><input id="receiver_editing_address" name="address" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '收件人的地址', required: true" /></td>
           </tr>
         </table>
       </div>

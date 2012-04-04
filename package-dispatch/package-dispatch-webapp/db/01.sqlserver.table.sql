@@ -41,6 +41,22 @@ create table sys_user_role(
 alter table sys_user_role add constraint pk_sys_user_role primary key (user_id, role_id)
 
 
+create table sys_function(
+    id int not null,
+    code varchar(255),
+    name varchar(255),
+    parent_id int,
+    func_index int
+)
+alter table sys_function add constraint pk_sys_function primary key (id)
+
+create table sys_role_function(
+    role_id int not null,
+    func_id int not null
+)
+alter table sys_role_function add constraint pk_sys_role_function primary key (role_id, func_id)
+
+
 create table customer_receiver_company(
     id int not null identity(1,1),
     user_id int,
@@ -63,33 +79,39 @@ alter table customer_receiver add constraint pk_customer_receiver primary key (i
 
 create table dispatch_order(
     id int not null identity(1,1),
+    
     sender_id int not null,
-    sender_code varchar(255),
     sender_name varchar(255),
     sender_tel varchar(20),
-    sender_address varchar(255),
     sender_company varchar(255),
+    sender_address varchar(255),
+    
     receiver_id int not null,
-    receiver_code varchar(255),
-    recerver_name varchar(255),
+    receiver_name varchar(255),
     receiver_tel varchar(20),
-    receiver_address varchar(255),
     receiver_company varchar(255),
-    order_time datetime,
+    receiver_address varchar(255),
+    
+    order_time datetime default getdate(),
     goods_name varchar(255),
     quantity varchar(255),
+    
     bar_code varchar(255),
     sender_identity_code varchar(255),
     receiver_identity_code varchar(255),
+    
     start_time datetime,
     end_time datetime,
+    
     scheduler_id int,
     scheduler_name varchar(255),
     scheduler_tel varchar(20),
     schedule_time datetime,
+    
     state int
 )
 alter table dispatch_order add constraint pk_dispatch_order primary key (id)
+
 
 create table dispatch_schedule_detail(
     id int not null identity(1,1),

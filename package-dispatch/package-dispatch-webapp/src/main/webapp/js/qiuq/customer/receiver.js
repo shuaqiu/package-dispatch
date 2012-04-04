@@ -2,12 +2,13 @@ define([
         "dojo/_base/lang",
         "dijit/registry",
         "../resource",
+        "../selection",
         "../widget/DataSelectionDialog",
         "dojo/i18n!./nls/receiver",
         "dijit/form/Select",
-        "../widget/ResourceGrid" ], function(lang, registry, resource, DataSelectionDialog, message) {
+        "../widget/ResourceGrid" ], function(lang, registry, resource, selection, DataSelectionDialog, message) {
 
-    return lang.mixin({}, resource, {
+    return lang.mixin({}, resource, selection, {
         resourceUrl : "web/receiver",
         listGrid : "receiver_list_grid",
 

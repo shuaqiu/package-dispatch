@@ -37,6 +37,11 @@ public class CompanyController extends AbstractResourceController<Company> {
         this.companyService = companyService;
     }
 
+    @Override
+    protected ResourceService<Company> getService() {
+        return companyService;
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public HttpEntity<List<Company>> query(@RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
@@ -52,10 +57,5 @@ public class CompanyController extends AbstractResourceController<Company> {
         HttpEntity<List<Company>> entity = new HttpEntity<List<Company>>(list, header);
 
         return entity;
-    }
-
-    @Override
-    protected ResourceService<Company> getService() {
-        return companyService;
     }
 }

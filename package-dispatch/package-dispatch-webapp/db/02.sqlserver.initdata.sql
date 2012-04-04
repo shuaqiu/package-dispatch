@@ -13,3 +13,7 @@ set identity_insert sys_user off
 
 insert into sys_user_role(user_id, role_id)
 values(0, 0)
+
+
+insert into sys_role(id, code, name)
+values (1, 'administrators', '系统管理员')

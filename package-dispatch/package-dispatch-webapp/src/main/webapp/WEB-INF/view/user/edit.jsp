@@ -11,45 +11,45 @@
       <div>
         <table class="formTable">
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_code">登录帐号: </label></td>
-            <td><input id="user_new_code" name="code" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '用户的登录帐号', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="user_editing_code">登录帐号: </label></td>
+            <td><input id="user_editing_code" name="code" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的登录帐号', required: true" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_name">姓名: </label></td>
-            <td><input id="user_new_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '用户的姓名', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="user_editing_name">姓名: </label></td>
+            <td><input id="user_editing_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的姓名', required: true" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_password">密码: </label></td>
-            <td><input id="user_new_password" name="password" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '用户的密码', type: 'password', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="user_editing_password">密码: </label></td>
+            <td><input id="user_editing_password" name="password" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的密码', type: 'password', required: true" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_tel">电话: </label></td>
-            <td><input id="user_new_tel" name="tel" maxlength="20" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '用户的手机号码或电话号码', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="user_editing_tel">电话: </label></td>
+            <td><input id="user_editing_tel" name="tel" maxlength="20" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的手机号码或电话号码', required: true" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_company">公司: </label></td>
-            <td><input id="user_new_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
-                data-dojo-props="placeholder: '用户的公司', required: true, onFocus: function(){require(['qiuq/system/user'], function(user){user.showSelectionDialog();});}" /></td>
+            <td class="labelCell"><em>*</em><label for="user_editing_company">公司: </label></td>
+            <td><input id="user_editing_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
+                data-dojo-props="placeHolder: '用户的公司', required: true, onFocus: function(){require(['qiuq/system/user'], function(selection){selection.showSelectionDialog();});}" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><label for="user_new_department">部门: </label></td>
-            <td><input id="user_new_department" name="department" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeholder: '用户所在的部门'" /></td>
+            <td class="labelCell"><label for="user_editing_department">部门: </label></td>
+            <td><input id="user_editing_department" name="department" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeHolder: '用户所在的部门'" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_address">地址: </label></td>
-            <td><input id="user_new_address" name="address" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '用户公司的地址', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="user_editing_address">地址: </label></td>
+            <td><input id="user_editing_address" name="address" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户公司的地址', required: true" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_new_type">用户类型: </label></td>
-            <td><select id="user_new_type" name="type" data-dojo-type="dijit.form.Select"
-              data-dojo-props="placeholder: '用户类型', required: true, onChange: function(){require(['qiuq/system/user'], function(user){user.typeChanged();});}">
+            <td class="labelCell"><em>*</em><label for="user_editing_type">用户类型: </label></td>
+            <td><select id="user_editing_type" name="type" data-dojo-type="dijit.form.Select"
+              data-dojo-props="placeHolder: '用户类型', required: true, onChange: function(){require(['qiuq/system/user'], function(user){user.typeChanged();});}">
                 <option value="1">惠信员工</option>
                 <option value="2">客户</option>
             </select></td>
           </tr>
           <tr id="user_editing_customerType_row" style="display: none;">
-            <td class="labelCell"><label for="user_new_customerType">客户类型: </label></td>
-            <td><select id="user_new_customerType" name="customerType" data-dojo-type="dijit.form.Select" data-dojo-props="placeholder: '客户类型'">
+            <td class="labelCell"><label for="user_editing_customerType">客户类型: </label></td>
+            <td><select id="user_editing_customerType" name="customerType" data-dojo-type="dijit.form.Select" data-dojo-props="placeHolder: '客户类型'">
                 <option value="0">普通客户</option>
                 <option value="1">客户管理员</option>
             </select></td>
