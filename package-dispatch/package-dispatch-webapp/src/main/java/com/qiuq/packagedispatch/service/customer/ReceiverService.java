@@ -29,6 +29,11 @@ public class ReceiverService extends AbstractResourceService<Receiver> {
         this.receiveRepository = receiveRepository;
     }
 
+    @Override
+    protected ResourceRepository<Receiver> getRepository() {
+        return receiveRepository;
+    }
+
     /**
      * @param userId
      * @param sort
@@ -42,9 +47,14 @@ public class ReceiverService extends AbstractResourceService<Receiver> {
         return receiveRepository.query(userId, sort, query, range);
     }
 
-    @Override
-    protected ResourceRepository<Receiver> getRepository() {
-        return receiveRepository;
+    /**
+     * @param userId
+     * @param query
+     * @return
+     * @author qiushaohua 2012-4-4
+     */
+    public long matchedRecordCount(int userId, String query) {
+        return receiveRepository.matchedRecordCount(userId, query);
     }
 
 }

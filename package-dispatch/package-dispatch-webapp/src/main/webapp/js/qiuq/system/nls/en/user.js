@@ -1,3 +1,4 @@
 define({
-    "creation" : "Create User"
+    "create" : "Create User",
+    "modify"   : "Modify User"
 });

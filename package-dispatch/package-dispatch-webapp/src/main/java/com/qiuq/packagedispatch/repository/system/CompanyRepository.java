@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,6 @@ import org.springframework.util.StringUtils;
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
-import com.qiuq.packagedispatch.repository.ResourceMapper;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
 /**
@@ -45,25 +45,6 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
 
             return com;
         }
-    }
-
-    private final class CompanyResourceMapper implements ResourceMapper<Company> {
-
-        @Override
-        public MapSqlParameterSource mapObject(Company com, SqlSourceType sourceType) {
-            MapSqlParameterSource paramMap = new MapSqlParameterSource();
-            paramMap.addValue("code", com.getCode());
-            paramMap.addValue("name", com.getName());
-            paramMap.addValue("address", com.getAddress());
-
-            if (sourceType == SqlSourceType.INSERT) {
-                paramMap.addValue("parent_id", -1);
-                paramMap.addValue("full_id", -1);
-                paramMap.addValue("type", Type.TYPE_CUSTOMER);
-            }
-            return paramMap;
-        }
-
     }
 
     /**
@@ -131,9 +112,13 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     @Override
     public boolean insert(Company com) {
         String sql = "insert into sys_company(code, name, address, parent_id, full_id, type)"
-                + " values(:code, :name, :address, :parent_id, :full_id, :type)";
+                + " values(:code, :name, :address, :parentId, :fullId, :type)";
 
-        return doInsert(sql, com, new CompanyResourceMapper());
+        com.setParentId(-1);
+        com.setFullId("-1");
+        com.setType(Type.TYPE_CUSTOMER);
+
+        return doInsert(sql, new BeanPropertySqlParameterSource(com));
     }
 
     /**
@@ -146,7 +131,7 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     public boolean update(int id, Company com) {
         String sql = "update sys_company set code = :code, name = :name, address = :address where id = :id";
 
-        return doUpdate(sql, id, com, new CompanyResourceMapper());
+        return doUpdate(sql, new BeanPropertySqlParameterSource(com));
     }
 
 }

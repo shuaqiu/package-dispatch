@@ -8,13 +8,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.qiuq.packagedispatch.bean.customer.ReceiverCompany;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
-import com.qiuq.packagedispatch.repository.ResourceMapper;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
 /**
@@ -35,17 +35,6 @@ public class ReceiverCompanyRepository extends AbstractRepository implements Res
         }
     }
 
-    private final class ReceiverCompanyResourceMapper implements ResourceMapper<ReceiverCompany> {
-        @Override
-        public MapSqlParameterSource mapObject(ReceiverCompany t, SqlSourceType sourceType) {
-            MapSqlParameterSource paramMap = new MapSqlParameterSource();
-            paramMap.addValue("userId", t.getUserId());
-            paramMap.addValue("name", t.getName());
-            paramMap.addValue("address", t.getAddress());
-            return paramMap;
-        }
-    }
-
     /**
      * @param userId
      * @param sort
@@ -55,18 +44,35 @@ public class ReceiverCompanyRepository extends AbstractRepository implements Res
      * @author qiushaohua 2012-4-1
      */
     public List<ReceiverCompany> query(int userId, String sort, String query, long[] range) {
-        String sql = "select com.*, row_number() over(" + orderBy(sort) + ") as rownum"
-                + " from customer_receiver_company com where com.user_id = :userId";
-
+        String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum"
+                + " from customer_receiver_company where user_id = :userId";
         MapSqlParameterSource paramMap = new MapSqlParameterSource("userId", userId);
 
         if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
+            sql += " and (name like :query or address like :query)";
             paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
         }
 
         String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
         return jdbcTemplate.query(rangeQuerySql, paramMap, new ReceiverCompanyRowMapper());
+    }
+
+    /**
+     * @param userId
+     * @param query
+     * @return
+     * @author qiushaohua 2012-4-4
+     */
+    public long matchedRecordCount(int userId, String query) {
+        String sql = "select count(*) from customer_receiver_company where user_id = :userId";
+        MapSqlParameterSource paramMap = new MapSqlParameterSource("userId", userId);
+
+        if (StringUtils.hasText(query)) {
+            sql += " and (name like :query or address like :query)";
+            paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
+        }
+
+        return jdbcTemplate.queryForLong(sql, paramMap);
     }
 
     @Override
@@ -82,13 +88,13 @@ public class ReceiverCompanyRepository extends AbstractRepository implements Res
     @Override
     public boolean insert(ReceiverCompany t) {
         String sql = "insert into customer_receiver_company(user_id, name, address) values(:userId, :name, :address)";
-        return doInsert(sql, t, new ReceiverCompanyResourceMapper());
+        return doInsert(sql, new BeanPropertySqlParameterSource(t));
     }
 
     @Override
     public boolean update(int id, ReceiverCompany t) {
         String sql = "update customer_receiver_company set user_id = :userId, name = :name, address = :address where id = :id";
-        return doUpdate(sql, id, t, new ReceiverCompanyResourceMapper());
+        return doUpdate(sql, new BeanPropertySqlParameterSource(t));
     }
 
 }

@@ -60,7 +60,7 @@ public class User implements Type {
      * @see #CUSTOMER_TYPE_NORMAL
      * @see #CUSTOMER_TYPE_ADMIN
      */
-    private int customerType;
+    private Integer customerType;
     /**
      * 用户状态
      * 
@@ -147,7 +147,7 @@ public class User implements Type {
 
     /** @author qiushaohua 2012-3-19 */
     public void setCompanyId(int groupId) {
-        this.companyId = groupId;
+        companyId = groupId;
     }
 
     /** @author qiushaohua 2012-3-19 */
@@ -209,7 +209,7 @@ public class User implements Type {
      * @see #CUSTOMER_TYPE_ADMIN
      * @author qiushaohua 2012-3-19
      */
-    public int getCustomerType() {
+    public Integer getCustomerType() {
         return customerType;
     }
 
@@ -220,7 +220,7 @@ public class User implements Type {
      * @see #CUSTOMER_TYPE_ADMIN
      * @author qiushaohua 2012-3-19
      */
-    public void setCustomerType(int customerType) {
+    public void setCustomerType(Integer customerType) {
         this.customerType = customerType;
     }
 

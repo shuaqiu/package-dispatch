@@ -3,7 +3,8 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <form name="user_creation_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+  <form name="user_editing_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+    <input type="hidden" name="id" />
     <input type="hidden" name="companyId" />
     <fieldset>
       <legend>用户信息</legend>
@@ -28,7 +29,7 @@
           <tr>
             <td class="labelCell"><em>*</em><label for="user_new_company">公司: </label></td>
             <td><input id="user_new_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
-                data-dojo-props="placeholder: '用户的公司', required: true, onClick: function(){require(['qiuq/system/user'], function(user){user.showCompany();});}" /></td>
+                data-dojo-props="placeholder: '用户的公司', required: true, onFocus: function(){require(['qiuq/system/user'], function(user){user.showSelectionDialog();});}" /></td>
           </tr>
           <tr>
             <td class="labelCell"><label for="user_new_department">部门: </label></td>
@@ -46,7 +47,7 @@
                 <option value="2">客户</option>
             </select></td>
           </tr>
-          <tr id="user_creation_customerType_row" style="display: none;">
+          <tr id="user_editing_customerType_row" style="display: none;">
             <td class="labelCell"><label for="user_new_customerType">客户类型: </label></td>
             <td><select id="user_new_customerType" name="customerType" data-dojo-type="dijit.form.Select" data-dojo-props="placeholder: '客户类型'">
                 <option value="0">普通客户</option>
@@ -59,7 +60,7 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/user'], function(user){user.save();});}" /></td>
+        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/user'], function(resource){resource.doSave();});}" /></td>
       </tr>
     </table>
   </form>

@@ -12,11 +12,11 @@ define([
         "dijit/layout/ContentPane",
         "dijit/MenuBar",
         "dijit/MenuBarItem",
-        "dojo/i18n!./nls/ResourceList",
+        "dojo/i18n!./nls/ResourceGrid",
         "dojox/grid/enhanced/plugins/Pagination" ], function(domConstruct, lang, declare, _WidgetBase, TextBox, Button,
         EnhancedGrid, ObjectStore, JsonRest, BorderContainer, ContentPane, MenuBar, MenuBarItem, message) {
 
-    return declare("qiuq.widget.ResourceList", [ _WidgetBase ], {
+    return declare("qiuq.widget.ResourceGrid", [ _WidgetBase ], {
         listGrid : null,
         storeTarget : null,
         structure : null,

@@ -1,3 +1,4 @@
 define({
-    "creation" : "Create Receiver's Company"
+    "create" : "Create Receiver's Company",
+    "modify"   : "Modify Receiver's Company"
 });

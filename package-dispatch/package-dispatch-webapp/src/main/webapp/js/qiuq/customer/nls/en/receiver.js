@@ -1,4 +1,5 @@
 define({
     "receiver" : "Receiver",
-    "creation" : "Create Receiver"
+    "create" : "Create Receiver",
+    "modify"   : "Modify Receiver"
 });

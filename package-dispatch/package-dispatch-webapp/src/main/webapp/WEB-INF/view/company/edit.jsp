@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <form name="company_creation_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+  <form name="company_editing_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
     <input type="hidden" name="id" />
     <fieldset>
       <legend>客户公司信息</legend>
@@ -27,7 +27,7 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/company'], function(company){company.doSave();});}" /></td>
+        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/company'], function(resource){resource.doSave();});}" /></td>
       </tr>
     </table>
   </form>

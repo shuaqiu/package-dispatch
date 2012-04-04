@@ -3,15 +3,13 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <form name="company" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+  <form name="receivercompany_editing_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+    <input type="hidden" name="id" />
+    <input type="hidden" name="userId" value="${user.id }" />
     <fieldset>
-      <legend>客户公司信息</legend>
+      <legend>收件公司信息</legend>
       <div>
         <table class="formTable">
-          <tr>
-            <td class="labelCell"><em>*</em><label for="company_new_code">编码: </label></td>
-            <td><input id="company_new_code" name="code" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '客户公司的编码', required: true" /></td>
-          </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="company_new_name">公司名称: </label></td>
             <td><input id="company_new_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeholder: '客户公司的名称', required: true" /></td>
@@ -26,7 +24,7 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/system/company'], function(company){company.save();});}" /></td>
+        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/customer/receivercompany'], function(resource){resource.doSave();});}" /></td>
       </tr>
     </table>
   </form>

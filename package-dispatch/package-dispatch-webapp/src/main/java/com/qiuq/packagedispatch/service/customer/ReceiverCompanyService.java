@@ -29,6 +29,11 @@ public class ReceiverCompanyService extends AbstractResourceService<ReceiverComp
         this.receiverCompanyRepository = receiverCompanyRepository;
     }
 
+    @Override
+    protected ResourceRepository<ReceiverCompany> getRepository() {
+        return receiverCompanyRepository;
+    }
+
     /**
      * @param userId
      * @param sort
@@ -42,9 +47,14 @@ public class ReceiverCompanyService extends AbstractResourceService<ReceiverComp
         return receiverCompanyRepository.query(userId, sort, query, range);
     }
 
-    @Override
-    protected ResourceRepository<ReceiverCompany> getRepository() {
-        return receiverCompanyRepository;
+    /**
+     * @param userId
+     * @param query
+     * @return
+     * @author qiushaohua 2012-4-4
+     */
+    public long matchedRecordCount(int userId, String query) {
+        return receiverCompanyRepository.matchedRecordCount(userId, query);
     }
 
 }

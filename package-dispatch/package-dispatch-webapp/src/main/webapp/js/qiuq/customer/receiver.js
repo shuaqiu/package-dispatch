@@ -4,21 +4,24 @@ define([
         "../resource",
         "../widget/DataSelectionDialog",
         "dojo/i18n!./nls/receiver",
-        "dijit/form/Select" ], function(lang, registry, resource, DataSelectionDialog, message) {
+        "dijit/form/Select",
+        "../widget/ResourceGrid" ], function(lang, registry, resource, DataSelectionDialog, message) {
 
     return lang.mixin({}, resource, {
         resourceUrl : "web/receiver",
         listGrid : "receiver_list_grid",
 
-        creationTabName : message["creation"],
-        creationTab : "receiver_creation_tab",
-        creationForm : "receiver_creation",
+        createTabName : message["create"],
+        modifyTabName : message["modify"],
+        editingTab : "receiver_editing_tab",
+        editingForm : "receiver_editing_form",
 
-        companyDialog : "receiver_creation_company_dialog",
+        companyDialog : "receiver_editing_company_dialog",
 
-        showReceiverCompany : function() {
+        showSelectionDialog : function() {
             var dialog = registry.byId(this.companyDialog);
             if (!dialog) {
+                var doSelect = lang.hitch(this, this.doSelect);
                 dialog = new DataSelectionDialog({
                     id : this.companyDialog,
                     storeTarget : 'web/receivercompany/',
@@ -31,17 +34,17 @@ define([
                         field : "address",
                         width : "350px"
                     } ],
-                    onRowClick : function(item, idx) {
-                        selectReceiverCompany(item);
+                    onRowClick : function(item) {
+                        doSelect(item);
                     }
                 });
             }
             dialog.show();
         },
 
-        selectReceiverCompany : function(companyId, company) {
-            var form = document.forms[this.creationForm];
-            registry.byId(form["companyId"].id).set("value", item["id"]);
+        doSelect : function(item) {
+            var form = document.forms[this.editingForm];
+            form["companyId"].value = item["id"];
             registry.byId(form["company"].id).set("value", item["name"]);
             registry.byId(form["address"].id).set("value", item["address"]);
         }

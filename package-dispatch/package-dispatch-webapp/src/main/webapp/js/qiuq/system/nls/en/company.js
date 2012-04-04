@@ -3,5 +3,6 @@ define({
     "name" : "Company Name",
     "address" : "Address",
     
-    "creation" : "Create Company"
+    "create" : "Create Company",
+    "modify"   : "Modify Company"
 });

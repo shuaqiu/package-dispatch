@@ -22,25 +22,26 @@ define([
         resourceUrl : null,
         listGrid : null,
 
-        creationTabName : null,
-        creationTab : null,
-        creationForm : null,
+        createTabName : null,
+        modifyTabName : null,
+        editingTab : null,
+        editingForm : null,
 
-        doCreate : function() {
+        doCreate : function(tabName) {
             var deferred = new Deferred();
             tab.show([], {
-                "title" : this.creationTabName,
-                "href" : this.resourceUrl + "/edit",
+                title : tabName ? tabName : this.createTabName,
+                href : this.resourceUrl + "/edit",
                 onLoad : function() {
                     deferred.resolve();
                 }
-            }, this.creationTab);
+            }, this.editingTab);
 
             return deferred;
         },
 
         doSave : function() {
-            var form = document.forms[this.creationForm];
+            var form = document.forms[this.editingForm];
 
             var dijitForm = registry.byNode(form);
             if (dijitForm.isValid() == false) {
@@ -52,8 +53,6 @@ define([
             this._saveByXhr(form).then(function(result) {
                 saved(result);
             });
-
-            tab.close(this.creationTab);
         },
 
         _saveByXhr : function(form) {
@@ -61,17 +60,17 @@ define([
 
             if (itemId) {
                 return xhr.put({
-                    "url" : this.resourceUrl + "/" + itemId,
-                    "putData" : domform.toJson(form),
-                    "handleAs" : "json",
-                    "contentType" : "application/json"
+                    url : this.resourceUrl + "/" + itemId,
+                    putData : domform.toJson(form),
+                    handleAs : "json",
+                    contentType : "application/json"
                 });
             } else {
                 return xhr.post({
-                    "url" : this.resourceUrl,
-                    "postData" : domform.toJson(form),
-                    "handleAs" : "json",
-                    "contentType" : "application/json"
+                    url : this.resourceUrl,
+                    postData : domform.toJson(form),
+                    handleAs : "json",
+                    contentType : "application/json"
                 });
             }
         },
@@ -82,6 +81,7 @@ define([
                 if (grid) {
                     grid._refresh(true);
                 }
+                tab.close(this.editingTab);
             } else {
                 MessageDialog.error(message["err." + result.errCode]);
             }
@@ -97,13 +97,13 @@ define([
 
             var item = items[0];
             var _initForm = lang.hitch(this, this._initForm);
-            this.doCreate().then(function() {
+            this.doCreate(this.modifyTabName).then(function() {
                 _initForm(item);
             });
         },
 
         _initForm : function(item) {
-            var form = document.forms[this.creationForm];
+            var form = document.forms[this.editingForm];
 
             for ( var p in item) {
                 var elem = form[p];

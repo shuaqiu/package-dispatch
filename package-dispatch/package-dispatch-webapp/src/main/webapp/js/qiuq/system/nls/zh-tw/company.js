@@ -3,5 +3,6 @@ define({
     "name" : "公司名稱 ",
     "address" : "地址",
     
-    "creation" : "新建客戶公司"
+    "create" : "新建客戶公司",
+    "modify"   : "修改客戶公司"
 });

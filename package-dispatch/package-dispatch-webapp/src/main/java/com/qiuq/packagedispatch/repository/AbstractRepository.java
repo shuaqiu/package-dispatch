@@ -11,8 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.util.StringUtils;
 
-import com.qiuq.packagedispatch.repository.ResourceMapper.SqlSourceType;
-
 /**
  * @author qiushaohua 2012-3-27
  * @version 0.0.1
@@ -91,16 +89,13 @@ public abstract class AbstractRepository {
 
     /**
      * @param sql
-     * @param user
-     * @param mapper
+     * @param paramSource
      * @return
-     * @author qiushaohua 2012-3-31
+     * @author qiushaohua 2012-4-4
      */
-    protected <T> boolean doInsert(String sql, T t, ResourceMapper<T> mapper) {
-        MapSqlParameterSource paramMap = mapper.mapObject(t, SqlSourceType.INSERT);
-
+    protected <T> boolean doInsert(String sql, SqlParameterSource paramSource) {
         try {
-            int update = jdbcTemplate.update(sql, paramMap);
+            int update = jdbcTemplate.update(sql, paramSource);
             return update == 1;
         } catch (DataAccessException e) {
         }
@@ -109,18 +104,13 @@ public abstract class AbstractRepository {
 
     /**
      * @param sql
-     * @param id
-     * @param user
-     * @param mapper
+     * @param paramSource
      * @return
-     * @author qiushaohua 2012-3-31
+     * @author qiushaohua 2012-4-4
      */
-    protected <T> boolean doUpdate(String sql, int id, T t, ResourceMapper<T> mapper) {
-        MapSqlParameterSource paramMap = mapper.mapObject(t, SqlSourceType.UPDATE);
-        paramMap.addValue("id", id);
-
+    protected <T> boolean doUpdate(String sql, SqlParameterSource paramSource) {
         try {
-            int update = jdbcTemplate.update(sql, paramMap);
+            int update = jdbcTemplate.update(sql, paramSource);
             return update == 1;
         } catch (DataAccessException e) {
         }

@@ -18,7 +18,7 @@ define([
         message) {
 
     var id = {
-        form : "order_creation",
+        form : "order_editing",
         receiverDialog : "order_new_receiver_dialog"
     };
 

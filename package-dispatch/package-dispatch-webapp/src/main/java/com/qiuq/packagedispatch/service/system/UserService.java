@@ -30,6 +30,11 @@ public class UserService extends AbstractResourceService<User> {
         this.userRepository = userRepository;
     }
 
+    @Override
+    protected ResourceRepository<User> getRepository() {
+        return userRepository;
+    }
+
     /**
      * @param usercode
      * @param password
@@ -63,8 +68,12 @@ public class UserService extends AbstractResourceService<User> {
         return userRepository.query(sort, query, range);
     }
 
-    @Override
-    protected ResourceRepository<User> getRepository() {
-        return userRepository;
+    /**
+     * @param query
+     * @return
+     * @author qiushaohua 2012-4-4
+     */
+    public long matchedRecordCount(String query) {
+        return userRepository.matchedRecordCount(query);
     }
 }

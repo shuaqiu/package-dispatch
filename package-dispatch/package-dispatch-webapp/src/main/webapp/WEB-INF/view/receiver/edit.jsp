@@ -3,7 +3,8 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <form name="receiver_creation" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+  <form name="receiver_editing_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
+    <input type="hidden" name="id" />
     <input type="hidden" name="userId" value="${user.id }" />
     <input type="hidden" name="companyId" />
     <fieldset>
@@ -21,7 +22,7 @@
           <tr>
             <td class="labelCell"><em>*</em><label for="receiver_new_company">公司: </label></td>
             <td><input id="receiver_new_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
-                data-dojo-props="placeholder: '收件人的公司', required: true, onClick: function(){require(['qiuq/customer/receiver'], function(receiver){receiver.showReceiverCompany();});}" /></td>
+                data-dojo-props="placeholder: '收件人的公司', required: true, onClick: function(){require(['qiuq/customer/receiver'], function(receiver){receiver.showSelectionDialog();});}" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="receiver_new_address">地址: </label></td>
@@ -33,7 +34,7 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/customer/receiver'], function(receiver){receiver.save();});}" /></td>
+        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '保存', onClick : function(){require(['qiuq/customer/receiver'], function(resource){resource.doSave();});}" /></td>
       </tr>
     </table>
   </form>

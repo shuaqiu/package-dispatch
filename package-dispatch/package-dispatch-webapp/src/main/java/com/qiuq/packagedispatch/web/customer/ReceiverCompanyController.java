@@ -6,6 +6,8 @@ package com.qiuq.packagedispatch.web.customer;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,12 +46,24 @@ public class ReceiverCompanyController extends AbstractResourceController<Receiv
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public List<ReceiverCompany> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
+    public HttpEntity<List<ReceiverCompany>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
             return null;
         }
-        return receiverCompanyService.query(user.getId(), sort, query, range(range));
+
+        long[] rangeArr = range(range);
+
+        HttpHeaders header = new HttpHeaders();
+        if (rangeArr != null) {
+            long count = receiverCompanyService.matchedRecordCount(user.getId(), query);
+            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
+        }
+
+        List<ReceiverCompany> list = receiverCompanyService.query(user.getId(), sort, query, rangeArr);
+        HttpEntity<List<ReceiverCompany>> entity = new HttpEntity<List<ReceiverCompany>>(list, header);
+
+        return entity;
     }
 }
