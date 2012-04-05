@@ -4,6 +4,7 @@
 package com.qiuq.packagedispatch.service.order;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,25 +35,23 @@ public class OrderService extends AbstractResourceService<Order> {
     }
 
     /**
-     * @param userId
      * @param sort
-     * @param query
+     * @param params
      * @param range
      * @return
      * @author qiushaohua 2012-4-4
      */
-    public List<Order> query(int userId, String sort, String query, long[] range) {
-        return orderRepository.query(sort, null, range);
+    public List<Order> query(String sort, Map<String, Object> params, long[] range) {
+        return orderRepository.query(sort, params, range);
     }
 
     /**
-     * @param userId
-     * @param query
+     * @param params
      * @return
      * @author qiushaohua 2012-4-4
      */
-    public long matchedRecordCount(int userId, String query) {
-        return orderRepository.matchedRecordCount(null);
+    public long matchedRecordCount(Map<String, Object> params) {
+        return orderRepository.matchedRecordCount(params);
     }
 
 }

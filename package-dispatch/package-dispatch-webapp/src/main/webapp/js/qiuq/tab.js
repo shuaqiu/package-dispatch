@@ -27,6 +27,10 @@ define([
         }
 
         conf["closable"] = true;
+        conf["onClose"] = function() {
+            console.info("closed");
+            return true;
+        };
         var panel = new ContentPane(conf);
         getTab().addChild(panel);
         return panel;

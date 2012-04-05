@@ -4,9 +4,9 @@
 <html>
 <body>
   <form name="order_editing_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
-  <input type="hidden" name="senderId" value="${user.id }"/>
-  <input type="hidden" name="receiverId"/>
-    <fieldset>
+    <input type="hidden" name="senderId" value="${user.id }" />
+    <input type="hidden" name="receiverId" />
+    <fieldset style="display: none;">
       <legend>寄件人信息</legend>
       <div>
         <table class="formTable">
@@ -53,10 +53,10 @@
             <td class="labelCell"><em>*</em><label for="order_editing_receiverAddress">地址: </label></td>
             <td><input id="order_editing_receiverAddress" name="receiverAddress" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '收件人所在的地址', required: true" /></td>
           </tr>
-          <tr>
-            <td class="labelCell"></td>
-            <td><input name="isAddConsignee" data-dojo-type="dijit.form.CheckBox" data-dojo-props="" value="true" /><label for="isAdd">保存收件人</label></td>
-          </tr>
+          <!--           <tr> -->
+          <!--             <td class="labelCell"></td> -->
+          <!--             <td><input name="isAddConsignee" data-dojo-type="dijit.form.CheckBox" data-dojo-props="" value="true" /><label for="isAdd">保存收件人</label></td> -->
+          <!--           </tr> -->
         </table>
       </div>
     </fieldset>
@@ -82,6 +82,8 @@
       </tr>
     </table>
   </form>
-  <div><!-- 加上这一个div, 是为了使得外层的ContentPane 不是只有一个子结点, 不增加overflow: hidden 的样式, 从而可以出现滚动条 --></div>
+  <div>
+    <!-- 加上这一个div, 是为了使得外层的ContentPane 不是只有一个子结点, 不增加overflow: hidden 的样式, 从而可以出现滚动条 -->
+  </div>
 </body>
 </html>

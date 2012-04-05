@@ -27,15 +27,20 @@ define([
         editingTab : null,
         editingForm : null,
 
-        doCreate : function(tabName) {
+        doCreate : function(setting) {
+            setting = lang.mixin({
+                title : this.createTabName,
+                tabId : this.editingTab
+            }, (setting && typeof setting == "object" ? setting : {}));
+
             var deferred = new Deferred();
             tab.show([], {
-                title : tabName ? tabName : this.createTabName,
+                title : setting.title,
                 href : this.resourceUrl + "/edit",
                 onLoad : function() {
                     deferred.resolve();
                 }
-            }, this.editingTab);
+            }, setting.tabId);
 
             return deferred;
         },
@@ -97,7 +102,9 @@ define([
 
             var item = items[0];
             var _initForm = lang.hitch(this, this._initForm);
-            this.doCreate(this.modifyTabName).then(function() {
+            this.doCreate({
+                title : this.modifyTabName
+            }).then(function() {
                 _initForm(item);
             });
         },

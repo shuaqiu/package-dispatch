@@ -21,10 +21,16 @@ define([
         storeTarget : null,
         structure : null,
 
+        gridOption : null,
+
         doCreate : null,
         doModify : null,
         doDelete : null,
+        _createMenuLabel : message["create"],
+        _modifyMenuLabel : message["modify"],
+        _deleteMenuLabel : message["delete"],
 
+        _queryButtonLabel : message["query"],
         _queryInput : null,
         _grid : null,
         _mainContainer : null,
@@ -68,7 +74,7 @@ define([
                 }
             });
             var queryButton = new Button({
-                label : message["query"]
+                label : this._queryButtonLabel
             });
             this.connect(queryButton, "onClick", function() {
                 this._onQuery();
@@ -85,19 +91,19 @@ define([
 
             if (this.doCreate && lang.isFunction(this.doCreate)) {
                 MenuBarItem({
-                    label : message["create"],
+                    label : this._createMenuLabel,
                     onClick : this.doCreate
                 }).placeAt(menuBar);
             }
             if (this.doModify && lang.isFunction(this.doModify)) {
                 MenuBarItem({
-                    label : message["modify"],
+                    label : this._modifyMenuLabel,
                     onClick : this.doModify
                 }).placeAt(menuBar);
             }
             if (this.doDelete && lang.isFunction(this.doDelete)) {
                 MenuBarItem({
-                    label : message["delete"],
+                    label : this._deleteMenuLabel,
                     onClick : this.doDelete
                 }).placeAt(menuBar);
             }
@@ -116,7 +122,7 @@ define([
         },
 
         _createGrid : function() {
-            this._grid = new EnhancedGrid({
+            var option = {
                 id : this.listGrid,
                 store : new ObjectStore({
                     objectStore : new JsonRest({
@@ -124,18 +130,27 @@ define([
                         sortParam : 'sort'
                     })
                 }),
-                height : "600px",
                 structure : this.structure,
                 plugins : {
                     pagination : true
                 }
-            });
+            };
+            if (this.gridOption) {
+                option = lang.mixin(option, this.gridOption);
+            }
+
+            this._grid = new EnhancedGrid(option);
             return this._grid;
         },
 
         destroyRendering : function(/* Boolean? */preserveDom) {
             this.inherited(arguments);
             this._mainContainer.destroyRecursive(preserveDom);
+        },
+
+        queryWith : function(value) {
+            this._queryInput.set("value", value);
+            this._onQuery();
         }
     });
 });

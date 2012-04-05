@@ -76,6 +76,8 @@ public class Order {
      */
     private int state;
 
+    private String stateDescribe;
+
     /** @author qiushaohua 2012-3-19 */
     public int getId() {
         return id;
@@ -364,6 +366,16 @@ public class Order {
      */
     public void setState(int state) {
         this.state = state;
+    }
+
+    /** @author qiushaohua 2012-4-5 */
+    public String getStateDescribe() {
+        return stateDescribe;
+    }
+
+    /** @author qiushaohua 2012-4-5 */
+    public void setStateDescribe(String stateDescribe) {
+        this.stateDescribe = stateDescribe;
     }
 
 }

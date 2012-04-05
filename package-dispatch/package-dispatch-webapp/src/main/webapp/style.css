@@ -40,3 +40,27 @@ em:after {
 /*******************************************************************************
 **************************form style******************************************** 
 *******************************************************************************/
+.simpleTableInfo table {
+    border-collapse: collapse;
+    margin-left: -1px;
+    border: solid #DEDEDE;
+    border-width: 0 1px;
+}
+
+.simpleTableInfo th {
+    padding: 5px;
+    background: #F0F0F0;
+    border-top: 1px solid #DEDEDE;
+    border-bottom: 1px solid #DEDEDE;
+    border-left: 1px solid #F0F0F0;
+    font-weight: normal;
+}
+
+.simpleTableInfo td {
+    padding: 5px;
+    background: #fff;
+    border-top: 1px solid #DEDEDE;
+    border-bottom: 1px solid #DEDEDE;
+    border-left: 1px solid #F0F0F0;
+    text-align: center;
+}

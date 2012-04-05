@@ -41,12 +41,38 @@ public abstract class AbstractRepository {
     protected String orderBy(String sort) {
         if (StringUtils.hasText(sort) && sort.length() > 1) {
             if (sort.startsWith("+") || sort.startsWith(" ")) {
-                return " order by " + sort.substring(1);
+                return " order by " + underscoreName(sort.substring(1));
             } else if (sort.startsWith("-")) {
-                return " order by " + sort.substring(1) + " desc";
+                return " order by " + underscoreName(sort.substring(1)) + " desc";
             }
         }
         return "";
+    }
+
+    /**
+     * Convert a name in camelCase to an underscored name in lower case. Any upper case letters are converted to lower
+     * case with a preceding underscore.
+     * 
+     * @param name
+     *            the string containing original name
+     * @return the converted name
+     * @see BeanPropertyRowMap
+     */
+    private String underscoreName(String name) {
+        StringBuilder result = new StringBuilder();
+        if (name != null && name.length() > 0) {
+            result.append(name.substring(0, 1).toLowerCase());
+            for (int i = 1; i < name.length(); i++) {
+                String s = name.substring(i, i + 1);
+                if (s.equals(s.toUpperCase())) {
+                    result.append("_");
+                    result.append(s.toLowerCase());
+                } else {
+                    result.append(s);
+                }
+            }
+        }
+        return result.toString();
     }
 
     /**

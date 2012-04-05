@@ -41,7 +41,9 @@
             "dijit/MenuBarItem",
             "dijit/PopupMenuBarItem",
             "dijit/DropDownMenu",
-            "dijit/MenuItem" ], function() {
+            "dijit/MenuItem",
+            "dijit/form/TextBox",
+            "qiuq/order/order" ], function() {
     });
 
     require([ "qiuq/login", "dojo/dom", "dojo/_base/xhr", "dijit/layout/ContentPane", "dojo/domReady!" ], function(
@@ -51,7 +53,7 @@
         }, function() {
             login.doLogin().then(function(json) {
                 fetchMenu();
-                dom.byId("showusername").innerHTML = json.user.name;
+                dom.byId("showusername").innerHTML = json.obj.name;
             });
         })
 
@@ -67,12 +69,36 @@
         }
     });
 
-    function showTab(moduleArr, conf, id, callback) {
-        require([ "dojo/_base/lang", "qiuq/tab" ], function(lang, tab) {
-            var deferred = tab.show(moduleArr, conf, id);
-            if (callback && lang.isFunction(callback)) {
-                deferred.then(callback);
+    function showTab(moduleArr, conf, id) {
+        require([ "qiuq/tab" ], function(tab) {
+            tab.show(moduleArr, conf, id);
+        });
+    }
+
+    function doQuery(evt) {
+        if (evt.keyCode != "13") {
+            return;
+        }
+        var value = this.get("value");
+        require([ "dojo/_base/Deferred", "dijit/registry" ], function(Deferred, registry) {
+            var deferred = new Deferred();
+            var orderList = registry.byId("order_list");
+            if (orderList) {
+                showTab([], {}, "order_list_tab");
+                deferred.resolve();
+            } else {
+                showTab([ "qiuq/order/order" ], {
+                    title : "订单查询",
+                    href : "web/order/list",
+                    onLoad : function() {
+                        orderList = registry.byId("order_list");
+                        deferred.resolve();
+                    }
+                }, "order_list_tab");
             }
+            deferred.then(function() {
+                orderList.queryWith(value);
+            });
         });
     }
 </script>
@@ -80,25 +106,20 @@
 <body class="tundra">
   <div id="appLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
     <div id="banner" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'">
-      <div id="showusername"></div>
+      <div id="showusername">${user.name }</div>
       <div class="searchInputColumn">
-        <div class="searchInputColumnInner">
-          <input id="searchTerms" placeholder="search terms">
-          <button id="searchBtn">Search</button>
-        </div>
+        <input id="searchTerms" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeHolder: '搜索订单', onKeyUp: doQuery">
       </div>
       <div id="nav">&nbsp;</div>
     </div>
     <!--     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div> -->
     <div id="tab" data-dojo-type="dijit.layout.TabContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
-      <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About'"></div>
-      <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About2'">
-
-        <h2>Flickr keyword photo searchddadfafa</h2>
-        <p>Each search creates a new tab with the results as thumbnails</p>
-        <p>Click on any thumbnail to view the larger image</p>
-
-      </div>
+      <div id="panel_order_list_tab" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '订单查询', href: 'web/order/list'"></div>
+      <!--       <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About2'"> -->
+      <!--         <h2>Flickr keyword photo searchddadfafa</h2> -->
+      <!--         <p>Each search creates a new tab with the results as thumbnails</p> -->
+      <!--         <p>Click on any thumbnail to view the larger image</p> -->
+      <!--       </div> -->
     </div>
     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">版权所有, 惠信企业 @copy 2012-2012</div>
   </div>

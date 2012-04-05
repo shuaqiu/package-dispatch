@@ -4,37 +4,37 @@ define([
         "../resource",
         "../selection",
         "../widget/ResourceGrid",
-        "dojo/i18n!./nls/order",
+        "dojo/i18n!./nls/schedule",
         "dojo/date/locale",
         "dojo/date/stamp",
         "dijit/form/CheckBox",
         "dijit/form/Textarea" ], function(lang, registry, resource, selection, ResourceGrid, message) {
 
     return lang.mixin({}, resource, selection, {
-        resourceUrl : "web/order",
-        listGrid : "order_list_grid",
+        resourceUrl : "web/schedule",
+        listGrid : "schedule_list_grid",
 
         createTabName : message["create"],
         modifyTabName : message["modify"],
-        editingTab : "order_editing_tab",
-        editingForm : "order_editing_form",
+        editingTab : "schedule_editing_tab",
+        editingForm : "schedule_editing_form",
 
-        selectionDialog : "order_editing_receiver_dialog",
+        selectionDialog : "schedule_editing_receiver_dialog",
         selectionStoreTarget : "web/receiver/",
         selectionStructure : [ {
-            name : message["name"],
+            name : "姓名",
             field : "name",
             width : "100px"
         }, {
-            name : message["tel"],
+            name : "电话",
             field : "tel",
             width : "100px"
         }, {
-            name : message["company"],
+            name : "公司",
             field : "company",
             width : "200px"
         }, {
-            name : message["address"],
+            name : "地址",
             field : "address",
             width : "200px"
         } ],
@@ -46,6 +46,26 @@ define([
             registry.byId(form["receiverTel"].id).set("value", item["tel"]);
             registry.byId(form["receiverCompany"].id).set("value", item["company"]);
             registry.byId(form["receiverAddress"].id).set("value", item["address"]);
+        },
+
+        doModify : function() {
+            var grid = registry.byId(this.listGrid);
+            var items = grid.selection.getSelected();
+            if (items.length != 1) {
+                MessageDialog.error(message["err.NOT_SELECTED"]);
+                return;
+            }
+
+            var item = items[0];
+
+            showTab([], {
+                title : this.modifyTabName,
+                href : this.resourceUrl + "/edit/" + item["id"]
+            }, this.editingTab);
+        },
+        
+        _initForm : function(item) {
+
         }
     });
     //

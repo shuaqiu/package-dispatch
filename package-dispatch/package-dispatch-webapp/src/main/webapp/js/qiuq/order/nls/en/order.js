@@ -1,5 +1,6 @@
 define({
-    "receiver" : "Receiver",
-    
-    "err.INVALID" : "Please input these necessary fields!"
+    "name" : "Name",
+    "tel" : "Mobile(Phone) Number",
+    "company" : "Company",
+    "address" : "Address"
 });

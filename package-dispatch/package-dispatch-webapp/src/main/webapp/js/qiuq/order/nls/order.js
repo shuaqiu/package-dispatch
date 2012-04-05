@@ -1,8 +1,9 @@
 define({
     "root" : {
-        "receiver" : "收件人",
-        
-        "err.INVALID" : "请填写必填的字段!"
+        "name" : "姓名",
+        "tel" : "手机(电话)号码",
+        "company" : "公司",
+        "address" : "地址"
     },
     "en" : true,
     "zh-tw" : true,

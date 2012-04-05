@@ -108,7 +108,8 @@ create table dispatch_order(
     scheduler_tel varchar(20),
     schedule_time datetime,
     
-    state int
+    state int,
+    state_describe varchar(255)
 )
 alter table dispatch_order add constraint pk_dispatch_order primary key (id)
 

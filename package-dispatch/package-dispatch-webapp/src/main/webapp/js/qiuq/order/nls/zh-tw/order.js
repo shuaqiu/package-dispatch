@@ -1,5 +1,6 @@
 define({
-    "receiver" : "收件人",
-    
-    "err.INVALID" : "請填寫必填的字段!"
+    "name" : "姓名",
+    "tel" : "手機(電話)號碼",
+    "company" : "公司",
+    "address" : "地址"
 });

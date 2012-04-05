@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.order.Order;
+import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
@@ -38,10 +39,10 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
     public boolean insert(Order t) {
         String sql = "insert into dispatch_order(sender_id, sender_name, sender_tel, sender_company, sender_address,"
                 + " receiver_id, receiver_name, receiver_tel, receiver_company, receiver_address,"
-                + " goods_name, quantity, bar_code, sender_identity_code, receiver_identity_code, state)"
+                + " goods_name, quantity, bar_code, sender_identity_code, receiver_identity_code, state, state_describe)"
                 + "values(:senderId, :senderName, :senderTel, :senderCompany, :senderAddress,"
                 + " :receiverId, :receiverName, :receiverTel, :receiverCompany, :receiverAddress,"
-                + " :goodsName, :quantity, :barCode, :senderIdentityCode, :receiverIdentityCode, :state)";
+                + " :goodsName, :quantity, :barCode, :senderIdentityCode, :receiverIdentityCode, :state, :stateDescribe)";
         return doInsert(sql, new BeanPropertySqlParameterSource(t));
     }
 
@@ -106,9 +107,16 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
             paramMap.addValue("state", state);
         }
 
+        int processing = Converter.toInt(params.get("processing"), -1);
+        if (processing != -1) {
+            sql += " and state != :receivedState and state != :cancelState";
+            paramMap.addValue("receivedState", State.RECEIVED.ordinal());
+            paramMap.addValue("cancelState", State.CANCELED.ordinal());
+        }
+
         String query = Converter.toString(params.get("query"));
         if (StringUtils.hasText(query)) {
-            sql += " and (senderName like :query or senderTel like :query or receiverName like :query or receiverTel like :query)";
+            sql += " and (sender_name like :query or sender_tel like :query or receiver_name like :query or receiver_tel like :query)";
             paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
         }
 
