@@ -129,6 +129,19 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         return jdbcTemplate.queryForLong(sql, paramMap);
     }
 
+    /**
+     * @param roleId
+     * @return
+     * @author qiushaohua 2012-4-6
+     */
+    public List<User> getUserWithRole(int roleId) {
+        String sql = "select usr.* from sys_user usr left join sys_user_role role on usr.id = role.user_id"
+                + " where usr.type = " + Type.TYPE_SELF + " and role.role_id = :roleId";
+        SqlParameterSource paramMap = new MapSqlParameterSource("roleId", roleId);
+
+        return jdbcTemplate.query(sql, paramMap, new UserRowMapper());
+    }
+
     @Override
     public User query(int id) {
         return doQuery("sys_user", id, new UserRowMapper());

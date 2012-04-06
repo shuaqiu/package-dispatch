@@ -53,7 +53,7 @@
         }, function() {
             login.doLogin().then(function(json) {
                 fetchMenu();
-                dom.byId("showusername").innerHTML = json.obj.name;
+                // dom.byId("showusername").innerHTML = json.obj.name;
             });
         })
 
@@ -114,7 +114,7 @@
     </div>
     <!--     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div> -->
     <div id="tab" data-dojo-type="dijit.layout.TabContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
-      <div id="panel_order_list_tab" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '订单查询', href: 'web/order/list'"></div>
+      <!--       <div id="panel_order_list_tab" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '订单查询', href: 'web/order/list'"></div> -->
       <!--       <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About2'"> -->
       <!--         <h2>Flickr keyword photo searchddadfafa</h2> -->
       <!--         <p>Each search creates a new tab with the results as thumbnails</p> -->

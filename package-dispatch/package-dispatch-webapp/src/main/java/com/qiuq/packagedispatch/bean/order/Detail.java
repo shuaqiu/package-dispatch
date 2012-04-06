@@ -24,7 +24,7 @@ public class Detail {
     /**
      * 处理顺序
      */
-    private int handle_index;
+    private int handleIndex;
 
     // 处理人信息
     private int handlerId;
@@ -71,13 +71,13 @@ public class Detail {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public int getHandle_index() {
-        return handle_index;
+    public int getHandleIndex() {
+        return handleIndex;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setHandle_index(int index) {
-        this.handle_index = index;
+    public void setHandleIndex(int index) {
+        this.handleIndex = index;
     }
 
     /** @author qiushaohua 2012-3-19 */

@@ -13,15 +13,15 @@ public enum State {
 
     SCHEDULED("已调度, 正上门收件"),
 
-    GOT_GOODS("已收件, 正派送"),
+    FETCHED("已收件, 正派送"),
 
-    DISPATCHING("派送中"),
+    TRANSITING("派送中"),
 
     IN_STORAGE("已入库"),
 
     OUT_STORAGE("已出库"),
 
-    RECEIVED("已送达"),
+    DELIVERED("已送达"),
 
     CANCELED("已取消");
 

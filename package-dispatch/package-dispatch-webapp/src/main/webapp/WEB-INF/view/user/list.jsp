@@ -14,8 +14,18 @@
             {name: '公司', field: 'company', width: '200px'},
             {name: '部门', field: 'department', width: '150px'},
             {name: '地址', field: 'address', width: '250px'},
-            {name: '类型', field: 'type', width: '100px', get: function(value){if(value == 1){return '惠信员工';}else{return '客户';}} },
-            {name: '客户类型', field: 'customerType', width: '100px', get: function(value){if(value == 1){return '客户管理员';}else{return '普通客户';}} }
+            {name: '类型', field: 'type', width: '100px', formatter: function(value){if(value == 1){return '惠信员工';}else{return '客户';}} },
+            {name: '客户类型', width: '100px', get: 
+                function(idx, item){
+                    if(item['type'] == 1){
+                        return ''
+                    }
+                    if(item['customerType'] == 1){
+                        return '客户管理员';
+                    }
+                    return '普通客户';
+                } 
+            }
         ],
         doCreate:function(){
             require(['qiuq/system/user'], function(resource){resource.doCreate();});

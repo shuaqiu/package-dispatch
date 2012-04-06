@@ -73,7 +73,18 @@ public class UserService extends AbstractResourceService<User> {
      * @return
      * @author qiushaohua 2012-4-4
      */
+    @Transactional(readOnly = true)
     public long matchedRecordCount(String query) {
         return userRepository.matchedRecordCount(query);
+    }
+
+    /**
+     * @param fetcher
+     * @return
+     * @author qiushaohua 2012-4-6
+     */
+    @Transactional(readOnly = true)
+    public List<User> getUserWithRole(int roleId) {
+        return userRepository.getUserWithRole(roleId);
     }
 }

@@ -16,4 +16,16 @@ values(0, 0)
 
 
 insert into sys_role(id, code, name)
-values (1, 'administrators', '系统管理员')
+values (1, 'duty managers', '值班经理')
+
+insert into sys_role(id, code, name)
+values (2, 'schedulers', '调度员')
+
+insert into sys_role(id, code, name)
+values (3, 'schedulers', '收件员')
+
+insert into sys_role(id, code, name)
+values (4, 'schedulers', '中转员')
+
+insert into sys_role(id, code, name)
+values (5, 'schedulers', '派件员')

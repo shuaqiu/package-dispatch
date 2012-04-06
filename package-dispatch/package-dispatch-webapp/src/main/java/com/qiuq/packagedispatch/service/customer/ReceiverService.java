@@ -53,6 +53,7 @@ public class ReceiverService extends AbstractResourceService<Receiver> {
      * @return
      * @author qiushaohua 2012-4-4
      */
+    @Transactional(readOnly = true)
     public long matchedRecordCount(int userId, String query) {
         return receiveRepository.matchedRecordCount(userId, query);
     }

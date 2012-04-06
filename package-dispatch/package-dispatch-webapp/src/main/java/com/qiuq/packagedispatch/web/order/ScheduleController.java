@@ -3,6 +3,7 @@
  */
 package com.qiuq.packagedispatch.web.order;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +19,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.WebRequest;
 
+import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
+import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.State;
+import com.qiuq.packagedispatch.bean.system.Role;
+import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.order.OrderService;
+import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
+import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
  * @author qiushaohua 2012-4-5
@@ -36,10 +44,18 @@ public class ScheduleController extends AbstractResourceController<Order> {
 
     private OrderService orderService;
 
+    private UserService userService;
+
     /** @author qiushaohua 2012-4-5 */
     @Autowired
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    /** @author qiushaohua 2012-4-6 */
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -76,26 +92,6 @@ public class ScheduleController extends AbstractResourceController<Order> {
         return entity;
     }
 
-    @Override
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
-    public OperateResult insert(@RequestBody Order t) {
-        String barCode = "";
-        String senderIdentityCode = "";
-        String receiverIdentityCode = "";
-        t.setBarCode(barCode);
-        t.setSenderIdentityCode(senderIdentityCode);
-        t.setReceiverIdentityCode(receiverIdentityCode);
-        t.setState(State.NEW_ORDER.ordinal());
-        t.setStateDescribe(State.NEW_ORDER.getDescribe());
-        OperateResult insert = super.insert(t);
-
-        if (insert.isOk()) {
-        }
-
-        return insert;
-    }
-
     /**
      * @return
      * @author qiushaohua 2012-4-5
@@ -104,6 +100,38 @@ public class ScheduleController extends AbstractResourceController<Order> {
     public String edit(@PathVariable int orderId, Map<String, Object> r) {
         Order order = orderService.query(orderId);
         r.put("order", order);
+
+        List<User> fetcher = userService.getUserWithRole(Role.FETCHER);
+        List<User> transiter = userService.getUserWithRole(Role.TRANSITER);
+        List<User> deliverer = userService.getUserWithRole(Role.DELIVERER);
+        r.put("fetcher", fetcher);
+        r.put("transiter", transiter);
+        r.put("deliverer", deliverer);
+
         return "schedule/edit";
+    }
+
+    @RequestMapping(value = "/edit/{orderId}", method = RequestMethod.POST)
+    @ResponseBody
+    public OperateResult schedule(WebRequest req, @PathVariable int orderId, @RequestBody Map<String, Object> params) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if(user == null){
+            return new OperateResult(ErrCode.INVALID, "not logined user");
+        }
+
+        int fetcherId = Converter.toInt(params.get("fetcher"));
+        int delivererId = Converter.toInt(params.get("deliverer"));
+
+        List<?> list = (List<?>) params.get("transiter");
+
+        List<Integer> transiterIds = new ArrayList<Integer>(list.size());
+
+        for (Object obj : list) {
+            transiterIds.add(Converter.toInt(obj));
+        }
+
+        boolean isOk = orderService.schedule(user, orderId, fetcherId, transiterIds, delivererId);
+
+        return OperateResult.OK;
     }
 }

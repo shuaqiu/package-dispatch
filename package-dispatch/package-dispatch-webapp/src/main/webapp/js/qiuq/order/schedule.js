@@ -1,16 +1,20 @@
 define([
+        "dojo/query",
+        "dojo/dom-attr",
+        "dojo/json",
         "dojo/_base/lang",
+        "dojo/_base/xhr",
         "dijit/registry",
         "../resource",
-        "../selection",
-        "../widget/ResourceGrid",
         "dojo/i18n!./nls/schedule",
         "dojo/date/locale",
-        "dojo/date/stamp",
+        "dojo/dnd/Source",
+        "dojo/dnd/Target",
         "dijit/form/CheckBox",
-        "dijit/form/Textarea" ], function(lang, registry, resource, selection, ResourceGrid, message) {
+        "dijit/form/Textarea",
+        "../widget/ResourceGrid" ], function(query, attr, json, lang, xhr, registry, resource, message) {
 
-    return lang.mixin({}, resource, selection, {
+    return lang.mixin({}, resource, {
         resourceUrl : "web/schedule",
         listGrid : "schedule_list_grid",
 
@@ -18,35 +22,6 @@ define([
         modifyTabName : message["modify"],
         editingTab : "schedule_editing_tab",
         editingForm : "schedule_editing_form",
-
-        selectionDialog : "schedule_editing_receiver_dialog",
-        selectionStoreTarget : "web/receiver/",
-        selectionStructure : [ {
-            name : "姓名",
-            field : "name",
-            width : "100px"
-        }, {
-            name : "电话",
-            field : "tel",
-            width : "100px"
-        }, {
-            name : "公司",
-            field : "company",
-            width : "200px"
-        }, {
-            name : "地址",
-            field : "address",
-            width : "200px"
-        } ],
-
-        doSelect : function(item) {
-            var form = document.forms[this.editingForm];
-            form["receiverId"].value = item["id"];
-            registry.byId(form["receiverName"].id).set("value", item["name"]);
-            registry.byId(form["receiverTel"].id).set("value", item["tel"]);
-            registry.byId(form["receiverCompany"].id).set("value", item["company"]);
-            registry.byId(form["receiverAddress"].id).set("value", item["address"]);
-        },
 
         doModify : function() {
             var grid = registry.byId(this.listGrid);
@@ -63,26 +38,45 @@ define([
                 href : this.resourceUrl + "/edit/" + item["id"]
             }, this.editingTab);
         },
-        
-        _initForm : function(item) {
 
+        doSave : function() {
+            var form = document.forms[this.editingForm];
+
+            var fetcherLi = query("li", query("ul[name='fetcher']", form)[0]);
+            if (fetcherLi.length == 0) {
+                MessageBox.error(message["err.NOT_FETCHER"]);
+                return;
+            }
+            var transiterLi = query("li", query("ul[name='transiter']", form)[0]);
+            if (transiterLi.length == 0) {
+                MessageBox.error(message["err.NOT_TRANSITER"]);
+                return;
+            }
+            var delivererLi = query("li", query("ul[name='deliverer']", form)[0]);
+            if (delivererLi.length == 0) {
+                MessageBox.error(message["err.NOT_DELIVERER"]);
+                return;
+            }
+
+            var fetcher = attr.get(fetcherLi[0], "data-handler");
+            var transiter = new Array();
+            transiterLi.forEach(function(li) {
+                transiter.push(attr.get(li, "data-handler"));
+            });
+            var deliverer = attr.get(delivererLi[0], "data-handler");
+
+            xhr.post({
+                url : "web/schedule/edit/" + form["orderId"].value,
+                postData : json.stringify({
+                    fetcher : fetcher,
+                    transiter : transiter,
+                    deliverer : deliverer
+                }),
+                handleAs : "json",
+                contentType : "application/json"
+            }).then(function() {
+
+            });
         }
     });
-    //
-    // function showSuggestReceiver(obj) {
-    // var value = registry.byId(obj.id).get("value");
-    // var reg = new RegExp(".*" + value + ".*");
-    // initReceiverTable({
-    // "name" : reg
-    // }, false).then(function(html) {
-    // new Dialog({
-    // "title" : "Receiver",
-    // "content" : html,
-    // style : {
-    // width : "600px",
-    // height : "400px"
-    // }
-    // }).show();
-    // });
-    // }
 });

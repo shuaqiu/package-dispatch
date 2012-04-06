@@ -3,18 +3,22 @@
  */
 package com.qiuq.packagedispatch.repository.order;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.order.Order;
+import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
 import com.qiuq.packagedispatch.bean.order.State;
+import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
@@ -110,7 +114,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         int processing = Converter.toInt(params.get("processing"), -1);
         if (processing != -1) {
             sql += " and state != :receivedState and state != :cancelState";
-            paramMap.addValue("receivedState", State.RECEIVED.ordinal());
+            paramMap.addValue("receivedState", State.DELIVERED.ordinal());
             paramMap.addValue("cancelState", State.CANCELED.ordinal());
         }
 
@@ -121,6 +125,70 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         }
 
         return sql.replaceFirst(" and ", " where ");
+    }
+
+    /**
+     * @param details
+     * @return
+     * @author qiushaohua 2012-4-7
+     */
+    public boolean insertScheduleDetails(List<ScheduleDetail> details) {
+        // id int not null identity(1,1),
+        // order_id int not null,
+        // state int,
+        // handle_index int,
+        // handler_id int,
+        // handler_name varchar(255),
+        // handler_tel varchar(20),
+
+        String sql = "insert into dispatch_schedule_detail (order_id, state, handle_index, handler_id)"
+                + " values (:orderId, :state, :handleIndex, :handlerId)";
+
+        SqlParameterSource[] batchArgs = new SqlParameterSource[details.size()];
+
+        int index = 0;
+        for (ScheduleDetail detail : details) {
+            batchArgs[index++] = new BeanPropertySqlParameterSource(detail);
+        }
+
+        int[] batchUpdate = jdbcTemplate.batchUpdate(sql, batchArgs);
+
+        return batchUpdate != null;
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-7
+     */
+    public int updateHandlerInfo(int orderId) {
+        String sql = "update dispatch_schedule_detail set"
+                + " handler_name = (select usr.name from sys_user usr where usr.id = handler_id),"
+                + " handler_tel = (select usr.tel from sys_user usr where usr.id = handler_id)"
+                + " where order_id = :orderId";
+        SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
+        return jdbcTemplate.update(sql, paramMap);
+    }
+
+    /**
+     * @param orderId
+     * @param user
+     * @author qiushaohua 2012-4-7
+     * @return
+     */
+    public boolean updateScheduleInfo(int orderId, User user) {
+        String sql = "update dispatch_order set scheduler_id = :schedulerId, scheduler_name = :schedulerName, scheduler_tel = :schedulerTel,"
+                + " schedule_time = :scheduleTime, state = :state, state_describe = :stateDescribe where id = :id";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("id", orderId);
+        paramMap.addValue("schedulerId", user.getId());
+        paramMap.addValue("schedulerName", user.getName());
+        paramMap.addValue("schedulerTel", user.getTel());
+        paramMap.addValue("scheduleTime", new Timestamp(System.currentTimeMillis()));
+        paramMap.addValue("state", State.SCHEDULED.ordinal());
+        paramMap.addValue("stateDescribe", State.SCHEDULED.getDescribe());
+        return jdbcTemplate.update(sql, paramMap) == 1;
     }
 
 }
