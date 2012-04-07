@@ -9,6 +9,11 @@ package com.qiuq.packagedispatch.bean.system;
  */
 public class Company implements Type {
 
+    /**
+     * 自身公司的ID
+     */
+    public static final int SELF_ID = 0;
+
     private int id;
     private String code;
     private String name;

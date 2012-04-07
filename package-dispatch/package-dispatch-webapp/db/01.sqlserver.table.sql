@@ -100,8 +100,8 @@ create table dispatch_order(
     sender_identity_code varchar(255),
     receiver_identity_code varchar(255),
     
-    start_time datetime,
-    end_time datetime,
+    fetch_time datetime,
+    deliver_time datetime,
     
     scheduler_id int,
     scheduler_name varchar(255),

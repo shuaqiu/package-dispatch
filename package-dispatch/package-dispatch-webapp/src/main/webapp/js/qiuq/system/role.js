@@ -4,17 +4,17 @@ define([
         "dijit/registry",
         "../resource",
         "../widget/DataSelectionDialog",
-        "dojo/i18n!./nls/user",
+        "dojo/i18n!./nls/role",
         "dijit/form/Select",
         "../widget/ResourceGrid" ], function(lang, dom, registry, resource, DataSelectionDialog, message) {
 
     return lang.mixin({}, resource, {
-        resourceUrl : "web/user",
-        listGrid : "user_list_grid",
+        resourceUrl : "web/role",
+        listGrid : "role_list_grid",
 
         createTabName : message["create"],
         modifyTabName : message["modify"],
-        editingTab : "user_editing_tab",
-        editingForm : "user_editing_form"
+        editingTab : "role_editing_tab",
+        editingForm : "role_editing_form"
     });
 });

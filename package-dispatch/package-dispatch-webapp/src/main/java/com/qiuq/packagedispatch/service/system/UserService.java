@@ -4,6 +4,7 @@
 package com.qiuq.packagedispatch.service.system;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,24 +59,24 @@ public class UserService extends AbstractResourceService<User> {
 
     /**
      * @param sort
-     * @param query
+     * @param params
      * @param range
      * @return
      * @author qiushaohua 2012-3-27
      */
     @Transactional(readOnly = true)
-    public List<User> query(String sort, String query, long[] range) {
-        return userRepository.query(sort, query, range);
+    public List<User> query(String sort, Map<String, Object> params, long[] range) {
+        return userRepository.query(sort, params, range);
     }
 
     /**
-     * @param query
+     * @param params
      * @return
      * @author qiushaohua 2012-4-4
      */
     @Transactional(readOnly = true)
-    public long matchedRecordCount(String query) {
-        return userRepository.matchedRecordCount(query);
+    public long matchedRecordCount(Map<String, Object> params) {
+        return userRepository.matchedRecordCount(params);
     }
 
     /**

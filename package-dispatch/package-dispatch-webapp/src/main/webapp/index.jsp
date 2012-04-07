@@ -6,8 +6,9 @@
 <meta charset="UTF-8">
 <title>惠信企业配送服务系统</title>
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" />
-<!-- <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/resources/tundraGrid.css" /> -->
 <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" />
+<link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/claro/claro.css" />
+<link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
 <link rel="stylesheet" href="style.css" />
 <script type="text/javascript">
     var dojoConfig = {
@@ -28,8 +29,8 @@
             name : "qiuq",
             location : "qiuq"
         } ],
-        locale : "zh-tw",
-        extraLocale : [ "en", "zh-tw" ]
+        locale : "zh"
+    //, extraLocale : [ "en", "zh-tw" ]
     };
 </script>
 <script src="js/dojo-1.7.2/dojo/dojo.js"></script>
@@ -46,8 +47,8 @@
             "qiuq/order/order" ], function() {
     });
 
-    require([ "qiuq/login", "dojo/dom", "dojo/_base/xhr", "dijit/layout/ContentPane", "dojo/domReady!" ], function(
-            login, dom, xhr, ContentPane) {
+    require([ "qiuq/login", "dojo/parser", "dojo/dom", "dojo/_base/xhr", "dojo/domReady!" ], function(login, parser,
+            dom, xhr) {
         login.isLogined().then(function() {
             fetchMenu();
         }, function() {
@@ -61,17 +62,15 @@
             xhr.get({
                 "url" : "web/menu"
             }).then(function(content) {
-                dom.byId("nav").innerHTML = "";
-                new ContentPane({
-                    "content" : content
-                }).placeAt("nav").startup();
+                dom.byId("nav").innerHTML = content;
+                parser.parse("nav");
             });
         }
     });
 
-    function showTab(moduleArr, conf, id) {
+    function showTab(moduleArr, conf, id, forceReload) {
         require([ "qiuq/tab" ], function(tab) {
-            tab.show(moduleArr, conf, id);
+            tab.show(moduleArr, conf, id, forceReload);
         });
     }
 
@@ -91,22 +90,22 @@
                     title : "订单查询",
                     href : "web/order/list",
                     onLoad : function() {
-                        orderList = registry.byId("order_list");
                         deferred.resolve();
                     }
                 }, "order_list_tab");
             }
             deferred.then(function() {
-                orderList.queryWith(value);
+                registry.byId("order_list").queryWith(value);
             });
         });
     }
 </script>
 </head>
-<body class="tundra">
+<!-- <body class="tundra"> -->
+<body class="claro">
   <div id="appLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
     <div id="banner" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'">
-      <div id="showusername">${user.name }</div>
+      <%--       <div id="showusername">${user.name }</div> --%>
       <div class="searchInputColumn">
         <input id="searchTerms" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeHolder: '搜索订单', onKeyUp: doQuery">
       </div>
@@ -121,7 +120,7 @@
       <!--         <p>Click on any thumbnail to view the larger image</p> -->
       <!--       </div> -->
     </div>
-    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">版权所有, 惠信企业 @copy 2012-2012</div>
+    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">Copyright © 2012-2012 惠信</div>
   </div>
 </body>
 </html>

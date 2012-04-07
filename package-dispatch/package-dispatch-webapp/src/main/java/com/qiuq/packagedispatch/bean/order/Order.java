@@ -57,11 +57,11 @@ public class Order {
     /**
      * 从寄件人拿到货物的时间
      */
-    private Date startTime;
+    private Date fetchTime;
     /**
      * 将货物送到收件人的时间
      */
-    private Date endTime;
+    private Date deliverTime;
 
     // 调度员信息
     private Integer schedulerId;
@@ -277,8 +277,8 @@ public class Order {
      * 
      * @author qiushaohua 2012-3-19
      */
-    public Date getStartTime() {
-        return startTime;
+    public Date getFetchTime() {
+        return fetchTime;
     }
 
     /**
@@ -286,8 +286,8 @@ public class Order {
      * 
      * @author qiushaohua 2012-3-19
      */
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setFetchTime(Date fetchTime) {
+        this.fetchTime = fetchTime;
     }
 
     /**
@@ -295,8 +295,8 @@ public class Order {
      * 
      * @author qiushaohua 2012-3-19
      */
-    public Date getEndTime() {
-        return endTime;
+    public Date getDeliverTime() {
+        return deliverTime;
     }
 
     /**
@@ -304,8 +304,8 @@ public class Order {
      * 
      * @author qiushaohua 2012-3-19
      */
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setDeliverTime(Date deliverTime) {
+        this.deliverTime = deliverTime;
     }
 
     /** @author qiushaohua 2012-3-19 */

@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.qiuq.packagedispatch.bean.system.Type;
-import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
-import com.qiuq.packagedispatch.service.system.UserService;
+import com.qiuq.packagedispatch.service.system.RoleService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 
 /**
@@ -29,50 +27,41 @@ import com.qiuq.packagedispatch.web.AbstractResourceController;
  * @version 0.0.1
  */
 @Controller
-@RequestMapping(value = "/user")
-public class UserController extends AbstractResourceController<User> {
+@RequestMapping(value = "/role")
+public class RoleController extends AbstractResourceController<Map<String, Object>> {
 
-    private UserService userService;
+    private RoleService roleService;
 
-
-    /** @author qiushaohua 2012-3-27 */
+    /** @author qiushaohua 2012-4-8 */
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
     }
 
+
     @Override
-    protected ResourceService<User> getService() {
-        return userService;
+    protected ResourceService<Map<String, Object>> getService() {
+        return roleService;
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public HttpEntity<List<User>> query(@RequestParam(defaultValue = "+id") String sort,
+    public HttpEntity<List<Map<String, Object>>> query(@RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("type", getControllerUserType());
         params.put("query", query);
 
         long[] rangeArr = range(range);
 
         HttpHeaders header = new HttpHeaders();
         if (rangeArr != null) {
-            long count = userService.matchedRecordCount(params);
+            long count = roleService.matchedRecordCount(params);
             header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
         }
 
-        List<User> list = userService.query(sort, params, rangeArr);
-        HttpEntity<List<User>> entity = new HttpEntity<List<User>>(list, header);
+        List<Map<String, Object>> list = roleService.query(sort, params, rangeArr);
+        HttpEntity<List<Map<String, Object>>> entity = new HttpEntity<List<Map<String, Object>>>(list, header);
 
         return entity;
-    }
-
-    /**
-     * @return
-     * @author qiushaohua 2012-4-8
-     */
-    protected int getControllerUserType() {
-        return Type.TYPE_SELF;
     }
 }

@@ -93,30 +93,33 @@ public class OrderService extends AbstractResourceService<Order> {
             int delivererId) {
         List<ScheduleDetail> details = new ArrayList<ScheduleDetail>(transiterIds.size() + 2);
 
-        ScheduleDetail fetcher = new ScheduleDetail();
-        fetcher.setOrderId(orderId);
-        fetcher.setHandlerId(fetcherId);
-        fetcher.setHandleIndex(1);
-        fetcher.setState(State.FETCHED.ordinal());
-        details.add(fetcher);
+        details.add(buildScheduleDetail(orderId, fetcherId, 1, State.FETCHED));
 
         int index = 1;
         for (Integer transiterId : transiterIds) {
-            ScheduleDetail transiter = new ScheduleDetail();
-            fetcher.setOrderId(orderId);
-            fetcher.setHandlerId(transiterId);
-            fetcher.setHandleIndex(index++);
-            fetcher.setState(State.TRANSITING.ordinal());
-            details.add(transiter);
+            details.add(buildScheduleDetail(orderId, transiterId, index++, State.TRANSITING));
         }
 
-        ScheduleDetail deliverer = new ScheduleDetail();
-        fetcher.setOrderId(orderId);
-        fetcher.setHandlerId(delivererId);
-        fetcher.setHandleIndex(1);
-        fetcher.setState(State.DELIVERED.ordinal());
-        details.add(deliverer);
+        details.add(buildScheduleDetail(orderId, delivererId, 1, State.DELIVERED));
+
         return details;
+    }
+
+    /**
+     * @param orderId
+     * @param handlerId
+     * @param handleIndex
+     * @param state
+     * @return
+     * @author qiushaohua 2012-4-7
+     */
+    private ScheduleDetail buildScheduleDetail(int orderId, int handlerId, int handleIndex, State state) {
+        ScheduleDetail detail = new ScheduleDetail();
+        detail.setOrderId(orderId);
+        detail.setHandlerId(handlerId);
+        detail.setHandleIndex(handleIndex);
+        detail.setState(state.ordinal());
+        return detail;
     }
 
 }

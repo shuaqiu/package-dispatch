@@ -14,12 +14,23 @@ define([
         return "panel_" + specId;
     }
 
-    function getPanel(conf, specId) {
+    function getPanel(conf, specId, forceReload) {
         if (specId) {
             var panelId = getPanelId(specId);
 
             var panel = registry.byId(panelId);
             if (panel) {
+                if (forceReload) {
+                    if (conf.title) {
+                        panel.set("title", conf.title);
+                    }
+                    if (conf.content) {
+                        panel.set("content", conf.content);
+                    }
+                    if (conf.href) {
+                        panel.set("href", conf.href);
+                    }
+                }
                 return panel;
             }
 
@@ -27,18 +38,14 @@ define([
         }
 
         conf["closable"] = true;
-        conf["onClose"] = function() {
-            console.info("closed");
-            return true;
-        };
         var panel = new ContentPane(conf);
         getTab().addChild(panel);
         return panel;
     }
 
-    function show(conf, specId) {
+    function show(conf, specId, forceReload) {
         // get panel or create panel
-        var panel = getPanel(conf, specId);
+        var panel = getPanel(conf, specId, forceReload);
         // make this tab selected
         getTab().selectChild(panel);
     }
@@ -49,9 +56,9 @@ define([
     }
 
     return {
-        "show" : function(moduleArr, conf, specId) {
+        "show" : function(moduleArr, conf, specId, forceReload) {
             require(moduleArr, function() {
-                show(conf, specId);
+                show(conf, specId, forceReload);
             });
         },
         "close" : close

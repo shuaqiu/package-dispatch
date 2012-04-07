@@ -1,7 +1,7 @@
 define({
     "root" : {
         "name" : "姓名",
-        "tel" : "手机(电话)号码",
+        "tel" : "电话号码",
         "company" : "公司",
         "address" : "地址"
     },

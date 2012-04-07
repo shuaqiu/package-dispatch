@@ -6,13 +6,16 @@ define([
         "dojo/_base/xhr",
         "dijit/registry",
         "../resource",
+        "../tab",
+        "../widget/MessageDialog",
         "dojo/i18n!./nls/schedule",
         "dojo/date/locale",
         "dojo/dnd/Source",
         "dojo/dnd/Target",
         "dijit/form/CheckBox",
         "dijit/form/Textarea",
-        "../widget/ResourceGrid" ], function(query, attr, json, lang, xhr, registry, resource, message) {
+        "../widget/ResourceGrid" ], function(query, attr, json, lang, xhr, registry, resource, tab, MessageDialog,
+        message) {
 
     return lang.mixin({}, resource, {
         resourceUrl : "web/schedule",
@@ -36,26 +39,26 @@ define([
             showTab([], {
                 title : this.modifyTabName,
                 href : this.resourceUrl + "/edit/" + item["id"]
-            }, this.editingTab);
+            }, this.editingTab, true);
         },
 
-        doSave : function() {
+        _getValidData : function() {
             var form = document.forms[this.editingForm];
 
             var fetcherLi = query("li", query("ul[name='fetcher']", form)[0]);
             if (fetcherLi.length == 0) {
-                MessageBox.error(message["err.NOT_FETCHER"]);
-                return;
+                MessageDialog.error(message["err.NOT_FETCHER"]);
+                return null;
             }
             var transiterLi = query("li", query("ul[name='transiter']", form)[0]);
             if (transiterLi.length == 0) {
-                MessageBox.error(message["err.NOT_TRANSITER"]);
-                return;
+                MessageDialog.error(message["err.NOT_TRANSITER"]);
+                return null;
             }
             var delivererLi = query("li", query("ul[name='deliverer']", form)[0]);
             if (delivererLi.length == 0) {
-                MessageBox.error(message["err.NOT_DELIVERER"]);
-                return;
+                MessageDialog.error(message["err.NOT_DELIVERER"]);
+                return null;
             }
 
             var fetcher = attr.get(fetcherLi[0], "data-handler");
@@ -65,17 +68,20 @@ define([
             });
             var deliverer = attr.get(delivererLi[0], "data-handler");
 
-            xhr.post({
+            return json.stringify({
+                fetcher : fetcher,
+                transiter : transiter,
+                deliverer : deliverer
+            });
+        },
+
+        _saveByXhr : function(data) {
+            var form = document.forms[this.editingForm];
+            return xhr.post({
                 url : "web/schedule/edit/" + form["orderId"].value,
-                postData : json.stringify({
-                    fetcher : fetcher,
-                    transiter : transiter,
-                    deliverer : deliverer
-                }),
+                postData : data,
                 handleAs : "json",
                 contentType : "application/json"
-            }).then(function() {
-
             });
         }
     });

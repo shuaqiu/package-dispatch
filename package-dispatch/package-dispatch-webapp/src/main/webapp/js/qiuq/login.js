@@ -28,12 +28,12 @@ define([
             "content" : "<div id='" + id.dialogContent + "'></div>"
         });
 
-        _createInput();
-
+        var passwordInput = _createInput();
         var loginButton = _createButton();
 
         var deferred = new Deferred();
-        loginButton.onClick = function() {
+
+        function lg() {
             _login().then(function(result) {
                 if (result.ok) {
                     dialog.destroyRecursive();
@@ -42,6 +42,16 @@ define([
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
+        }
+
+        passwordInput.on("onKeyUp", function(evt) {
+            if (evt.keyCode == "13") {
+                lg();
+            }
+        });
+
+        loginButton.onClick = function() {
+            lg();
         };
 
         dialog.show();
@@ -71,6 +81,8 @@ define([
                 "padding" : "3px"
             }
         }).placeAt(id.dialogContent);
+
+        return password;
     }
 
     function _createButton() {

@@ -1,6 +1,10 @@
 define({
     "root" : {
-        "modify" : "调度"
+        "modify" : "调度",
+
+        "err.NOT_FETCHER" : "请选择收件人员!",
+        "err.NOT_TRANSITER" : "请选择中转人员!",
+        "err.NOT_DELIVERER" : "请选择派件人员!"
     },
     "en" : true,
     "zh-tw" : true,

@@ -6,6 +6,7 @@ package com.qiuq.packagedispatch.repository.system;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
@@ -94,39 +96,61 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     /**
      * @param sort
-     * @param query
+     * @param params
      * @param range
      * @return
      * @author qiushaohua 2012-3-27
      */
-    public List<User> query(String sort, String query, long[] range) {
-        String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from sys_user where id > 0";
-        SqlParameterSource paramMap = null;
+    public List<User> query(String sort, Map<String, Object> params, long[] range) {
+        String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from sys_user"
+                + " where id > 0 and state = " + User.STATE_VALID;
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
 
-        if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
-            paramMap = new MapSqlParameterSource("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildCondition(params, paramMap);
 
         String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
         return jdbcTemplate.query(rangeQuerySql, paramMap, new UserRowMapper());
     }
 
     /**
-     * @param query
+     * @param params
      * @return
      * @author qiushaohua 2012-4-4
      */
-    public long matchedRecordCount(String query) {
-        String sql = "select count(*) from sys_user where id > 0";
-        SqlParameterSource paramMap = null;
+    public long matchedRecordCount(Map<String, Object> params) {
+        String sql = "select count(*) from sys_user where id > 0 and state = " + User.STATE_VALID;
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
 
-        if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
-            paramMap = new MapSqlParameterSource("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildCondition(params, paramMap);
 
         return jdbcTemplate.queryForLong(sql, paramMap);
+    }
+
+    /**
+     * @param params
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2012-4-8
+     */
+    private String buildCondition(Map<String, Object> params, MapSqlParameterSource paramMap) {
+        String sql = "";
+        if (params == null || params.size() == 0) {
+            return sql;
+        }
+
+        int type = Converter.toInt(params.get("type"), -1);
+        if (type != -1) {
+            sql += " and type = :type";
+            paramMap.addValue("type", type);
+        }
+
+        String query = Converter.toString(params.get("query"));
+        if (StringUtils.hasText(query)) {
+            sql += " and (code like :query or name like :query or address like :query)";
+            paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
+        }
+
+        return sql;
     }
 
     /**

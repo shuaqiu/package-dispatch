@@ -133,14 +133,6 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @author qiushaohua 2012-4-7
      */
     public boolean insertScheduleDetails(List<ScheduleDetail> details) {
-        // id int not null identity(1,1),
-        // order_id int not null,
-        // state int,
-        // handle_index int,
-        // handler_id int,
-        // handler_name varchar(255),
-        // handler_tel varchar(20),
-
         String sql = "insert into dispatch_schedule_detail (order_id, state, handle_index, handler_id)"
                 + " values (:orderId, :state, :handleIndex, :handlerId)";
 

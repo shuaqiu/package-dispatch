@@ -39,7 +39,7 @@ define([
             this._mainContainer = new BorderContainer({
                 design : "headline"
             }).placeAt(this.domNode, "after");
-            this.domNode.parentNode.removeChild(this.domNode);
+            // this.domNode.parentNode.removeChild(this.domNode);
 
             this._mainContainer.addChild(new ContentPane({
                 region : "top",
@@ -116,6 +116,7 @@ define([
         },
 
         _onQuery : function() {
+            console.info(this._queryInput.get("value"));
             this._grid.setQuery({
                 query : this._queryInput.get("value")
             });
@@ -143,6 +144,10 @@ define([
             return this._grid;
         },
 
+        destroy : function(/* Boolean */preserveDom) {
+            this.inherited(arguments);
+        },
+        
         destroyRendering : function(/* Boolean? */preserveDom) {
             this.inherited(arguments);
             this._mainContainer.destroyRecursive(preserveDom);
@@ -150,7 +155,10 @@ define([
 
         queryWith : function(value) {
             this._queryInput.set("value", value);
-            this._onQuery();
+            var q = lang.hitch(this, this._onQuery);
+            setTimeout(function(){
+                q();
+            }, 100);
         }
     });
 });

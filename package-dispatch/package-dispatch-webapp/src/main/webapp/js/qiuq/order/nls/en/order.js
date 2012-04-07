@@ -1,6 +1,6 @@
 define({
     "name" : "Name",
-    "tel" : "Mobile(Phone) Number",
+    "tel" : "Phone Number",
     "company" : "Company",
     "address" : "Address"
 });

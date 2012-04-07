@@ -46,34 +46,43 @@ define([
         },
 
         doSave : function() {
+            var data = this._getValidData();
+            if (data == null) {
+                return;
+            }
+
+            var saved = lang.hitch(this, this._saved);
+            this._saveByXhr(data).then(function(result) {
+                saved(result);
+            });
+        },
+
+        _getValidData : function() {
             var form = document.forms[this.editingForm];
 
             var dijitForm = registry.byNode(form);
             if (dijitForm.isValid() == false) {
                 MessageDialog.error(message["err.INVALID"]);
-                return;
+                return null;
             }
-
-            var saved = lang.hitch(this, this._saved);
-            this._saveByXhr(form).then(function(result) {
-                saved(result);
-            });
+            return domform.toJson(form);
         },
 
-        _saveByXhr : function(form) {
+        _saveByXhr : function(data) {
+            var form = document.forms[this.editingForm];
             var itemId = form["id"].value;
 
             if (itemId) {
                 return xhr.put({
                     url : this.resourceUrl + "/" + itemId,
-                    putData : domform.toJson(form),
+                    putData : data,
                     handleAs : "json",
                     contentType : "application/json"
                 });
             } else {
                 return xhr.post({
                     url : this.resourceUrl,
-                    postData : domform.toJson(form),
+                    postData : data,
                     handleAs : "json",
                     contentType : "application/json"
                 });

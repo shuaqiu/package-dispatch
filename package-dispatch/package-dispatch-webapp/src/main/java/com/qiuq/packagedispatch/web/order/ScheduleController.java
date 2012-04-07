@@ -131,7 +131,10 @@ public class ScheduleController extends AbstractResourceController<Order> {
         }
 
         boolean isOk = orderService.schedule(user, orderId, fetcherId, transiterIds, delivererId);
-
-        return OperateResult.OK;
+        if (isOk) {
+            return OperateResult.OK;
+        } else {
+            return new OperateResult(ErrCode.INSERT_FAIL, "add new resource fail");
+        }
     }
 }
