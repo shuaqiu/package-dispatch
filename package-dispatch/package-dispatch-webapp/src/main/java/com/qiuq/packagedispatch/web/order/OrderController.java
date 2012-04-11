@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.OperateResult;
+import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.User;
@@ -140,5 +142,18 @@ public class OrderController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-5
      */
     private void sendIdentityToSender(Order t) {
+    }
+
+    @RequestMapping(value = "/view/{orderId}", method = RequestMethod.GET)
+    public String view(@PathVariable int orderId, Map<String, Object> r) {
+        r.put("DELIVERED", State.DELIVERED.ordinal());
+
+        Order order = orderService.query(orderId);
+        r.put("order", order);
+
+        List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
+        r.put("handleDetail", handleDetail);
+
+        return "order/view";
     }
 }

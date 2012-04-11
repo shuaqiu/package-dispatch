@@ -1,5 +1,6 @@
 define({
     "root" : {
+        "view" : "查看处理情况",
         "name" : "姓名",
         "tel" : "电话号码",
         "company" : "公司",

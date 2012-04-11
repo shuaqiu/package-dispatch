@@ -9,6 +9,16 @@
         listGrid : 'order_list_grid',
         storeTarget: 'web/order/',
         structure: [
+            {name: '操作', width: '100px', get: function(idx, item){
+                return new dijit.form.Button({
+                    label : '查看',
+                    onClick : function(){
+                        require(['qiuq/order/order'], function(resource){
+                            resource.doView(item['id']);
+                        });
+                    }
+                });
+            }},
             {name: '条形码', field: 'barCode', width: '100px'},
             //{name: '发件人', field: 'senderName', width: '100px'},
             //{name: '发件人电话', field: 'senderTel', width: '100px'},

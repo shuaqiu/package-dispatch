@@ -24,7 +24,9 @@ import org.springframework.web.context.request.WebRequest;
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
+import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
+import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.User;
@@ -100,6 +102,9 @@ public class ScheduleController extends AbstractResourceController<Order> {
     public String edit(@PathVariable int orderId, Map<String, Object> r) {
         Order order = orderService.query(orderId);
         r.put("order", order);
+
+        List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
+        List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
 
         List<User> fetcher = userService.getUserWithRole(Role.FETCHER);
         List<User> transiter = userService.getUserWithRole(Role.TRANSITER);

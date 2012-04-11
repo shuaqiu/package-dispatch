@@ -23,9 +23,11 @@ define([
 
         gridOption : null,
 
+        doView : null,
         doCreate : null,
         doModify : null,
         doDelete : null,
+        _viewLabel : message["view"],
         _createMenuLabel : message["create"],
         _modifyMenuLabel : message["modify"],
         _deleteMenuLabel : message["delete"],
@@ -89,6 +91,13 @@ define([
         _createMenu : function() {
             var menuBar = new MenuBar({});
 
+            if (this.doView && lang.isFunction(this.doView)) {
+                MenuBarItem({
+                    label : this._viewMenuLabel,
+                    onClick : this.doView
+                }).placeAt(menuBar);
+            }
+
             if (this.doCreate && lang.isFunction(this.doCreate)) {
                 MenuBarItem({
                     label : this._createMenuLabel,
@@ -147,7 +156,7 @@ define([
         destroy : function(/* Boolean */preserveDom) {
             this.inherited(arguments);
         },
-        
+
         destroyRendering : function(/* Boolean? */preserveDom) {
             this.inherited(arguments);
             this._mainContainer.destroyRecursive(preserveDom);
@@ -156,7 +165,7 @@ define([
         queryWith : function(value) {
             this._queryInput.set("value", value);
             var q = lang.hitch(this, this._onQuery);
-            setTimeout(function(){
+            setTimeout(function() {
                 q();
             }, 100);
         }

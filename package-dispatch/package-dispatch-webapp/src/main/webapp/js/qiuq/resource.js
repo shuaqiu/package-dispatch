@@ -22,27 +22,35 @@ define([
         resourceUrl : null,
         listGrid : null,
 
+        viewTabName : null,
         createTabName : null,
         modifyTabName : null,
+        viewTab : null,
         editingTab : null,
         editingForm : null,
 
-        doCreate : function(setting) {
-            setting = lang.mixin({
-                title : this.createTabName,
-                tabId : this.editingTab
-            }, (setting && typeof setting == "object" ? setting : {}));
+        doView : function() {
+            var grid = registry.byId(this.listGrid);
+            var items = grid.selection.getSelected();
+            if (items.length != 1) {
+                MessageDialog.error(message["err.NOT_SELECTED"]);
+                return;
+            }
 
-            var deferred = new Deferred();
+            var item = items[0];
+
             tab.show([], {
-                title : setting.title,
-                href : this.resourceUrl + "/edit",
-                onLoad : function() {
-                    deferred.resolve();
-                }
-            }, setting.tabId);
+                title : this.viewTabName,
+                href : this.resourceUrl + "/view/" + item["id"],
+            }, this.viewTab, true);
+        },
 
-            return deferred;
+        doCreate : function(setting) {
+            tab.show([], {
+                title : this.createTabName,
+                href : this.resourceUrl + "/edit",
+            }, this.editingTab, true);
+
         },
 
         doSave : function() {
@@ -111,9 +119,17 @@ define([
 
             var item = items[0];
             var _initForm = lang.hitch(this, this._initForm);
-            this.doCreate({
-                title : this.modifyTabName
-            }).then(function() {
+
+            var deferred = new Deferred();
+            tab.show([], {
+                title : this.modifyTabName,
+                href : this.resourceUrl + "/edit",
+                onLoad : function() {
+                    deferred.resolve();
+                }
+            }, this.editingTab, true);
+
+            deferred.then(function() {
                 _initForm(item);
             });
         },

@@ -13,15 +13,13 @@
     padding-bottom: 2px;
 }
 
-#barner {
-    padding: 8px;
+.dojoxGridCell .dijitButton {
+    margin: 0;
 }
 
-html,body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    padding: 0;
+/******************************************************************************/
+#barner {
+    padding: 8px;
 }
 
 #appLayout {
@@ -29,6 +27,13 @@ html,body {
 }
 
 /******************************************************************************/
+html,body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
 fieldset {
     margin-top: 8px;
 }
@@ -78,5 +83,30 @@ em:after {
     border-top: 1px solid #DEDEDE;
     border-bottom: 1px solid #DEDEDE;
     border-left: 1px solid #F0F0F0;
+    text-align: center;
+}
+
+/*******************************************************************************
+**************************detail style******************************************** 
+*******************************************************************************/
+.details {
+    margin-left: 100px;
+}
+
+.detail {
+    float: left;
+    min-width: 200px;
+    background-color: #E5F2FE;
+    border: 1px solid #759DC0;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+    color: #000000;
+    padding: 2px 4px 4px;
+    text-align: center;
+}
+
+.arrow {
+    clear: both;
+    width: 200px;
     text-align: center;
 }

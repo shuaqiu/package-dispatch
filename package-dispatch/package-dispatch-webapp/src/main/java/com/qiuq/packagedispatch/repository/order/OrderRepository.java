@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.qiuq.common.convert.Converter;
+import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
 import com.qiuq.packagedispatch.bean.order.State;
@@ -181,6 +182,28 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         paramMap.addValue("state", State.SCHEDULED.ordinal());
         paramMap.addValue("stateDescribe", State.SCHEDULED.getDescribe());
         return jdbcTemplate.update(sql, paramMap) == 1;
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-9
+     */
+    public List<ScheduleDetail> getScheduleDetail(int orderId) {
+        String sql = "select * from dispatch_schedule_detail where order_id = :orderId";
+        SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
+        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(ScheduleDetail.class));
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-9
+     */
+    public List<HandleDetail> getHandleDetail(int orderId) {
+        String sql = "select * from dispatch_handle_detail where order_id = :orderId";
+        SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
+        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(HandleDetail.class));
     }
 
 }

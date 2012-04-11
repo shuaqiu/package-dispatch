@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
 import com.qiuq.packagedispatch.bean.order.State;
@@ -120,6 +121,26 @@ public class OrderService extends AbstractResourceService<Order> {
         detail.setHandleIndex(handleIndex);
         detail.setState(state.ordinal());
         return detail;
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-9
+     */
+    @Transactional(readOnly = true)
+    public List<ScheduleDetail> getScheduleDetail(int orderId) {
+        return orderRepository.getScheduleDetail(orderId);
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-9
+     */
+    @Transactional(readOnly = true)
+    public List<HandleDetail> getHandleDetail(int orderId) {
+        return orderRepository.getHandleDetail(orderId);
     }
 
 }

@@ -14,8 +14,10 @@ define([
         resourceUrl : "web/order",
         listGrid : "order_list_grid",
 
+        viewTabName : message["view"],
         createTabName : message["create"],
         modifyTabName : message["modify"],
+        viewTab : "order_view_tab",
         editingTab : "order_editing_tab",
         editingForm : "order_editing_form",
 
@@ -46,6 +48,13 @@ define([
             registry.byId(form["receiverTel"].id).set("value", item["tel"]);
             registry.byId(form["receiverCompany"].id).set("value", item["company"]);
             registry.byId(form["receiverAddress"].id).set("value", item["address"]);
+        },
+
+        doView : function(orderId) {
+            showTab([], {
+                title : this.viewTabName,
+                href : this.resourceUrl + "/view/" + orderId,
+            }, this.viewTab, true);
         }
     });
     //
