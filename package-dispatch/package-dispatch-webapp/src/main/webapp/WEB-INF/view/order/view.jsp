@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <body>
@@ -11,8 +12,7 @@
     </div>
 
     <c:forEach var="var" items="${handleDetail }">
-      <div class="arrow">|</div>
-      <div class="arrow">V</div>
+      <div class="arrow down"></div>
       <div class="detail">
         <div>${var.handlerName }</div>
         <div>${var.handlerTel }</div>
@@ -20,8 +20,7 @@
       </div>
     </c:forEach>
     <c:if test="${order.state == DELIVERED }">
-      <div class="arrow">|</div>
-      <div class="arrow">V</div>
+      <div class="arrow down"></div>
       <div class="detail">
         <div>${order.receiverName }</div>
         <div>${order.receiverTel }</div>

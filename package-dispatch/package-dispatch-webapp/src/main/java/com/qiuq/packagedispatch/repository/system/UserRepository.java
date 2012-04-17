@@ -144,6 +144,12 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
             paramMap.addValue("type", type);
         }
 
+        int companyId = Converter.toInt(params.get("companyId"), -1);
+        if (companyId != -1) {
+            sql += " and company_id = :companyId";
+            paramMap.addValue("companyId", companyId);
+        }
+
         String query = Converter.toString(params.get("query"));
         if (StringUtils.hasText(query)) {
             sql += " and (code like :query or name like :query or address like :query)";

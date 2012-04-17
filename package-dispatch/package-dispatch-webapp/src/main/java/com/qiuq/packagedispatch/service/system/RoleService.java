@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.packagedispatch.bean.system.Function;
+import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 import com.qiuq.packagedispatch.repository.system.RoleRepository;
 import com.qiuq.packagedispatch.service.AbstractResourceService;
@@ -53,6 +55,16 @@ public class RoleService extends AbstractResourceService<Map<String, Object>> {
     @Transactional(readOnly = true)
     public long matchedRecordCount(Map<String, Object> params) {
         return roleRepository.matchedRecordCount(params);
+    }
+
+    /**
+     * @param user
+     * @return
+     * @author qiushaohua 2012-4-12
+     */
+    @Transactional(readOnly = true)
+    public List<Function> getAccessableFunctions(User user) {
+        return roleRepository.getAccessableFunctions(user);
     }
 
 }

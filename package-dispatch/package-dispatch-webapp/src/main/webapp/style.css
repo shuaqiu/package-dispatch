@@ -108,5 +108,12 @@ em:after {
 .arrow {
     clear: both;
     width: 200px;
+    height: 32px;
     text-align: center;
+}
+
+.arrow.down{
+    background-image: url("img/blue_arrow_down_32.png");
+    background-position: center center;
+    background-repeat: no-repeat;
 }

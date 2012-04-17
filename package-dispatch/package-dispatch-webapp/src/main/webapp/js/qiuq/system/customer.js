@@ -1,22 +1,15 @@
 define([
         "dojo/_base/lang",
-        "dojo/dom",
         "dijit/registry",
-        "../resource",
+        "../account",
         "../selection",
-        "../widget/DataSelectionDialog",
         "dojo/i18n!./nls/customer",
         "dijit/form/Select",
-        "../widget/ResourceGrid" ], function(lang, dom, registry, resource, selection, DataSelectionDialog, message) {
+        "../widget/ResourceGrid" ], function(lang, registry, account, selection, message) {
 
-    return lang.mixin({}, resource, selection, {
-        resourceUrl : "web/customer",
-        listGrid : "customer_list_grid",
-
+    return lang.mixin({}, account, selection, {
         createTabName : message["create"],
         modifyTabName : message["modify"],
-        editingTab : "customer_editing_tab",
-        editingForm : "customer_editing_form",
 
         selectionDialog : "customer_editing_company_dialog",
         selectionStoreTarget : "web/company",

@@ -24,6 +24,7 @@ import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.State;
+import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.order.OrderService;
@@ -68,7 +69,9 @@ public class OrderController extends AbstractResourceController<Order> {
         }
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("senderId", user.getId());
+        if (user.getType() == Type.TYPE_CUSTOMER) {
+            params.put("senderId", user.getId());
+        }
         params.put("processing", 1);
         params.put("query", query);
 

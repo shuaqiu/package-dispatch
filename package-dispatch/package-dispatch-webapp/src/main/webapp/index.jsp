@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>惠信企业配送服务系统</title>
+<title>慧信企业配送服务系统</title>
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" />
 <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" />
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/claro/claro.css" />
@@ -75,7 +75,7 @@
     }
 
     function doQuery(evt) {
-        if (evt.keyCode != "13") {
+        if (evt.keyCode != "\n") {
             return;
         }
         var value = this.get("value");
@@ -120,7 +120,7 @@
       <!--         <p>Click on any thumbnail to view the larger image</p> -->
       <!--       </div> -->
     </div>
-    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">Copyright © 2012-2012 惠信</div>
+    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">Copyright © 2012-2012 慧信</div>
   </div>
 </body>
 </html>

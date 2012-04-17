@@ -3,8 +3,10 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <div data-dojo-type="qiuq.widget.ResourceGrid"
-    data-dojo-props="
+  <c:if test="${user.type == 1 }">
+    <%--Type.TYPE_SELF--%>
+    <div data-dojo-type="qiuq.widget.ResourceGrid"
+      data-dojo-props="
         listGrid : 'customer_list_grid',
         storeTarget: 'web/customer/',
         structure: [
@@ -36,6 +38,32 @@
             require(['qiuq/system/customer'], function(resource){resource.doDelete();});
         }
         ">
-  </div>
+    </div>
+  </c:if>
+  <c:if test="${user.type == 2 }">
+    <%--Type.TYPE_CUSTOMER--%>
+    <div data-dojo-type="qiuq.widget.ResourceGrid"
+      data-dojo-props="
+        listGrid : 'customer_list_grid',
+        storeTarget: 'web/customer/',
+        structure: [
+            {name: '登录账户', field: 'code', width: '150px'},
+            {name: '姓名', field: 'name', width: '150px'},
+            {name: '电话', field: 'tel', width: '120px'},
+            {name: '部门', field: 'department', width: '150px'},
+            {name: '地址', field: 'address', width: '250px'}
+        ],
+        doCreate:function(){
+            require(['qiuq/system/account'], function(resource){resource.doCreate();});
+        },
+        doModify:function(){
+            require(['qiuq/system/account'], function(resource){resource.doModify();});
+        },
+        doDelete:function(){
+            require(['qiuq/system/account'], function(resource){resource.doDelete();});
+        }
+        ">
+    </div>
+  </c:if>
 </body>
 </html>

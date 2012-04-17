@@ -6,12 +6,15 @@ package com.qiuq.packagedispatch.repository.system;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.qiuq.common.convert.Converter;
+import com.qiuq.packagedispatch.bean.system.Function;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
@@ -77,6 +80,21 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
         }
 
         return sql;
+    }
+
+    /**
+     * @param user
+     * @return
+     * @author qiushaohua 2012-4-12
+     */
+    public List<Function> getAccessableFunctions(User user) {
+        String sql = "select func.* from sys_function func"
+                + " left join sys_role_function roleFunc on func.id = roleFunc.func_id"
+                + " left join sys_role role on roleFunc.role_id = role.id"
+                + " left join sys_user_role userRole on role.id = userRole.role_id"
+                + " where userRole.user_id = :userId";
+        SqlParameterSource paramMap = new MapSqlParameterSource("userId", user.getId());
+        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(Function.class));
     }
 
     @Override

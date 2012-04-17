@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
+import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
  * Manage the user
@@ -47,12 +49,21 @@ public class UserController extends AbstractResourceController<User> {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public HttpEntity<List<User>> query(@RequestParam(defaultValue = "+id") String sort,
+    public HttpEntity<List<User>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
+
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return null;
+        }
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", getControllerUserType());
         params.put("query", query);
+
+        if (user.getType() == Type.TYPE_CUSTOMER && user.getCustomerType() == User.CUSTOMER_TYPE_ADMIN) {
+            params.put("companyId", user.getCompanyId());
+        }
 
         long[] rangeArr = range(range);
 
