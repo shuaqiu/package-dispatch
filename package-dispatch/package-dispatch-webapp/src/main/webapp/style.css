@@ -91,16 +91,17 @@ em:after {
 *******************************************************************************/
 .details {
     margin-left: 100px;
+    float: left;
 }
 
 .detail {
     float: left;
     min-width: 200px;
-    background-color: #E5F2FE;
+    background-color: #E8FDA9;
     border: 1px solid #759DC0;
     border-radius: 4px 4px 4px 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
-    color: #000000;
+    color: #000;
     padding: 2px 4px 4px;
     text-align: center;
 }
@@ -110,10 +111,16 @@ em:after {
     width: 200px;
     height: 32px;
     text-align: center;
-}
-
-.arrow.down{
-    background-image: url("img/blue_arrow_down_32.png");
+    background-image: url("img/arrow_down_32.png");
     background-position: center center;
     background-repeat: no-repeat;
+}
+
+.schedule .detail{
+    background-color: #E5F2FE;
+    border-color: #759DC0;
+}
+
+.schedule .arrow{
+    background-image: url("img/blue_arrow_down_32.png");
 }

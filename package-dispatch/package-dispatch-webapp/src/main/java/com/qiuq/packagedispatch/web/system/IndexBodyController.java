@@ -24,8 +24,8 @@ import com.qiuq.packagedispatch.web.HttpSessionUtil;
  * @version 0.0.1
  */
 @Controller
-@RequestMapping(value = "/menu")
-public class MenuController {
+@RequestMapping(value = "/index/body")
+public class IndexBodyController {
 
     private RoleService roleService;
 
@@ -36,7 +36,7 @@ public class MenuController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getMenu(WebRequest req) {
+    public String body(WebRequest req) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
             return "error";
@@ -59,6 +59,6 @@ public class MenuController {
         System.err.println(funcMap);
         HttpSessionUtil.setFunctionMap(req, funcMap);
 
-        return "menu";
+        return "main";
     }
 }

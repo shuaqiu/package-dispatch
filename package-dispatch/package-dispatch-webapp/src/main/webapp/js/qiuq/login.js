@@ -1,15 +1,17 @@
 define([
+        "dojo/parser",
+        "dojo/dom",
+        "dojo/string",
+        "dojo/_base/Deferred",
+        "dojo/_base/xhr",
+        "dijit/registry",
         "dijit/Dialog",
         "dijit/layout/ContentPane",
         "dijit/form/TextBox",
         "dijit/form/Button",
-        "dojo/_base/Deferred",
-        "dojo/_base/xhr",
-        "dojo/i18n!./nls/login",
-        "dojo/string",
-        "dijit/registry",
-        "./widget/MessageDialog" ], function(Dialog, ContentPane, TextBox, Button, Deferred, xhr, message, string,
-        registry, MessageDialog) {
+        "./widget/MessageDialog",
+        "dojo/i18n!./nls/login" ], function(parser, dom, string, Deferred, xhr, registry, Dialog, ContentPane, TextBox,
+        Button, MessageDialog, message) {
 
     var id = {
         dialogId : "login.dialog",
@@ -44,17 +46,22 @@ define([
             });
         }
 
-        passwordInput.on("onKeyUp", function(evt) {
+        passwordInput.onKeyPress = function(evt) {
             if (evt.keyCode == "13") {
                 lg();
             }
-        });
+        };
 
         loginButton.onClick = function() {
             lg();
         };
 
         dialog.show();
+        try {
+            var title = dom.byId(id.dialogId).children[0];
+            title.removeChild(title.children[1]);
+        } catch (e) {
+        }
 
         return deferred;
     }
@@ -153,12 +160,35 @@ define([
             "url" : "web/login",
             "handleAs" : "json"
         }).then(function(json) {
-            doLogin();
+            registry.byId("appLayout").destroyRecursive();
+            // dom.byId(document.body).innerHTML = "";
+            tryLogin();
+        });
+    }
+
+    function tryLogin() {
+        var deferred = new Deferred();
+        isLogined().then(function() {
+            deferred.resolve();
+        }, function() {
+            doLogin().then(function(json) {
+                deferred.resolve();
+            });
+        });
+        deferred.then(loadBody);
+    }
+
+    function loadBody() {
+        xhr.get({
+            "url" : "web/index/body"
+        }).then(function(content) {
+            dom.byId(document.body).innerHTML = content;
+            parser.parse(document.body);
         });
     }
 
     return {
-        "doLogin" : doLogin,
+        "tryLogin" : tryLogin,
         "isLogined" : isLogined,
         "doLogout" : doLogout
     };

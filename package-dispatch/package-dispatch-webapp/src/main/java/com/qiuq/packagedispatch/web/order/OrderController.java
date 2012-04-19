@@ -23,6 +23,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
+import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
@@ -156,6 +157,8 @@ public class OrderController extends AbstractResourceController<Order> {
 
         List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
         r.put("handleDetail", handleDetail);
+        List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
+        r.put("scheduleDetail", scheduleDetail);
 
         return "order/view";
     }

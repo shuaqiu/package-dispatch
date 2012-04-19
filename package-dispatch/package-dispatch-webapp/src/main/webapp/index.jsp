@@ -49,23 +49,17 @@
 
     require([ "qiuq/login", "dojo/parser", "dojo/dom", "dojo/_base/xhr", "dojo/domReady!" ], function(login, parser,
             dom, xhr) {
-        login.isLogined().then(function() {
-            fetchMenu();
-        }, function() {
-            login.doLogin().then(function(json) {
-                fetchMenu();
-                // dom.byId("showusername").innerHTML = json.obj.name;
-            });
-        })
+        //         login.isLogined().then(function() {
+        //             loadBody();
+        //         }, function() {
+        //             login.doLogin().then(function(json) {
+        //                 loadBody();
+        //                 // dom.byId("showusername").innerHTML = json.obj.name;
+        //             });
+        //         })
 
-        function fetchMenu() {
-            xhr.get({
-                "url" : "web/menu"
-            }).then(function(content) {
-                dom.byId("nav").innerHTML = content;
-                parser.parse("nav");
-            });
-        }
+        login.tryLogin();
+
     });
 
     function showTab(moduleArr, conf, id, forceReload) {
@@ -103,24 +97,5 @@
 </head>
 <!-- <body class="tundra"> -->
 <body class="claro">
-  <div id="appLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
-    <div id="banner" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'">
-      <%--       <div id="showusername">${user.name }</div> --%>
-      <div class="searchInputColumn">
-        <input id="searchTerms" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeHolder: '搜索订单', onKeyUp: doQuery">
-      </div>
-      <div id="nav">&nbsp;</div>
-    </div>
-    <!--     <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter: true, region: 'left'" style="width: 200px;">left</div> -->
-    <div id="tab" data-dojo-type="dijit.layout.TabContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
-      <!--       <div id="panel_order_list_tab" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '订单查询', href: 'web/order/list'"></div> -->
-      <!--       <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'About2'"> -->
-      <!--         <h2>Flickr keyword photo searchddadfafa</h2> -->
-      <!--         <p>Each search creates a new tab with the results as thumbnails</p> -->
-      <!--         <p>Click on any thumbnail to view the larger image</p> -->
-      <!--       </div> -->
-    </div>
-    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">Copyright © 2012-2012 慧信</div>
-  </div>
 </body>
 </html>

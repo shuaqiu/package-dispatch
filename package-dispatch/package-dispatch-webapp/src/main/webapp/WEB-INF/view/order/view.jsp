@@ -12,15 +12,21 @@
     </div>
 
     <c:forEach var="var" items="${handleDetail }">
-      <div class="arrow down"></div>
+      <div class="arrow"></div>
       <div class="detail">
-        <div>${var.handlerName }</div>
-        <div>${var.handlerTel }</div>
-        <div>${var.handleTime }</div>
+        <c:if test="${user.type == 1 }">
+          <%--Type.TYPE_SELF--%>
+          <div>${var.handlerName }</div>
+          <div>${var.handlerTel }</div>
+        </c:if>
+        <div>${var.description }</div>
+        <div>
+          <fmt:formatDate value="${var.handleTime }" pattern="yyyy-MM-dd HH:mm:ss" />
+        </div>
       </div>
     </c:forEach>
     <c:if test="${order.state == DELIVERED }">
-      <div class="arrow down"></div>
+      <div class="arrow"></div>
       <div class="detail">
         <div>${order.receiverName }</div>
         <div>${order.receiverTel }</div>
@@ -28,6 +34,31 @@
       </div>
     </c:if>
   </div>
+  <c:if test="${user.type == 1 }">
+    <%--Type.TYPE_SELF--%>
+    <div class="details schedule">
+      <div class="detail">
+        <div>${order.senderName }</div>
+        <div>${order.senderTel }</div>
+        <div>${order.senderAddress }</div>
+      </div>
+      <c:forEach var="var" items="${scheduleDetail }">
+        <div class="arrow"></div>
+        <div class="detail">
+          <div>&nbsp;</div>
+          <div>${var.handlerName }</div>
+          <div>${var.handlerTel }</div>
+          <div>&nbsp;</div>
+        </div>
+      </c:forEach>
+      <div class="arrow"></div>
+      <div class="detail">
+        <div>${order.receiverName }</div>
+        <div>${order.receiverTel }</div>
+        <div>${order.receiverAddress }</div>
+      </div>
+    </div>
+  </c:if>
   <div>
     <!-- 加上这一个div, 是为了使得外层的ContentPane 不是只有一个子结点, 不增加overflow: hidden 的样式, 从而可以出现滚动条 -->
   </div>
