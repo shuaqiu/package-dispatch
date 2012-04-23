@@ -10,13 +10,20 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
+import com.qiuq.common.ErrCode;
+import com.qiuq.common.OperateResult;
+import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
@@ -36,11 +43,18 @@ public class UserController extends AbstractResourceController<User> {
 
     private UserService userService;
 
+    private PasswordEncoder passwordEncoder;
 
     /** @author qiushaohua 2012-3-27 */
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    /** @author qiushaohua 2012-4-23 */
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -85,5 +99,34 @@ public class UserController extends AbstractResourceController<User> {
      */
     protected int getControllerUserType() {
         return Type.TYPE_SELF;
+    }
+
+    /**
+     * @param req
+     * @param params
+     * @return
+     * @author qiushaohua 2012-4-22
+     */
+    @RequestMapping(value = "/password", method = RequestMethod.PUT)
+    @ResponseBody
+    public OperateResult modifyPassword(WebRequest req, @RequestBody Map<String, Object> params) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return null;
+        }
+
+        String currentPassword = Converter.toString(params.get("currentPassword"));
+        String newPassword = Converter.toString(params.get("newPassword"));
+        if (!StringUtils.hasText(currentPassword) || !StringUtils.hasText(newPassword)) {
+            return new OperateResult(ErrCode.NULL, "password can't be empty");
+        }
+
+        boolean isPasswordValid = passwordEncoder.isPasswordValid(user.getPassword(), currentPassword, user.getSalt());
+
+        if (!isPasswordValid) {
+            return new OperateResult(ErrCode.NOT_CORRECT, "Current password is incorrect");
+        }
+
+        return userService.modifyPassword(user, newPassword);
     }
 }

@@ -1,6 +1,5 @@
 define({
+    "alertTitle" : "提示",
     "errTitle" : "錯誤",
-
-    "err.1" : "用戶名或密碼為空",
-    "err.2" : "沒有這個用戶, 或者密碼錯誤"
+    "confirmTitle" : "確認"
 });

@@ -56,7 +56,6 @@ public class IndexBodyController {
                 funcMap.put("account", true);
             }
         }
-        System.err.println(funcMap);
         HttpSessionUtil.setFunctionMap(req, funcMap);
 
         return "main";

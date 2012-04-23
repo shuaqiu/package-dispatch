@@ -14,6 +14,8 @@ public enum ErrCode {
 
     NOT_FOUND,
 
+    NOT_CORRECT,
+
     INVALID,
 
     INSERT_FAIL,

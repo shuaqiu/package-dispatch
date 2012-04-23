@@ -39,7 +39,7 @@
       <c:if test="${function.account }">
         <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){showTab(['qiuq/system/account'], {title: '账号管理', href: 'web/customer/list'}, this.id);}">账号管理</div>
       </c:if>
-      <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){}">修改密码</div>
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){require(['qiuq/system/passwordmodifier'], function(modifier){modifier.show();});}">修改密码</div>
       <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){require(['qiuq/login'], function(login){login.doLogout();});}">注销</div>
     </div>
   </div>

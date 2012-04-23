@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -87,5 +88,16 @@ public class UserService extends AbstractResourceService<User> {
     @Transactional(readOnly = true)
     public List<User> getUserWithRole(int roleId) {
         return userRepository.getUserWithRole(roleId);
+    }
+
+    /**
+     * @param user
+     * @param newPassword
+     * @return
+     * @author qiushaohua 2012-4-22
+     */
+    @Transactional
+    public OperateResult modifyPassword(User user, String newPassword) {
+        return userRepository.modifyPassword(user, newPassword);
     }
 }

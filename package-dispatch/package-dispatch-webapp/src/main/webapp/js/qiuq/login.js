@@ -14,11 +14,11 @@ define([
         Button, MessageDialog, message) {
 
     var id = {
-        dialogId : "login.dialog",
-        dialogContent : "login.dialogContent",
-        usercode : "login.usercode",
-        password : "login.password",
-        buttonPane : "login.buttonPane"
+        dialogId : "login_dialog",
+        dialogContent : "login_dialogContent",
+        usercode : "login_usercode",
+        password : "login_password",
+        buttonPane : "login_buttonPane"
     };
 
     function doLogin() {
@@ -29,9 +29,6 @@ define([
             // Create Dialog content
             "content" : "<div id='" + id.dialogContent + "'></div>"
         });
-
-        var passwordInput = _createInput();
-        var loginButton = _createButton();
 
         var deferred = new Deferred();
 
@@ -46,20 +43,23 @@ define([
             });
         }
 
-        passwordInput.onKeyPress = function(evt) {
-            if (evt.keyCode == "13") {
-                lg();
-            }
-        };
+        var inputed = _createInput();
+        var loginButton = _createButton();
+
+        inputed.then(function() {
+            lg();
+        });
 
         loginButton.onClick = function() {
             lg();
         };
 
         dialog.show();
+
         try {
-            var title = dom.byId(id.dialogId).children[0];
-            title.removeChild(title.children[1]);
+            var closeButton = dom.byId(id.dialogId).children[0].children[1];
+            closeButton.style.width = "0";
+            closeButton.style.height = "0";
         } catch (e) {
         }
 
@@ -77,10 +77,17 @@ define([
             }
         }).placeAt(id.dialogContent);
 
+        var deferred = new Deferred();
         var password = new TextBox({
             "id" : id.password,
             "placeHolder" : message["inputPassword"],
-            "type" : "password"
+            "type" : "password",
+            "onKeyPress" : function(evt) {
+                if (evt.keyCode == 13) {
+                    // enter
+                    deferred.resolve();
+                }
+            }
         });
         new ContentPane({
             "content" : password,
@@ -89,7 +96,7 @@ define([
             }
         }).placeAt(id.dialogContent);
 
-        return password;
+        return deferred;
     }
 
     function _createButton() {
@@ -161,7 +168,6 @@ define([
             "handleAs" : "json"
         }).then(function(json) {
             registry.byId("appLayout").destroyRecursive();
-            // dom.byId(document.body).innerHTML = "";
             tryLogin();
         });
     }
@@ -182,6 +188,14 @@ define([
         xhr.get({
             "url" : "web/index/body"
         }).then(function(content) {
+            // destroy all current widget first
+            var children = document.body.children;
+            for ( var i = 0; i < children.length; i++) {
+                var widget = registry.byNode(children[i]);
+                if (widget) {
+                    widget.destroyRecursive();
+                }
+            }
             dom.byId(document.body).innerHTML = content;
             parser.parse(document.body);
         });

@@ -18,6 +18,8 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.common.ErrCode;
+import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
@@ -57,12 +59,12 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         }
     }
 
-    private PasswordEncoder passwordDecorder;
+    private PasswordEncoder passwordEncoder;
 
     /** @author qiushaohua 2012-3-24 */
     @Autowired
-    public void setPasswordDecorder(PasswordEncoder passwordDecorder) {
-        this.passwordDecorder = passwordDecorder;
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -86,7 +88,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
             return null;
         }
 
-        boolean isValid = passwordDecorder.isPasswordValid(user.getPassword(), password, user.getSalt());
+        boolean isValid = passwordEncoder.isPasswordValid(user.getPassword(), password, user.getSalt());
         if (!isValid) {
             return null;
         }
@@ -172,6 +174,32 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         return jdbcTemplate.query(sql, paramMap, new UserRowMapper());
     }
 
+    /**
+     * @param user
+     * @param newPassword
+     * @return
+     * @author qiushaohua 2012-4-23
+     */
+    public OperateResult modifyPassword(User user, String newPassword) {
+        String salt = createSalt();
+        String password = passwordEncoder.encodePassword(newPassword, salt);
+
+        String sql = "update sys_user set password = :password, salt = :salt where id = :id";
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("password", password);
+        paramMap.addValue("salt", salt);
+        paramMap.addValue("id", user.getId());
+        int updated = jdbcTemplate.update(sql, paramMap);
+
+        if (updated == 1) {
+            user.setSalt(salt);
+            user.setPassword(password);
+            return OperateResult.OK;
+        }
+
+        return new OperateResult(ErrCode.UPDATE_FAIL, "Update password fail");
+    }
+
     @Override
     public User query(int id) {
         return doQuery("sys_user", id, new UserRowMapper());
@@ -187,8 +215,8 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         String sql = "insert into sys_user(code, name, password, salt, tel, company_id, company, department, address, type, customer_type, state)"
                 + " values(:code, :name, :password, :salt, :tel, :companyId, :company, :department, :address, :type, :customerType, :state)";
 
-        String salt = System.currentTimeMillis() + "";
-        String password = passwordDecorder.encodePassword(user.getPassword(), salt);
+        String salt = createSalt();
+        String password = passwordEncoder.encodePassword(user.getPassword(), salt);
         user.setSalt(salt);
         user.setPassword(password);
 
@@ -208,6 +236,14 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
                 + " where id = :id";
 
         return doUpdate(sql, new BeanPropertySqlParameterSource(user));
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-4-23
+     */
+    protected String createSalt() {
+        return System.currentTimeMillis() + "";
     }
 
 }
