@@ -9,7 +9,7 @@
         listGrid : 'order_list_grid',
         storeTarget: 'web/order/',
         structure: [
-            {name: '操作', width: '100px', get: function(idx, item){
+            {name: '操作', width: '70px', get: function(idx, item){
                 return new dijit.form.Button({
                     label : '查看',
                     onClick : function(){
@@ -19,6 +19,12 @@
                     }
                 });
             }},
+            {name: '下单时间', field: 'orderTime', width: '170px', formatter: function(value){
+                var d = new Date();
+                d.setTime(value);
+                return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
+            }},
+            {name: '状态', field: 'stateDescribe', width: '150px'},
             {name: '条形码', field: 'barCode', width: '100px'},
 <c:if test="${user.type ==  1}"><%--Type.TYPE_SELF--%>
             {name: '发件人', field: 'senderName', width: '100px'},
@@ -31,13 +37,7 @@
             {name: '收件人公司', field: 'receiverCompany', width: '200px'},
             {name: '收件人地址', field: 'receiverAddress', width: '200px'},
             {name: '物品', field: 'goodsName', width: '150px'},
-            {name: '数量', field: 'quantity', width: '150px'},
-            {name: '下单时间', field: 'orderTime', width: '170px', formatter: function(value){
-                var d = new Date();
-                d.setTime(value);
-                return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
-            }},
-            {name: '状态', field: 'stateDescribe', width: '150px'}
+            {name: '数量', field: 'quantity', width: '150px'}
         ]
         ">
   </div>

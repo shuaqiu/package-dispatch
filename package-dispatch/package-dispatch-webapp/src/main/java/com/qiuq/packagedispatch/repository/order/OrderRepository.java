@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -206,4 +207,69 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(HandleDetail.class));
     }
 
+    /**
+     * @param details
+     * @return
+     * @author qiushaohua 2012-4-24
+     */
+    public int[] batchHandle(List<HandleDetail> details) {
+        String sql = "insert into dispatch_handle_detail (order_id, state, handle_index, handler_id, handler_name, handler_tel, handle_time, description)"
+                + " values (:orderId, :state, :handleIndex, :handlerId, :handlerName, :handlerTel, :handleTime, :description)";
+
+        SqlParameterSource[] batchArgs = new SqlParameterSource[details.size()];
+
+        int index = 0;
+        for (HandleDetail detail : details) {
+            batchArgs[index++] = new BeanPropertySqlParameterSource(detail);
+        }
+
+        int[] batchUpdate = jdbcTemplate.batchUpdate(sql, batchArgs);
+        return batchUpdate;
+    }
+
+    /**
+     * @param barcode
+     * @return
+     * @author qiushaohua 2012-4-26
+     */
+    public int getOrderId(String barcode) {
+        String sql = "select id from dispatch_order where bar_code = :barcode";
+        SqlParameterSource paramMap = new MapSqlParameterSource("barcode", barcode);
+        try {
+            return jdbcTemplate.queryForInt(sql, paramMap);
+        } catch (DataAccessException e) {
+            // not such bar code or more than one order has such bar code
+            return 0;
+        }
+    }
+
+    /**
+     * @param detail
+     * @author qiushaohua 2012-4-26
+     * @return
+     */
+    public boolean insertHandleDetail(HandleDetail detail) {
+        String sql = "insert into dispatch_handle_detail (order_id, state, handle_index, handler_id, handler_name, handler_tel, handle_time, description)"
+                + " values (:orderId, :state, :handleIndex, :handlerId, :handlerName, :handlerTel, :handleTime, :description)";
+        SqlParameterSource paramMap = new BeanPropertySqlParameterSource(detail);
+
+        int inserted = jdbcTemplate.update(sql, paramMap);
+        return inserted == 1;
+
+    }
+
+    /**
+     * @param orderId
+     * @param state
+     * @author qiushaohua 2012-4-26
+     */
+    public boolean updateState(int orderId, State state) {
+        String sql = "update dispatch_order set state = :state, state_describe = :stateDescribe where id = :id";
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("state", state.ordinal());
+        paramMap.addValue("stateDescribe", state.getDescribe());
+        paramMap.addValue("id", orderId);
+
+        return jdbcTemplate.update(sql, paramMap) == 1;
+    }
 }

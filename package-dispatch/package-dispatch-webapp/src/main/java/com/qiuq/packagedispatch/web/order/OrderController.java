@@ -100,10 +100,8 @@ public class OrderController extends AbstractResourceController<Order> {
         // OperateResult result = OperateResult.OK;
         //
         // return result;
-        String barCode = "";
         String senderIdentityCode = "";
         String receiverIdentityCode = "";
-        t.setBarCode(barCode);
         t.setSenderIdentityCode(senderIdentityCode);
         t.setReceiverIdentityCode(receiverIdentityCode);
         t.setState(State.NEW_ORDER.ordinal());

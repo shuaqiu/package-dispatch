@@ -43,12 +43,8 @@ define([
             });
         }
 
-        var inputed = _createInput();
+        _createInput(lg);
         var loginButton = _createButton();
-
-        inputed.then(function() {
-            lg();
-        });
 
         loginButton.onClick = function() {
             lg();
@@ -66,7 +62,7 @@ define([
         return deferred;
     }
 
-    function _createInput() {
+    function _createInput(onPasswordEnter) {
         new ContentPane({
             "content" : new TextBox({
                 "id" : id.usercode,
@@ -77,7 +73,6 @@ define([
             }
         }).placeAt(id.dialogContent);
 
-        var deferred = new Deferred();
         var password = new TextBox({
             "id" : id.password,
             "placeHolder" : message["inputPassword"],
@@ -85,7 +80,7 @@ define([
             "onKeyPress" : function(evt) {
                 if (evt.keyCode == 13) {
                     // enter
-                    deferred.resolve();
+                    onPasswordEnter();
                 }
             }
         });
@@ -95,8 +90,6 @@ define([
                 "padding" : "3px"
             }
         }).placeAt(id.dialogContent);
-
-        return deferred;
     }
 
     function _createButton() {

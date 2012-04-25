@@ -19,7 +19,7 @@
     <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/storage'], {title: '快件入库', href: 'web/storage/edit'}, this.id);}">快件入库</div>
   </c:if>
   <c:if test="${function.outStorage }">
-    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/storage'], {title: '快件出库', href: 'web/storage/list'}, this.id);}">快件出库</div>
+    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/storage'], {title: '快件出库', href: 'web/storage/delete'}, this.id);}">快件出库</div>
   </c:if>
   <div data-dojo-type="dijit.PopupMenuBarItem">
     <span>系统管理</span>

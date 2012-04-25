@@ -27,12 +27,6 @@ define([
             "content" : "<div id='" + id.dialogContent + "'></div>"
         });
 
-        // var hide = dialog.hide;
-        // dialog.hide = function() {
-        // hide();
-        // this.destroyRecursive();
-        // };
-
         _createInput();
         _createButton();
 

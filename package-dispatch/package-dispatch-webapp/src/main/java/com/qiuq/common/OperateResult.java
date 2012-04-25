@@ -20,19 +20,11 @@ public class OperateResult {
     private final String message;
 
     private OperateResult(boolean isOk) {
-        this.isOk = true;
-
-        errCode = null;
-        message = null;
-        obj = null;
+        this(isOk, null);
     }
 
     public OperateResult(boolean isOk, Object obj) {
-        this.isOk = true;
-        this.obj = obj;
-
-        errCode = null;
-        message = null;
+        this(ErrCode.OK, null, obj);
     }
 
     public OperateResult(ErrCode errCode, String message) {

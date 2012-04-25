@@ -4,6 +4,7 @@
 package com.qiuq.packagedispatch.service.order;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.common.ErrCode;
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
@@ -141,6 +144,63 @@ public class OrderService extends AbstractResourceService<Order> {
     @Transactional(readOnly = true)
     public List<HandleDetail> getHandleDetail(int orderId) {
         return orderRepository.getHandleDetail(orderId);
+    }
+
+
+    /**
+     * @param details
+     * @author qiushaohua 2012-4-24
+     */
+    @Transactional
+    public int[] batchHandle(List<HandleDetail> details) {
+        return orderRepository.batchHandle(details);
+    }
+
+    /**
+     * @param user
+     * @param barcode
+     * @param state
+     * @return
+     * @author qiushaohua 2012-4-26
+     */
+    @Transactional
+    public OperateResult handleStorage(User user, String barcode, State state) {
+        int orderId = orderRepository.getOrderId(barcode);
+        if (orderId == 0) {
+            return new OperateResult(ErrCode.INVALID, "not such barcode");
+        }
+
+        HandleDetail detail = createHandleDetail(orderId, user, state);
+        boolean inserted = orderRepository.insertHandleDetail(detail);
+        if (!inserted) {
+            return new OperateResult(ErrCode.INSERT_FAIL, "fail to insert handle detail");
+        }
+
+        boolean updated = orderRepository.updateState(orderId, state);
+        if (!updated) {
+            return new OperateResult(ErrCode.UPDATE_FAIL, "fail to update order state");
+        }
+
+        return OperateResult.OK;
+    }
+
+    /**
+     * @param orderId
+     * @param user
+     * @param state
+     * @author qiushaohua 2012-4-26
+     */
+    protected HandleDetail createHandleDetail(int orderId, User user, State state) {
+        HandleDetail detail = new HandleDetail();
+        detail.setOrderId(orderId);
+        detail.setState(state.ordinal());
+        detail.setHandleIndex(1);
+        detail.setHandlerId(user.getId());
+        detail.setHandlerName(user.getName());
+        detail.setHandlerTel(user.getTel());
+        detail.setHandleTime(new Date());
+        detail.setDescription(state.getDescribe());
+        return detail;
     }
 
 }
