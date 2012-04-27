@@ -28,9 +28,8 @@
           <tr>
             <td class="labelCell"><label for="role_editing_role">角色: </label></td>
             <td><select id="role_editing_role" name="role_id" data-dojo-type="dijit.form.Select" data-dojo-props="placeHolder: '用户的角色'">
-                <option value="3">收件人员</option>
+                <option value="3">收件人员/派件人员</option>
                 <option value="4">中转人员</option>
-                <option value="5">派件人员</option>
                 <option value="2">调度员</option>
                 <option value="1">值班经理</option>
                 <option value="0">系统管理员</option>

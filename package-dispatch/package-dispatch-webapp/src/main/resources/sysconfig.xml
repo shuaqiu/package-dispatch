@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+    <comment>系统配置</comment>
+    
+    <!--  -->
+    <entry key="web.rest.address">http://localhost:8080/package-dispatch-webapp</entry>
+    
+    <!-- 短信发送配置 -->
+    <entry key="web.sms.sendAddress">http://59.42.246.82:8080/Message.sv?method=sendMsg</entry>
+    <entry key="web.sms.userCode">test</entry>
+    <entry key="web.sms.userPwd">11</entry>
+    <entry key="web.sms.charset">utf-8</entry>
+    
+    <!-- 新订单短信内容 -->
+    <entry key="order.notify.sender">你的订单已生成, 流水号为: {0}</entry>
+    <entry key="order.notify.receiver">你有新的快件, 验证码为: {0}</entry>
+</properties>

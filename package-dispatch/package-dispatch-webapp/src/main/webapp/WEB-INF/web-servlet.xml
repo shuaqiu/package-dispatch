@@ -19,9 +19,12 @@
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath*:/sys.properties</value>
+<!--                 <value>classpath*:/sys.properties</value> -->
+                <value>classpath*:/sysconfig.xml</value>
             </list>
         </property>
     </bean>
+    
+    <bean class="com.qiuq.common.sms.WebRequestSmsSender"/>
 </beans>
 

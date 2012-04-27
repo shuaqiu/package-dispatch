@@ -22,15 +22,10 @@ insert into sys_role(id, code, name)
 values (2, 'schedulers', '调度员')
 
 insert into sys_role(id, code, name)
-values (3, 'fetchers', '收件员')
+values (3, 'fetchers and deliverers', '收件员/派件员')
 
 insert into sys_role(id, code, name)
 values (4, 'transiters', '中转员')
-
-insert into sys_role(id, code, name)
-values (5, 'deliverers', '派件员')
-
-
 
 
 insert into sys_function(id, code, name)

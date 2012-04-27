@@ -80,7 +80,7 @@ public class OrderService extends AbstractResourceService<Order> {
 
         boolean isSaved = orderRepository.insertScheduleDetails(details);
         int updated = orderRepository.updateHandlerInfo(orderId);
-        boolean isUpdated = orderRepository.updateScheduleInfo(orderId, user);
+        boolean isUpdated = orderRepository.updateOrderInfo(orderId, user, fetcherId);
 
         return isSaved && updated == details.size() && isUpdated;
     }
@@ -176,7 +176,7 @@ public class OrderService extends AbstractResourceService<Order> {
             return new OperateResult(ErrCode.INSERT_FAIL, "fail to insert handle detail");
         }
 
-        boolean updated = orderRepository.updateState(orderId, state);
+        boolean updated = orderRepository.updateOrderState(orderId, user, state);
         if (!updated) {
             return new OperateResult(ErrCode.UPDATE_FAIL, "fail to update order state");
         }

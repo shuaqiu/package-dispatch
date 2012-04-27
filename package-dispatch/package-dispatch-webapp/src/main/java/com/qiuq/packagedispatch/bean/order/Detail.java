@@ -77,7 +77,7 @@ public class Detail {
 
     /** @author qiushaohua 2012-3-19 */
     public void setHandleIndex(int index) {
-        this.handleIndex = index;
+        handleIndex = index;
     }
 
     /** @author qiushaohua 2012-3-19 */

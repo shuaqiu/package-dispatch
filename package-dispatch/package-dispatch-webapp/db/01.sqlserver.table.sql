@@ -108,6 +108,11 @@ create table dispatch_order(
     scheduler_tel varchar(20),
     schedule_time datetime,
     
+    handler_id int,
+    handler_name varchar(255),
+    handler_tel varchar(20),
+    handler_role_id int,
+    
     state int,
     state_describe varchar(255)
 )
@@ -122,6 +127,7 @@ create table dispatch_schedule_detail(
     handler_id int,
     handler_name varchar(255),
     handler_tel varchar(20),
+    handler_role_id int,
     memo varchar(255)
 )
 alter table dispatch_schedule_detail add constraint pk_dispatch_schedule_detail primary key (id)
@@ -134,6 +140,7 @@ create table dispatch_handle_detail(
     handler_id int,
     handler_name varchar(255),
     handler_tel varchar(20),
+    handler_role_id int,
     memo varchar(255),
     handle_time datetime,
     description varchar(255)

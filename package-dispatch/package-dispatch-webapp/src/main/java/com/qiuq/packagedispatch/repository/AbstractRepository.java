@@ -64,7 +64,7 @@ public abstract class AbstractRepository {
             result.append(name.substring(0, 1).toLowerCase());
             for (int i = 1; i < name.length(); i++) {
                 String s = name.substring(i, i + 1);
-                if (s.equals(s.toUpperCase())) {
+                if (s.equals(s.toUpperCase()) && s.matches("[A-Z]")) {
                     result.append("_");
                     result.append(s.toLowerCase());
                 } else {

@@ -3,11 +3,13 @@
  */
 package com.qiuq.packagedispatch.web.order;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
@@ -20,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
+import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
+import com.qiuq.common.sms.SmsSender;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
@@ -42,10 +46,35 @@ public class OrderController extends AbstractResourceController<Order> {
 
     private OrderService orderService;
 
+    private SmsSender smsSender;
+
+    private String notifyTemplateForSender;
+    private String notifyTemplateForReceiver;
+
+    private DecimalFormat codeGeneratorFormatter = new DecimalFormat("0000");
+
     /** @author qiushaohua 2012-4-4 */
     @Autowired
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    /** @author qiushaohua 2012-4-28 */
+    @Autowired
+    public void setSmsSender(SmsSender smsSender) {
+        this.smsSender = smsSender;
+    }
+
+    /** @author qiushaohua 2012-4-28 */
+    @Value("${order.notify.sender}")
+    public void setNotifyTemplateForSender(String notifyTemplateForSender) {
+        this.notifyTemplateForSender = notifyTemplateForSender;
+    }
+
+    /** @author qiushaohua 2012-4-28 */
+    @Value("${order.notify.receiver}")
+    public void setNotifyTemplateForReceiver(String notifyTemplateForReceiver) {
+        this.notifyTemplateForReceiver = notifyTemplateForReceiver;
     }
 
     @Override
@@ -94,14 +123,8 @@ public class OrderController extends AbstractResourceController<Order> {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public OperateResult insert(@RequestBody Order t) {
-        // Order order = Converter.mapToBean(map, Order.class);
-        // System.err.println(order);
-        //
-        // OperateResult result = OperateResult.OK;
-        //
-        // return result;
-        String senderIdentityCode = "";
-        String receiverIdentityCode = "";
+        String senderIdentityCode = generateIdentityCode();
+        String receiverIdentityCode = generateIdentityCode();
         t.setSenderIdentityCode(senderIdentityCode);
         t.setReceiverIdentityCode(receiverIdentityCode);
         t.setState(State.NEW_ORDER.ordinal());
@@ -109,34 +132,33 @@ public class OrderController extends AbstractResourceController<Order> {
         OperateResult insert = super.insert(t);
 
         if (insert.isOk()) {
-            notifyNewOrder(t);
+            new Thread(new SmsNotifier(t)).start();
         }
 
         return insert;
     }
 
-    /**
-     * @param t
-     * @author qiushaohua 2012-4-5
-     */
-    private void notifyNewOrder(Order t) {
-        sendIdentityToSender(t);
-        sendIdentityToReceiver(t);
-        sendNewOrderToScheduler(t);
+    private String generateIdentityCode() {
+        int code = (int) Math.abs(Math.random() * 10000 / Math.sin(System.currentTimeMillis()));
+        return codeGeneratorFormatter.format(code);
     }
 
-    /**
-     * @param t
-     * @author qiushaohua 2012-4-5
-     */
-    private void sendNewOrderToScheduler(Order t) {
-    }
+    private class SmsNotifier implements Runnable {
+        private Order order;
 
-    /**
-     * @param t
-     * @author qiushaohua 2012-4-5
-     */
-    private void sendIdentityToReceiver(Order t) {
+        public SmsNotifier(Order order) {
+            this.order = order;
+        }
+
+        @Override
+        public void run() {
+            try {
+                sendIdentityToSender(order);
+                sendIdentityToReceiver(order);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -144,6 +166,36 @@ public class OrderController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-5
      */
     private void sendIdentityToSender(Order t) {
+        smsSender.send(notifyTemplateForSender.replaceAll("\\{0\\}", t.getSenderIdentityCode()), t.getSenderTel());
+    }
+
+    /**
+     * @param t
+     * @author qiushaohua 2012-4-5
+     */
+    private void sendIdentityToReceiver(Order t) {
+        smsSender
+        .send(notifyTemplateForReceiver.replaceAll("\\{0\\}", t.getReceiverIdentityCode()), t.getReceiverTel());
+    }
+
+    @RequestMapping(value = "/{orderId}/identity/sender")
+    public OperateResult resendIdentityToSender(@PathVariable int orderId) {
+        Order order = query(orderId);
+        if (order == null) {
+            return new OperateResult(ErrCode.NOT_FOUND, "not such order");
+        }
+        sendIdentityToSender(order);
+        return OperateResult.OK;
+    }
+
+    @RequestMapping(value = "/{orderId}/identity/receiver")
+    public OperateResult resendIdentityToReceiver(@PathVariable int orderId) {
+        Order order = query(orderId);
+        if (order == null) {
+            return new OperateResult(ErrCode.NOT_FOUND, "not such order");
+        }
+        sendIdentityToReceiver(order);
+        return OperateResult.OK;
     }
 
     @RequestMapping(value = "/view/{orderId}", method = RequestMethod.GET)

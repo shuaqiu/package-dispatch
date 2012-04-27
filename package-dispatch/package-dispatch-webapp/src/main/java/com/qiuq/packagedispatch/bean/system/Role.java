@@ -9,17 +9,15 @@ package com.qiuq.packagedispatch.bean.system;
  */
 public class Role {
 
-    public static final int ADMINISTRATOR = 0;
+    public static final int ADMINISTRATORS = 0;
 
-    public static final int MANAGER = 1;
+    public static final int DUTY_MANAGERS = 1;
 
-    public static final int SCHEDULER = 2;
+    public static final int SCHEDULERS = 2;
 
-    public static final int FETCHER = 3;
+    public static final int FETCHERS_AND_DELIVERERS = 3;
 
-    public static final int TRANSITER = 4;
-
-    public static final int DELIVERER = 5;
+    public static final int TRANSITERS = 4;
 
     private int id;
     private String code;

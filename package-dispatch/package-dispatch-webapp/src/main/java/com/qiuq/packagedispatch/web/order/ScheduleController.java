@@ -24,9 +24,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
-import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
-import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.User;
@@ -103,15 +101,14 @@ public class ScheduleController extends AbstractResourceController<Order> {
         Order order = orderService.query(orderId);
         r.put("order", order);
 
-        List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
-        List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
+        // List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
+        // List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
 
-        List<User> fetcher = userService.getUserWithRole(Role.FETCHER);
-        List<User> transiter = userService.getUserWithRole(Role.TRANSITER);
-        List<User> deliverer = userService.getUserWithRole(Role.DELIVERER);
-        r.put("fetcher", fetcher);
+        List<User> fetcherAndDeliverer = userService.getUserWithRole(Role.FETCHERS_AND_DELIVERERS);
+        List<User> transiter = userService.getUserWithRole(Role.TRANSITERS);
+        r.put("fetcher", fetcherAndDeliverer);
         r.put("transiter", transiter);
-        r.put("deliverer", deliverer);
+        r.put("deliverer", fetcherAndDeliverer);
 
         return "schedule/edit";
     }

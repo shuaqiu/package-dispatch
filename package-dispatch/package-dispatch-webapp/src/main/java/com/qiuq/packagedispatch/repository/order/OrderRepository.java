@@ -135,8 +135,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @author qiushaohua 2012-4-7
      */
     public boolean insertScheduleDetails(List<ScheduleDetail> details) {
-        String sql = "insert into dispatch_schedule_detail (order_id, state, handle_index, handler_id)"
-                + " values (:orderId, :state, :handleIndex, :handlerId)";
+        String sql = "insert into dispatch_schedule_detail (order_id, state, handle_index, handler_id, handler_role_id)"
+                + " values (:orderId, :state, :handleIndex, :handlerId, :handlerRoleId)";
 
         SqlParameterSource[] batchArgs = new SqlParameterSource[details.size()];
 
@@ -167,12 +167,23 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
     /**
      * @param orderId
      * @param user
+     * @param fetcherId
      * @author qiushaohua 2012-4-7
      * @return
      */
-    public boolean updateScheduleInfo(int orderId, User user) {
-        String sql = "update dispatch_order set scheduler_id = :schedulerId, scheduler_name = :schedulerName, scheduler_tel = :schedulerTel,"
-                + " schedule_time = :scheduleTime, state = :state, state_describe = :stateDescribe where id = :id";
+    public boolean updateOrderInfo(int orderId, User user, int fetcherId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update dispatch_order set");
+        sql.append("  scheduler_id = :schedulerId");
+        sql.append(", scheduler_name = :schedulerName");
+        sql.append(", scheduler_tel = :schedulerTel");
+        sql.append(", schedule_time = :scheduleTime");
+        sql.append(", handler_id = :fetcherId");
+        sql.append(", handler_name = (select name from sys_user where id = :fetcherId)");
+        sql.append(", handler_tel = (select tel from sys_user where id = :fetcherId)");
+        sql.append(", state = :state");
+        sql.append(", state_describe = :stateDescribe");
+        sql.append(" where id = :id");
 
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
         paramMap.addValue("id", orderId);
@@ -180,9 +191,12 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         paramMap.addValue("schedulerName", user.getName());
         paramMap.addValue("schedulerTel", user.getTel());
         paramMap.addValue("scheduleTime", new Timestamp(System.currentTimeMillis()));
+
+        paramMap.addValue("fetcherId", fetcherId);
+
         paramMap.addValue("state", State.SCHEDULED.ordinal());
         paramMap.addValue("stateDescribe", State.SCHEDULED.getDescribe());
-        return jdbcTemplate.update(sql, paramMap) == 1;
+        return jdbcTemplate.update(sql.toString(), paramMap) == 1;
     }
 
     /**
@@ -260,16 +274,27 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
 
     /**
      * @param orderId
+     * @param handler
      * @param state
      * @author qiushaohua 2012-4-26
      */
-    public boolean updateState(int orderId, State state) {
-        String sql = "update dispatch_order set state = :state, state_describe = :stateDescribe where id = :id";
+    public boolean updateOrderState(int orderId, User handler, State state) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update dispatch_order set");
+        sql.append("  handler_id = :handlerId");
+        sql.append(", handler_name = :handlerName");
+        sql.append(", handler_tel = :handlerTel");
+        sql.append(", state = :state");
+        sql.append(", state_describe = :stateDescribe");
+        sql.append(" where id = :id");
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("handlerId", handler.getId());
+        paramMap.addValue("handlerName", handler.getName());
+        paramMap.addValue("handlerTel", handler.getTel());
         paramMap.addValue("state", state.ordinal());
         paramMap.addValue("stateDescribe", state.getDescribe());
         paramMap.addValue("id", orderId);
 
-        return jdbcTemplate.update(sql, paramMap) == 1;
+        return jdbcTemplate.update(sql.toString(), paramMap) == 1;
     }
 }

@@ -9,7 +9,7 @@
       <div>
         <table class="formTable">
           <tr>
-            <td class="labelCell"><em>*</em><label for="storage_in_barcode">条形码: </label></td>
+            <td class="labelCell"><em>*</em><label for="storage_in_barcode">条形码(一行一个): </label></td>
             <td><textarea id="storage_in_barcode" data-dojo-type="dijit.form.Textarea" data-dojo-props="required: true"></textarea></td>
           </tr>
         </table>

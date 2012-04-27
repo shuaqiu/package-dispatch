@@ -55,7 +55,7 @@ public class Order {
     private String receiverIdentityCode;
 
     /**
-     * 从寄件人拿到货物的时间
+     * 从寄件人拿到货物的时间/出库的时间, 也就是用于计算告警的开始时间
      */
     private Date fetchTime;
     /**
@@ -68,6 +68,11 @@ public class Order {
     private String schedulerName;
     private String schedulerTel;
     private Date scheduleTime;
+
+    // 当前处理订单的人
+    private Integer handlerId;
+    private String handlerName;
+    private String handlerTel;
 
     /**
      * 订单状态
@@ -346,6 +351,36 @@ public class Order {
     /** @author qiushaohua 2012-3-19 */
     public void setScheduleTime(Date scheduleTime) {
         this.scheduleTime = scheduleTime;
+    }
+
+    /** @author qiushaohua 2012-4-27 */
+    public Integer getHandlerId() {
+        return handlerId;
+    }
+
+    /** @author qiushaohua 2012-4-27 */
+    public void setHandlerId(Integer handlerId) {
+        this.handlerId = handlerId;
+    }
+
+    /** @author qiushaohua 2012-4-27 */
+    public String getHandlerName() {
+        return handlerName;
+    }
+
+    /** @author qiushaohua 2012-4-27 */
+    public void setHandlerName(String handlerName) {
+        this.handlerName = handlerName;
+    }
+
+    /** @author qiushaohua 2012-4-27 */
+    public String getHandlerTel() {
+        return handlerTel;
+    }
+
+    /** @author qiushaohua 2012-4-27 */
+    public void setHandlerTel(String handlerTel) {
+        this.handlerTel = handlerTel;
     }
 
     /**

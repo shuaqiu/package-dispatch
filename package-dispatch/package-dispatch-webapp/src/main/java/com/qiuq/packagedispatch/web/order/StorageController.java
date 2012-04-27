@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,31 +50,42 @@ public class StorageController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public OperateResult insert(WebRequest req, @RequestParam String barcodes) {
-
-        return handleStorage(req, barcodes, State.IN_STORAGE);
-    }
-
-    @RequestMapping(method = RequestMethod.DELETE)
-    @ResponseBody
-    public OperateResult delete(WebRequest req, @RequestParam String barcodes) {
-
-        return handleStorage(req, barcodes, State.OUT_STORAGE);
-    }
-
-    protected OperateResult handleStorage(WebRequest req, String barcodes, State state) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
             return null;
         }
 
-        String[] barcodeArr = barcodes.split("\\n");
+        String[] barcodeArr = barcodes.split("[\\n|\\r|\\n\\r]");
 
         MultiValueMap<ErrCode, String> result = new LinkedMultiValueMap<ErrCode, String>();
         for (String barcode : barcodeArr) {
-            OperateResult handleResult = orderService.handleStorage(user, barcode, state);
-            result.add(handleResult.getErrCode(), barcode);
+            if (StringUtils.hasText(barcode)) {
+                OperateResult handleResult = orderService.handleStorage(user, barcode, State.IN_STORAGE);
+                result.add(handleResult.getErrCode(), barcode);
+            }
         }
 
+        return new OperateResult(true, result);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    @ResponseBody
+    public OperateResult delete(WebRequest req, @RequestParam String handler, @RequestParam String barcodes) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return null;
+        }
+        
+        String[] barcodeArr = barcodes.split("[\\n|\\r|\\n\\r]");
+        
+        MultiValueMap<ErrCode, String> result = new LinkedMultiValueMap<ErrCode, String>();
+        for (String barcode : barcodeArr) {
+            if (StringUtils.hasText(barcode)) {
+                OperateResult handleResult = orderService.handleStorage(user, barcode, State.OUT_STORAGE);
+                result.add(handleResult.getErrCode(), barcode);
+            }
+        }
+        
         return new OperateResult(true, result);
     }
 }

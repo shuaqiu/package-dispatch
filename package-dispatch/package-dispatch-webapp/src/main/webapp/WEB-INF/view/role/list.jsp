@@ -16,11 +16,9 @@
                 formatter: function(value){
                     switch(value){
                         case 3: 
-                            return '收件人员';
+                            return '收件人员/派件人员';
                         case 4: 
                             return '中转人员';
-                        case 5: 
-                            return '派件人员';
                         case 2: 
                             return '调度员';
                         case 1: 
