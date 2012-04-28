@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
@@ -53,6 +54,21 @@ public class XmlPropTest {
         prop.loadFromXML(new FileInputStream("test.xml"));
         assertEquals("abcdafada", prop.getProperty("testKeyForEn"));
         assertEquals("中文测试", prop.getProperty("testKey"));
+    }
+
+    @Test
+    public void testMessage() {
+        MessageFormat f = new MessageFormat("abcd{0}{1}");
+        String r = f.format(new Object[] {
+                "ef", 1
+        });
+        assertEquals("abcdef1", r);
+
+        MessageFormat f2 = new MessageFormat("abcd{1}");
+        String r2 = f2.format(new Object[] {
+                "ef", 1
+        });
+        assertEquals("abcd1", r2);
     }
 
 }

@@ -39,7 +39,7 @@ public class IndexBodyController {
     public String body(WebRequest req) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
-            return "error";
+            return "";
         }
 
         Map<String, Boolean> funcMap = new HashMap<String, Boolean>();

@@ -125,9 +125,7 @@ public class ScheduleController extends AbstractResourceController<Order> {
         int delivererId = Converter.toInt(params.get("deliverer"));
 
         List<?> list = (List<?>) params.get("transiter");
-
         List<Integer> transiterIds = new ArrayList<Integer>(list.size());
-
         for (Object obj : list) {
             transiterIds.add(Converter.toInt(obj));
         }

@@ -19,6 +19,7 @@ import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.order.OrderService;
+import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
@@ -29,7 +30,15 @@ import com.qiuq.packagedispatch.web.HttpSessionUtil;
 @RequestMapping("/storage")
 public class StorageController {
 
+    private UserService userService;
+
     private OrderService orderService;
+
+    /** @author qiushaohua 2012-4-28 */
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * @author qiushaohua 2012-4-24
@@ -52,15 +61,15 @@ public class StorageController {
     public OperateResult insert(WebRequest req, @RequestParam String barcodes) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
-            return null;
+            return new OperateResult(ErrCode.NOT_LOGINED, "no user is logined");
         }
 
-        String[] barcodeArr = barcodes.split("[\\n|\\r|\\n\\r]");
+        String[] barcodeArr = splitBarcodes(barcodes);
 
         MultiValueMap<ErrCode, String> result = new LinkedMultiValueMap<ErrCode, String>();
         for (String barcode : barcodeArr) {
             if (StringUtils.hasText(barcode)) {
-                OperateResult handleResult = orderService.handleStorage(user, barcode, State.IN_STORAGE);
+                OperateResult handleResult = orderService.handleStorage(user, barcode, State.IN_STORAGE, null);
                 result.add(handleResult.getErrCode(), barcode);
             }
         }
@@ -70,22 +79,36 @@ public class StorageController {
 
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
-    public OperateResult delete(WebRequest req, @RequestParam String handler, @RequestParam String barcodes) {
+    public OperateResult delete(WebRequest req, @RequestParam String handlerCode, @RequestParam String barcodes) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
-            return null;
+            return new OperateResult(ErrCode.NOT_LOGINED, "no user is logined");
         }
-        
-        String[] barcodeArr = barcodes.split("[\\n|\\r|\\n\\r]");
-        
+
+        User handlerUser = userService.getUser(handlerCode);
+        if (handlerUser == null) {
+            return new OperateResult(ErrCode.NOT_FOUND, "handler user not found ");
+        }
+
+        String[] barcodeArr = splitBarcodes(barcodes);
+
         MultiValueMap<ErrCode, String> result = new LinkedMultiValueMap<ErrCode, String>();
         for (String barcode : barcodeArr) {
             if (StringUtils.hasText(barcode)) {
-                OperateResult handleResult = orderService.handleStorage(user, barcode, State.OUT_STORAGE);
+                OperateResult handleResult = orderService.handleStorage(user, barcode, State.OUT_STORAGE, handlerUser);
                 result.add(handleResult.getErrCode(), barcode);
             }
         }
-        
+
         return new OperateResult(true, result);
+    }
+
+    /**
+     * @param barcodes
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    private String[] splitBarcodes(String barcodes) {
+        return barcodes.split("[\\n|\\r|\\n\\r]");
     }
 }

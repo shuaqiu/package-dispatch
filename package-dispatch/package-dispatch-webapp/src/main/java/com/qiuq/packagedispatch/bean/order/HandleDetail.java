@@ -12,6 +12,7 @@ import java.util.Date;
 public class HandleDetail extends Detail {
 
     private Date handleTime;
+    private Integer scheduleId;
     private String description;
 
     /** @author qiushaohua 2012-3-19 */
@@ -24,6 +25,16 @@ public class HandleDetail extends Detail {
         this.handleTime = handleTime;
     }
 
+    /** @author qiushaohua 2012-4-28 */
+    public Integer getScheduleId() {
+        return scheduleId;
+    }
+
+    /** @author qiushaohua 2012-4-28 */
+    public void setScheduleId(Integer scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
     /** @author qiushaohua 2012-3-19 */
     public String getDescription() {
         return description;
@@ -31,7 +42,7 @@ public class HandleDetail extends Detail {
 
     /** @author qiushaohua 2012-3-19 */
     public void setDescription(String desc) {
-        this.description = desc;
+        description = desc;
     }
 
 }

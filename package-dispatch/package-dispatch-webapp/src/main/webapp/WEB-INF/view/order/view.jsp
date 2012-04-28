@@ -5,19 +5,17 @@
 <html>
 <body>
   <div class="details">
+    <div class="desc">处理情况</div>
     <div class="detail">
-      <div>${order.senderName }</div>
-      <div>${order.senderTel }</div>
+      <div>${order.senderName }(${order.senderTel })</div>
       <div>${order.senderAddress }</div>
     </div>
-
     <c:forEach var="var" items="${handleDetail }">
       <div class="arrow"></div>
       <div class="detail">
         <c:if test="${user.type == 1 }">
           <%--Type.TYPE_SELF--%>
-          <div>${var.handlerName }</div>
-          <div>${var.handlerTel }</div>
+          <div>${var.handlerName }(${var.handlerTel })</div>
         </c:if>
         <div>${var.description }</div>
         <div>
@@ -28,33 +26,30 @@
     <c:if test="${order.state == DELIVERED }">
       <div class="arrow"></div>
       <div class="detail">
-        <div>${order.receiverName }</div>
-        <div>${order.receiverTel }</div>
+        <div>${order.receiverName }(${order.receiverTel })</div>
         <div>${order.receiverAddress }</div>
       </div>
     </c:if>
   </div>
-  <c:if test="${user.type == 1 }">
+  <c:if test="${user.type == 1 && order.state >= 1}">
     <%--Type.TYPE_SELF--%>
     <div class="details schedule">
+      <div class="desc">调度信息</div>
       <div class="detail">
-        <div>${order.senderName }</div>
-        <div>${order.senderTel }</div>
+        <div>${order.senderName }(${order.senderTel })</div>
         <div>${order.senderAddress }</div>
       </div>
       <c:forEach var="var" items="${scheduleDetail }">
         <div class="arrow"></div>
         <div class="detail">
           <div>&nbsp;</div>
-          <div>${var.handlerName }</div>
-          <div>${var.handlerTel }</div>
+          <div>${var.handlerName }(${var.handlerTel })</div>
           <div>&nbsp;</div>
         </div>
       </c:forEach>
       <div class="arrow"></div>
       <div class="detail">
-        <div>${order.receiverName }</div>
-        <div>${order.receiverTel }</div>
+        <div>${order.receiverName }(${order.receiverTel })</div>
         <div>${order.receiverAddress }</div>
       </div>
     </div>

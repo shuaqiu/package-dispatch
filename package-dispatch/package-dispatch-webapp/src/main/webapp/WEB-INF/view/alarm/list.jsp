@@ -5,24 +5,19 @@
 <body>
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
-        listGrid : 'schedule_list_grid',
-        storeTarget: 'web/schedule/',
+        listGrid : 'alarm_list_grid',
+        storeTarget: 'web/alarm/',
         structure: [
-            {name: '操作', field: 'id', width: '70px', get: function(idx, item){
-                return new dijit.form.Button({
-                    label : '调度',
-                    onClick : function(){
-                        require(['qiuq/order/schedule'], function(schedule){
-                            schedule.doModify(item['id']);
-                        });
-                    }
-                });
-            }},
-            {name: '下单时间', field: 'orderTime', width: '170px', formatter: function(value){
+            {name: '收件时间/出库时间', field: 'fetchTime', width: '170px', formatter: function(value){
                 var d = new Date();
                 d.setTime(value);
                 return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
             }},
+            {name: '用时 (分钟)', field: 'fetchTime', width: '100px', get: function(idx, item){
+                var c = new Date().getTime();
+                return parseInt((c - item['fetchTime']) / 60 / 1000);
+            }},
+            {name: '发件人', field: 'barCode', width: '100px'},
             {name: '发件人', field: 'senderName', width: '100px'},
             {name: '发件人电话', field: 'senderTel', width: '120px'},
             {name: '发件人公司', field: 'senderCompany', width: '200px'},

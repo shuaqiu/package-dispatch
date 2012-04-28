@@ -125,7 +125,6 @@ define([
         },
 
         _onQuery : function() {
-            console.info(this._queryInput.get("value"));
             this._grid.setQuery({
                 query : this._queryInput.get("value")
             });

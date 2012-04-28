@@ -15,6 +15,9 @@
   <c:if test="${function.schedule }">
     <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/schedule'], {title: '订单调度', href: 'web/schedule/list'}, this.id);}">订单调度</div>
   </c:if>
+  <c:if test="${function.alarm }">
+    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/alarm'], {title: '警报中心', href: 'web/alarm/list'}, this.id);}">警报中心</div>
+  </c:if>
   <c:if test="${function.inStorage }">
     <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/storage'], {title: '快件入库', href: 'web/storage/edit'}, this.id);}">快件入库</div>
   </c:if>

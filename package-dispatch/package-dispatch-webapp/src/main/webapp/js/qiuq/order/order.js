@@ -1,14 +1,16 @@
 define([
         "dojo/_base/lang",
+        "dojo/_base/xhr",
         "dijit/registry",
         "../resource",
         "../selection",
         "../widget/ResourceGrid",
+        "../widget/MessageDialog",
         "dojo/i18n!./nls/order",
         "dojo/date/locale",
         "dojo/date/stamp",
         "dijit/form/CheckBox",
-        "dijit/form/Textarea" ], function(lang, registry, resource, selection, ResourceGrid, message) {
+        "dijit/form/Textarea" ], function(lang, xhr, registry, resource, selection, ResourceGrid, MessageDialog, message) {
 
     return lang.mixin({}, resource, selection, {
         resourceUrl : "web/order",
@@ -55,6 +57,42 @@ define([
                 title : this.viewTabName,
                 href : this.resourceUrl + "/view/" + orderId,
             }, this.viewTab, true);
+        },
+
+        resendIdentityToSender : function(orderId) {
+            xhr.get({
+                url :  this.resourceUrl + "/" + orderId + "/identity/sender"
+            }).then(function(result){
+                if(result.ok){
+                    MessageDialog.alert(message["resendIdentityToSenderSucc"]);
+                }else{
+                    MessageDialog.error(message["err." + result.errCode]);
+                }
+            });
+        },
+        
+        resendIdentityToReceiver : function(orderId) {
+            xhr.get({
+                url :  this.resourceUrl + "/" + orderId + "/identity/receiver"
+            }).then(function(result){
+                if(result.ok){
+                    MessageDialog.alert(message["resendIdentityToReceiverSucc"]);
+                }else{
+                    MessageDialog.error(message["err." + result.errCode]);
+                }
+            });
+        },
+        
+        regenerateReceiverIdentity : function(orderId){
+            xhr.put({
+                url :  this.resourceUrl + "/" + orderId + "/identity/receiver"
+            }).then(function(result){
+                if(result.ok){
+                    MessageDialog.alert(message["regenerateReceiverIdentitySucc"]);
+                }else{
+                    MessageDialog.error(message["err." + result.errCode]);
+                }
+            });
         }
     });
     //

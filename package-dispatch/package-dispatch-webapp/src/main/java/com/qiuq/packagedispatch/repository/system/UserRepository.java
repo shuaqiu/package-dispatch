@@ -74,16 +74,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
      * @author qiushaohua 2012-3-20
      */
     public User getLoginUser(String usercode, String password) {
-        String sql = "select * from sys_user where code = :code";
-
-        SqlParameterSource paramMap = new MapSqlParameterSource("code", usercode);
-        User user;
-        try {
-            user = jdbcTemplate.queryForObject(sql, paramMap, new UserRowMapper());
-        } catch (DataAccessException e) {
-            return null;
-        }
-
+        User user = getUser(usercode);
         if (user == null || user.getState() != User.STATE_VALID) {
             return null;
         }
@@ -94,6 +85,22 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         }
 
         return user;
+    }
+
+    /**
+     * @param code
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    public User getUser(String usercode) {
+        String sql = "select * from sys_user where code = :usercode or alias = :usercode";
+
+        SqlParameterSource paramMap = new MapSqlParameterSource("usercode", usercode);
+        try {
+            return jdbcTemplate.queryForObject(sql, paramMap, new UserRowMapper());
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     /**
@@ -154,7 +161,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
         String query = Converter.toString(params.get("query"));
         if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
+            sql += " and (code like :query or alias like :query or name like :query or address like :query)";
             paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
         }
 

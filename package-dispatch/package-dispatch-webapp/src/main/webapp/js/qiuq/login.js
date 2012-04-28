@@ -95,10 +95,7 @@ define([
     function _createButton() {
         new ContentPane({
             "id" : id.buttonPane,
-            "style" : {
-                "padding" : "3px",
-                "text-align" : "center"
-            }
+            "className" : "loginDialogButtonBar"
         }).placeAt(id.dialogContent);
 
         var loginButton = new Button({
@@ -160,9 +157,13 @@ define([
             "url" : "web/login",
             "handleAs" : "json"
         }).then(function(json) {
-            registry.byId("appLayout").destroyRecursive();
-            tryLogin();
+            reLogin();
         });
+    }
+
+    function reLogin() {
+        registry.byId("appLayout").destroyRecursive();
+        tryLogin();
     }
 
     function tryLogin() {
@@ -174,7 +175,7 @@ define([
                 deferred.resolve();
             });
         });
-        deferred.then(loadBody);
+        return deferred.then(loadBody);
     }
 
     function loadBody() {
@@ -197,6 +198,7 @@ define([
     return {
         "tryLogin" : tryLogin,
         "isLogined" : isLogined,
-        "doLogout" : doLogout
+        "doLogout" : doLogout,
+        "reLogin" : reLogin
     };
 });

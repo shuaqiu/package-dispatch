@@ -5,7 +5,7 @@
   <div id="banner" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'">
     <%--       <div id="showusername">${user.name }</div> --%>
     <div class="searchInputColumn">
-      <input id="searchTerms" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeHolder: '搜索订单', onKeyUp: doQuery">
+      <input id="searchTerms" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeHolder: '搜索订单(条形码/姓名/手机)', onKeyUp: doQuery">
     </div>
     <div id="nav"><%@ include file="menu.jsp"%></div>
   </div>

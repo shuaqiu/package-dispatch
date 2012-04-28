@@ -5,8 +5,8 @@
 <head>
 <meta charset="UTF-8">
 <title>慧信企业配送服务系统</title>
-<link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" />
-<link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" />
+<!-- <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" /> -->
+<!-- <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" /> -->
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/claro/claro.css" />
 <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
 <link rel="stylesheet" href="style.css" />
@@ -47,19 +47,10 @@
             "qiuq/order/order" ], function() {
     });
 
-    require([ "qiuq/login", "dojo/parser", "dojo/dom", "dojo/_base/xhr", "dojo/domReady!" ], function(login, parser,
-            dom, xhr) {
-        //         login.isLogined().then(function() {
-        //             loadBody();
-        //         }, function() {
-        //             login.doLogin().then(function(json) {
-        //                 loadBody();
-        //                 // dom.byId("showusername").innerHTML = json.obj.name;
-        //             });
-        //         })
-
-        login.tryLogin();
-
+    require([ "qiuq/login", "qiuq/order/alarm", "dojo/domReady!" ], function(login, alarm) {
+        login.tryLogin().then(function(){
+            alarm.startCheck();
+        });
     });
 
     function showTab(moduleArr, conf, id, forceReload) {

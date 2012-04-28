@@ -1,5 +1,8 @@
 define({
     "alertTitle" : "Alert",
     "errTitle" : "Error",
-    "confirmTitle" : "Confirm"
+    "confirmTitle" : "Confirm",
+
+    "okButtonLabel" : "OK",
+    "cancelButtonLabel" : "Cancel"
 });

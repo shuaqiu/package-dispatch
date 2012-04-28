@@ -13,10 +13,53 @@
     padding-bottom: 2px;
 }
 
+.claro .dijitContentPane {
+    padding: 0;
+}
+
 .dojoxGridCell .dijitButton {
     margin: 0;
 }
 
+/******************************************************************************/
+.msgContent {
+    min-height: 100px;
+    padding: 10px;
+}
+
+.msgIcon {
+    background-repeat: no-repeat;
+    background-position: center center;
+    float: left;
+    width: 64px;
+    min-height: 100px;
+    padding: 10px;
+}
+
+.alertIcon {
+    background-image: url("img/msg_alert_32.png");
+}
+
+.errorIcon {
+    background-image: url("img/msg_error_32.png");
+}
+
+.confirmIcon {
+    background-image: url("img/msg_confirm_32.png");
+}
+
+.msgButtonBar {
+    text-align: right;
+    padding-right: 20px;
+    min-width: 400px;
+    background-color: #EFEFDF;
+}
+
+/******************************************************************************/
+.loginDialogButtonBar {
+    padding: 3px;
+    text-align: center;
+}
 /******************************************************************************/
 #barner {
     padding: 8px;
@@ -116,11 +159,11 @@ em:after {
     background-repeat: no-repeat;
 }
 
-.schedule .detail{
+.schedule .detail {
     background-color: #E5F2FE;
     border-color: #759DC0;
 }
 
-.schedule .arrow{
+.schedule .arrow {
     background-image: url("img/blue_arrow_down_32.png");
 }

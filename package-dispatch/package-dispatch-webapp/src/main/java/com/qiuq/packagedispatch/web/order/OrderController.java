@@ -4,9 +4,11 @@
 package com.qiuq.packagedispatch.web.order;
 
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,8 +50,8 @@ public class OrderController extends AbstractResourceController<Order> {
 
     private SmsSender smsSender;
 
-    private String notifyTemplateForSender;
-    private String notifyTemplateForReceiver;
+    private MessageFormat notifyTemplateForSender;
+    private MessageFormat notifyTemplateForReceiver;
 
     private DecimalFormat codeGeneratorFormatter = new DecimalFormat("0000");
 
@@ -68,13 +70,13 @@ public class OrderController extends AbstractResourceController<Order> {
     /** @author qiushaohua 2012-4-28 */
     @Value("${order.notify.sender}")
     public void setNotifyTemplateForSender(String notifyTemplateForSender) {
-        this.notifyTemplateForSender = notifyTemplateForSender;
+        this.notifyTemplateForSender = new MessageFormat(notifyTemplateForSender);
     }
 
     /** @author qiushaohua 2012-4-28 */
     @Value("${order.notify.receiver}")
     public void setNotifyTemplateForReceiver(String notifyTemplateForReceiver) {
-        this.notifyTemplateForReceiver = notifyTemplateForReceiver;
+        this.notifyTemplateForReceiver = new MessageFormat(notifyTemplateForReceiver);
     }
 
     @Override
@@ -123,8 +125,8 @@ public class OrderController extends AbstractResourceController<Order> {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public OperateResult insert(@RequestBody Order t) {
-        String senderIdentityCode = generateIdentityCode();
-        String receiverIdentityCode = generateIdentityCode();
+        String senderIdentityCode = generateSenderIdentityCode();
+        String receiverIdentityCode = generateReceiverIdentityCode(senderIdentityCode);
         t.setSenderIdentityCode(senderIdentityCode);
         t.setReceiverIdentityCode(receiverIdentityCode);
         t.setState(State.NEW_ORDER.ordinal());
@@ -138,11 +140,48 @@ public class OrderController extends AbstractResourceController<Order> {
         return insert;
     }
 
+    /**
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    private String generateSenderIdentityCode() {
+        Set<String> currentSenderIdentity = orderService.getCurrentSenderIdentity();
+
+        while (true) {
+            String code = generateIdentityCode();
+            if (!currentSenderIdentity.contains(code)) {
+                return code;
+            }
+        }
+    }
+
+    /**
+     * @param senderIdentityCode
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    private String generateReceiverIdentityCode(String senderIdentityCode) {
+        while (true) {
+            String code = generateIdentityCode();
+            if (!senderIdentityCode.equals(code)) {
+                return code;
+            }
+        }
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
     private String generateIdentityCode() {
-        int code = (int) Math.abs(Math.random() * 10000 / Math.sin(System.currentTimeMillis()));
+        int code = (int) (Math.random() * 10000);
         return codeGeneratorFormatter.format(code);
     }
 
+    /**
+     * @author qiushaohua 2012-4-28
+     * @version 0.0.1
+     */
     private class SmsNotifier implements Runnable {
         private Order order;
 
@@ -166,7 +205,10 @@ public class OrderController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-5
      */
     private void sendIdentityToSender(Order t) {
-        smsSender.send(notifyTemplateForSender.replaceAll("\\{0\\}", t.getSenderIdentityCode()), t.getSenderTel());
+        String content = notifyTemplateForSender.format(new Object[] {
+                t.getSenderIdentityCode()
+        });
+        smsSender.send(content, t.getSenderTel());
     }
 
     /**
@@ -174,11 +216,19 @@ public class OrderController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-5
      */
     private void sendIdentityToReceiver(Order t) {
-        smsSender
-        .send(notifyTemplateForReceiver.replaceAll("\\{0\\}", t.getReceiverIdentityCode()), t.getReceiverTel());
+        String content = notifyTemplateForReceiver.format(new Object[] {
+                t.getReceiverIdentityCode(), t.getSenderName(), t.getSenderTel(), t.getSenderCompany(),
+                t.getGoodsName(), t.getQuantity()
+        });
+        smsSender.send(content, t.getReceiverTel());
     }
 
-    @RequestMapping(value = "/{orderId}/identity/sender")
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    @RequestMapping(value = "/{orderId}/identity/sender", method = RequestMethod.GET)
     public OperateResult resendIdentityToSender(@PathVariable int orderId) {
         Order order = query(orderId);
         if (order == null) {
@@ -188,12 +238,40 @@ public class OrderController extends AbstractResourceController<Order> {
         return OperateResult.OK;
     }
 
-    @RequestMapping(value = "/{orderId}/identity/receiver")
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    @RequestMapping(value = "/{orderId}/identity/receiver", method = RequestMethod.GET)
     public OperateResult resendIdentityToReceiver(@PathVariable int orderId) {
         Order order = query(orderId);
         if (order == null) {
             return new OperateResult(ErrCode.NOT_FOUND, "not such order");
         }
+        sendIdentityToReceiver(order);
+        return OperateResult.OK;
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    @RequestMapping(value = "/{orderId}/identity/receiver", method = RequestMethod.PUT)
+    public OperateResult regenerateReceiverIdentity(@PathVariable int orderId) {
+        Order order = query(orderId);
+        if (order == null) {
+            return new OperateResult(ErrCode.NOT_FOUND, "not such order");
+        }
+
+        String code = generateReceiverIdentityCode(order.getSenderIdentityCode());
+        boolean isUpdated = orderService.updateReceiverIdentiry(orderId, code);
+        if (!isUpdated) {
+            return new OperateResult(ErrCode.UPDATE_FAIL, "fail to update receiver identity");
+        }
+
+        order.setReceiverIdentityCode(code);
         sendIdentityToReceiver(order);
         return OperateResult.OK;
     }

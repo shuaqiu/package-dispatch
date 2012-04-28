@@ -4,8 +4,10 @@
 package com.qiuq.packagedispatch.repository.order;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -120,9 +122,17 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
             paramMap.addValue("cancelState", State.CANCELED.ordinal());
         }
 
+        int transiting = Converter.toInt(params.get("transiting"), -1);
+        if (transiting != -1) {
+            sql += " and (state = :fetchedState or state = :transitingState or state = :outStorageState)";
+            paramMap.addValue("fetchedState", State.FETCHED.ordinal());
+            paramMap.addValue("transitingState", State.TRANSITING.ordinal());
+            paramMap.addValue("outStorageState", State.OUT_STORAGE.ordinal());
+        }
+
         String query = Converter.toString(params.get("query"));
         if (StringUtils.hasText(query)) {
-            sql += " and (sender_name like :query or sender_tel like :query or receiver_name like :query or receiver_tel like :query)";
+            sql += " and (bar_code like :query or sender_name like :query or sender_tel like :query or receiver_name like :query or receiver_tel like :query)";
             paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
         }
 
@@ -135,8 +145,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @author qiushaohua 2012-4-7
      */
     public boolean insertScheduleDetails(List<ScheduleDetail> details) {
-        String sql = "insert into dispatch_schedule_detail (order_id, state, handle_index, handler_id, handler_role_id)"
-                + " values (:orderId, :state, :handleIndex, :handlerId, :handlerRoleId)";
+        String sql = "insert into dispatch_schedule_detail (order_id, state, handle_index, handler_id)"
+                + " values (:orderId, :state, :handleIndex, :handlerId)";
 
         SqlParameterSource[] batchArgs = new SqlParameterSource[details.size()];
 
@@ -246,14 +256,14 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @return
      * @author qiushaohua 2012-4-26
      */
-    public int getOrderId(String barcode) {
-        String sql = "select id from dispatch_order where bar_code = :barcode";
+    public Order getOrder(String barcode) {
+        String sql = "select * from dispatch_order where bar_code = :barcode";
         SqlParameterSource paramMap = new MapSqlParameterSource("barcode", barcode);
         try {
-            return jdbcTemplate.queryForInt(sql, paramMap);
+            return jdbcTemplate.queryForObject(sql, paramMap, BeanPropertyRowMapper.newInstance(Order.class));
         } catch (DataAccessException e) {
             // not such bar code or more than one order has such bar code
-            return 0;
+            return null;
         }
     }
 
@@ -287,6 +297,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         sql.append(", state = :state");
         sql.append(", state_describe = :stateDescribe");
         sql.append(" where id = :id");
+
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
         paramMap.addValue("handlerId", handler.getId());
         paramMap.addValue("handlerName", handler.getName());
@@ -296,5 +307,51 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         paramMap.addValue("id", orderId);
 
         return jdbcTemplate.update(sql.toString(), paramMap) == 1;
+    }
+
+    /**
+     * @param orderId
+     * @param receiverIdentityCode
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    public boolean updateReceiverIdentiry(int orderId, String receiverIdentityCode) {
+        String sql = "update dispatch_order set receiver_identity_code = :receiverIdentityCode where id = :orderId";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("receiverIdentityCode", receiverIdentityCode);
+        paramMap.addValue("orderId", orderId);
+
+        return jdbcTemplate.update(sql.toString(), paramMap) == 1;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    public Set<String> getCurrentSenderIdentity() {
+        String sql = "select sender_identity_code from dispatch_order where state = :newOrderState or state = :scheduledState";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("newOrderState", State.NEW_ORDER.ordinal());
+        paramMap.addValue("scheduledState", State.SCHEDULED.ordinal());
+
+        return new HashSet<String>(jdbcTemplate.queryForList(sql, paramMap, String.class));
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-4-29
+     */
+    public List<Order> getNewAlarm() {
+        String sql = "select * from dispatch_order"
+                + " where (state = :fetchedState or state = :transitingState or state = :outStorageState)"
+                + "   and datediff(mi, fetch_time, getdate()) in (45, 60, 75) order by fetch_time";
+        // + "   and datediff(mi, fetch_time, getdate()) > 45 order by fetch_time"; // for test
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("fetchedState", State.FETCHED.ordinal());
+        paramMap.addValue("transitingState", State.TRANSITING.ordinal());
+        paramMap.addValue("outStorageState", State.OUT_STORAGE.ordinal());
+        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(Order.class));
     }
 }

@@ -9,8 +9,8 @@
       <div>
         <table class="formTable">
           <tr>
-            <td class="labelCell"><em>*</em><label for="storage_out_handler">中转人员/派单人员: </label></td>
-            <td><textarea id="storage_out_handler" data-dojo-type="dijit.form.TextBox" data-dojo-props="required: true"></textarea></td>
+            <td class="labelCell"><em>*</em><label for="storage_out_handler">中转/派单人员编号: </label></td>
+            <td><input id="storage_out_handler" data-dojo-type="dijit.form.TextBox" data-dojo-props="placeHolder: '中转/派单人员的编号', required: true" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="storage_out_barcode">条形码(一行一个): </label></td>

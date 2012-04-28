@@ -49,6 +49,16 @@ public class UserService extends AbstractResourceService<User> {
     }
 
     /**
+     * @param usercode
+     * @return
+     * @author qiushaohua 2012-4-28
+     */
+    @Transactional(readOnly = true)
+    public User getUser(String usercode) {
+        return userRepository.getUser(usercode);
+    }
+
+    /**
      * @param user
      * @return
      * @author qiushaohua 2012-3-23
