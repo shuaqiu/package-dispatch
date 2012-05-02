@@ -5,13 +5,7 @@ package com.qiuq.common;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.InvalidPropertiesFormatException;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,23 +31,6 @@ public class XmlPropTest {
      */
     @After
     public void tearDown() throws Exception {
-    }
-
-    @Test
-    public void testWrite() throws FileNotFoundException, IOException {
-        Properties prop = new Properties();
-        prop.put("testKey", "中文测试");
-        prop.put("testKeyForEn", "abcdafada");
-
-        prop.storeToXML(new FileOutputStream("test.xml"), "test.xml");
-    }
-
-    @Test
-    public void testRead() throws InvalidPropertiesFormatException, FileNotFoundException, IOException {
-        Properties prop = new Properties();
-        prop.loadFromXML(new FileInputStream("test.xml"));
-        assertEquals("abcdafada", prop.getProperty("testKeyForEn"));
-        assertEquals("中文测试", prop.getProperty("testKey"));
     }
 
     @Test

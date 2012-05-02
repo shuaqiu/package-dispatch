@@ -1,7 +1,7 @@
 define([
         "dojo/_base/lang",
         "dijit/registry",
-        "../account",
+        "./account",
         "../selection",
         "dojo/i18n!./nls/customer",
         "dijit/form/Select",
@@ -31,6 +31,26 @@ define([
             var form = document.forms[this.editingForm];
             form["companyId"].value = item["id"];
             registry.byId(form["company"].id).set("value", item["name"]);
+        },
+        
+        _initForm : function(item) {
+            var form = document.forms[this.editingForm];
+
+            for ( var p in item) {
+                if(p == "customer_type"){
+                    registry.byId("customer_editing_customerType").set("value", item[p]);
+                    return;
+                }
+                
+                var elem = form[p];
+                if (elem) {
+                    if (elem.id) {
+                        registry.byId(elem.id).set("value", item[p]);
+                    } else {
+                        elem.value = item[p];
+                    }
+                }
+            }
         }
     });
 });

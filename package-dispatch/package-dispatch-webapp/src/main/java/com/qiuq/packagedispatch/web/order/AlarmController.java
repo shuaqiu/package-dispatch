@@ -3,6 +3,7 @@
  */
 package com.qiuq.packagedispatch.web.order;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
+import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
  * @author qiushaohua 2012-4-29
@@ -75,7 +78,13 @@ public class AlarmController extends AbstractResourceController<Order> {
 
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     @ResponseBody
-    public List<Order> getNewAlarm() {
+    public List<Order> getNewAlarm(WebRequest req) {
+        Map<String, Boolean> functionMap = HttpSessionUtil.getFunctionMap(req);
+        Boolean isHasFunction = functionMap.get("alarm");
+        if (isHasFunction == null || !isHasFunction) {
+            return new ArrayList<Order>();
+        }
+
         return orderService.getNewAlarm();
     }
 }

@@ -3,7 +3,10 @@
  */
 package com.qiuq.packagedispatch.web.system;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -57,5 +60,23 @@ public class CompanyController extends AbstractResourceController<Company> {
         HttpEntity<List<Company>> entity = new HttpEntity<List<Company>>(list, header);
 
         return entity;
+    }
+
+    @Override
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public Map<String, Object> edit() {
+        Map<String, Object> rmap = new HashMap<String, Object>();
+        rmap.put("generatedCode", generateCode());
+        return rmap;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-2
+     */
+    private Object generateCode() {
+        Set<String> codes = companyService.getCurrentCodes();
+
+        return null;
     }
 }

@@ -22,7 +22,7 @@ define([
                 handleAs : "json"
             }).then(function(result) {
                 if (result.ok) {
-                    MessageDialog.alert(message["inSuccess"]);
+                    MessageDialog.alert(this._createMessage(result, message["inSuccess"]));
                     registry.byId(this.inBarcode).set("value", "");
                 } else {
                     if (result.errCode == "NOT_LOGINED") {
@@ -48,7 +48,7 @@ define([
                 handleAs : "json"
             }).then(function(result) {
                 if (result.ok) {
-                    MessageDialog.alert(message["outSuccess"]);
+                    MessageDialog.alert(this._createMessage(result, message["outSuccess"]));
                     registry.byId(this.outBarcode).set("value", "");
                 } else {
                     if (result.errCode == "NOT_LOGINED") {
@@ -64,6 +64,23 @@ define([
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
+        },
+        
+        _createMessage : function(result, okMsg){
+            var msg = [];
+            if (result.obj.OK) {
+                msg.push(okMsg + ": " + result.obj.OK.join(", "));
+            }
+            if (result.obj.INVALID) {
+                msg.push(message["invalidBarcode"] + ": " + result.obj.INVALID.join(", "));
+            }
+            if (result.obj.NOT_CORRECT) {
+                msg.push(message["orderStateIncorrect"] + ": " + result.obj.NOT_CORRECT.join(", "));
+            }
+            if (result.obj.UPDATE_FAIL) {
+                msg.push(message["updateFail"] + ": " + result.obj.UPDATE_FAIL.join(", "));
+            }
+            return msg.join("<br/>");
         }
     };
 });

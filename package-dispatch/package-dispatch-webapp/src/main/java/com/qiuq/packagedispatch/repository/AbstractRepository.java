@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -122,6 +123,22 @@ public abstract class AbstractRepository {
     protected <T> boolean doInsert(String sql, SqlParameterSource paramSource) {
         try {
             int update = jdbcTemplate.update(sql, paramSource);
+            return update == 1;
+        } catch (DataAccessException e) {
+        }
+        return false;
+    }
+
+    /**
+     * @param sql
+     * @param paramSource
+     * @param generatedKeyHolder
+     * @return
+     * @author qiushaohua 2012-5-2
+     */
+    protected <T> boolean doInsert(String sql, SqlParameterSource paramSource, KeyHolder generatedKeyHolder) {
+        try {
+            int update = jdbcTemplate.update(sql, paramSource, generatedKeyHolder);
             return update == 1;
         } catch (DataAccessException e) {
         }

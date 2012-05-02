@@ -10,10 +10,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -31,7 +33,7 @@ import com.qiuq.packagedispatch.repository.ResourceRepository;
  * @version 0.0.1
  */
 @Repository
-public class UserRepository extends AbstractRepository implements ResourceRepository<User> {
+public class UserRepository extends AbstractRepository implements ResourceRepository<Map<String, Object>> {
 
     /**
      * @author qiushaohua 2012-3-24
@@ -110,15 +112,16 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
      * @return
      * @author qiushaohua 2012-3-27
      */
-    public List<User> query(String sort, Map<String, Object> params, long[] range) {
-        String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from sys_user"
-                + " where id > 0 and state = " + User.STATE_VALID;
+    public List<Map<String, Object>> query(String sort, Map<String, Object> params, long[] range) {
+        String sql = "select usr.*, role.role_id, row_number() over(" + orderBy(sort) + ") as rownum"
+                + " from sys_user usr left join sys_user_role role on usr.id = role.user_id"
+                + " where usr.id > 0 and usr.state = " + User.STATE_VALID;
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
 
         sql += buildCondition(params, paramMap);
 
         String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
-        return jdbcTemplate.query(rangeQuerySql, paramMap, new UserRowMapper());
+        return jdbcTemplate.query(rangeQuerySql, paramMap, new ColumnMapRowMapper());
     }
 
     /**
@@ -208,8 +211,8 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     @Override
-    public User query(int id) {
-        return doQuery("sys_user", id, new UserRowMapper());
+    public Map<String, Object> query(int id) {
+        return doQuery("sys_user", id, new ColumnMapRowMapper());
     }
 
     @Override
@@ -218,9 +221,11 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     @Override
-    public boolean insert(User user) {
+    public boolean insert(Map<String, Object> map) {
         String sql = "insert into sys_user(code, name, password, salt, tel, company_id, company, department, address, type, customer_type, state)"
                 + " values(:code, :name, :password, :salt, :tel, :companyId, :company, :department, :address, :type, :customerType, :state)";
+
+        User user = Converter.mapToBean(map, User.class);
 
         String salt = createSalt();
         String password = passwordEncoder.encodePassword(user.getPassword(), salt);
@@ -233,16 +238,49 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
         user.setState(User.STATE_VALID);
 
-        return doInsert(sql, new BeanPropertySqlParameterSource(user));
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        boolean isUserInserted = doInsert(sql, new BeanPropertySqlParameterSource(user), generatedKeyHolder);
+
+        if (isUserInserted && map.containsKey("role_id")) {
+            int id = generatedKeyHolder.getKey().intValue();
+            map.put("id", id);
+            return insertRole(map);
+        }
+
+        return isUserInserted;
+    }
+
+    public boolean insertRole(Map<String, Object> t) {
+        String sql = "insert into sys_user_role(user_id, role_id) values (:id, :role_id)";
+        MapSqlParameterSource paramMap = new MapSqlParameterSource(t);
+        return doInsert(sql, paramMap);
     }
 
     @Override
-    public boolean update(int id, User user) {
+    public boolean update(int id, Map<String, Object> map) {
         String sql = "update sys_user set name = :name, tel = :tel, company_id = :companyId, company = :company,"
                 + " department = :department, address = :address, type = :type, customer_type = :customerType"
                 + " where id = :id";
 
-        return doUpdate(sql, new BeanPropertySqlParameterSource(user));
+        User user = Converter.mapToBean(map, User.class);
+
+        boolean isUserUpdated = doUpdate(sql, new BeanPropertySqlParameterSource(user));
+        if (isUserUpdated && map.containsKey("role_id")) {
+            return updateRole(map);
+        }
+
+        return isUserUpdated;
+    }
+
+    private boolean updateRole(Map<String, Object> map) {
+        String sql = "update sys_user_role set role_id = :role_id where user_id = :id";
+        MapSqlParameterSource paramMap = new MapSqlParameterSource(map);
+        boolean doUpdate = doUpdate(sql, paramMap);
+        if (!doUpdate) {
+            return insertRole(map);
+        }
+        return doUpdate;
+
     }
 
     /**

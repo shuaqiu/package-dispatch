@@ -27,7 +27,7 @@ define([ "dojo/dom-construct", "dojo/string", "dojo/_base/xhr", "dojo/i18n!./nls
 
                     for ( var i = 0; i < list.length; i++) {
                         var aOrder = list[i];
-                        var itemId = "alarm_list_" + aOrder["id"];
+                        var itemId = "alarm_item_" + aOrder["id"];
                         var sameIdItem = document.getElementById(itemId);
                         if (sameIdItem) {
                             ul.removeChild(sameIdItem);
@@ -42,7 +42,7 @@ define([ "dojo/dom-construct", "dojo/string", "dojo/_base/xhr", "dojo/i18n!./nls
                             receiverTel : aOrder["receiverTel"],
                             expentTime : expentTime + ""
                         });
-                        var color = expentTime >= 60 ? "red" : "yello";
+                        var color = expentTime >= 60 ? "red" : "yellow";
                         domconstruct.create("li", {
                             id : itemId,
                             innerHTML : desc,
@@ -55,15 +55,7 @@ define([ "dojo/dom-construct", "dojo/string", "dojo/_base/xhr", "dojo/i18n!./nls
 
                 _createContainer : function() {
                     var div = domconstruct.create("div", {
-                        className : "dijitDialog",
-                        style : {
-                            "position" : "absolute",
-                            "top" : 0,
-                            "right" : 0,
-                            "z-index" : 1000,
-                            "width" : "400px",
-                            "background" : "#FFF"
-                        }
+                        className : "dijitDialog alarmPopup",
                     }, document.body);
 
                     var title = domconstruct.create("div", {

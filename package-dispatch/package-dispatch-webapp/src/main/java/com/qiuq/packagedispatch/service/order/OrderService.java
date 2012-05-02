@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qiuq.common.ErrCode;
@@ -168,7 +169,7 @@ public class OrderService extends AbstractResourceService<Order> {
      * @return
      * @author qiushaohua 2012-4-26
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public OperateResult handleStorage(User user, String barcode, State state, User handler) {
         Order order = orderRepository.getOrder(barcode);
         if (order == null) {
@@ -180,20 +181,34 @@ public class OrderService extends AbstractResourceService<Order> {
             return new OperateResult(ErrCode.NOT_CORRECT, "the state of order is not correct");
         }
 
+        try {
+            doHandleStorage(user, order, state, handler);
+        } catch (Exception e) {
+            return new OperateResult(ErrCode.UPDATE_FAIL, "fail to handle storage ");
+        }
+
+        return OperateResult.OK;
+    }
+
+    /**
+     * @param user
+     * @param order
+     * @param state
+     * @param handler
+     * @author qiushaohua 2012-4-30
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean doHandleStorage(User user, Order order, State state, User handler) {
         // 创建处理明细, 这里处理人始终为当前用户("值班经理")
         HandleDetail detail = createHandleDetail(order.getId(), user, state);
         boolean inserted = orderRepository.insertHandleDetail(detail);
         if (!inserted) {
-            return new OperateResult(ErrCode.INSERT_FAIL, "fail to insert handle detail");
+            return false;
         }
 
         User nextCircleHandler = handler == null ? user : handler;
         boolean updated = orderRepository.updateOrderState(order.getId(), nextCircleHandler, state);
-        if (!updated) {
-            return new OperateResult(ErrCode.UPDATE_FAIL, "fail to update order state");
-        }
-
-        return OperateResult.OK;
+        return updated;
     }
 
     /**

@@ -167,3 +167,14 @@ em:after {
 .schedule .arrow {
     background-image: url("img/blue_arrow_down_32.png");
 }
+
+/***************************detail style***************************************/
+.alarmPopup {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    width: 400px;
+    background: #FFF;
+}
+/***************************detail style***************************************/

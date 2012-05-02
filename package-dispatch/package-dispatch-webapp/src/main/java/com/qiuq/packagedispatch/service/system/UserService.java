@@ -22,7 +22,7 @@ import com.qiuq.packagedispatch.service.AbstractResourceService;
  * @version 0.0.1
  */
 @Service
-public class UserService extends AbstractResourceService<User> {
+public class UserService extends AbstractResourceService<Map<String, Object>> {
 
     private UserRepository userRepository;
 
@@ -33,7 +33,7 @@ public class UserService extends AbstractResourceService<User> {
     }
 
     @Override
-    protected ResourceRepository<User> getRepository() {
+    protected ResourceRepository<Map<String, Object>> getRepository() {
         return userRepository;
     }
 
@@ -76,7 +76,7 @@ public class UserService extends AbstractResourceService<User> {
      * @author qiushaohua 2012-3-27
      */
     @Transactional(readOnly = true)
-    public List<User> query(String sort, Map<String, Object> params, long[] range) {
+    public List<Map<String, Object>> query(String sort, Map<String, Object> params, long[] range) {
         return userRepository.query(sort, params, range);
     }
 

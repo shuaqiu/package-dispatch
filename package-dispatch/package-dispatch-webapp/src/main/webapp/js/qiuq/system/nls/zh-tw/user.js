@@ -1,4 +1,4 @@
 define({
-    "create" : "新建用戶",
-    "modify" : "修改用戶"
+    "create" : "新建員工",
+    "modify" : "修改員工"
 });

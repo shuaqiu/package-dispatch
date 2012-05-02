@@ -34,4 +34,13 @@ public class CustomerController extends UserController {
     protected int getControllerUserType() {
         return Type.TYPE_CUSTOMER;
     }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-2
+     */
+    @Override
+    protected String generateCode() {
+        return "";
+    }
 }

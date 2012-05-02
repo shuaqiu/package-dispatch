@@ -40,6 +40,7 @@ public class User implements Type {
     private String salt;
 
     private String tel;
+    private String shortNumber;
 
     private int companyId;
     private String company;
@@ -138,6 +139,16 @@ public class User implements Type {
     /** @author qiushaohua 2012-3-19 */
     public void setTel(String tel) {
         this.tel = tel;
+    }
+
+    /** @author qiushaohua 2012-5-2 */
+    public String getShortNumber() {
+        return shortNumber;
+    }
+
+    /** @author qiushaohua 2012-5-2 */
+    public void setShortNumber(String shortNumber) {
+        this.shortNumber = shortNumber;
     }
 
     /** @author qiushaohua 2012-3-19 */

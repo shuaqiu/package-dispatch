@@ -24,6 +24,7 @@ create table sys_user(
     password varchar(255),
     salt varchar(255),
     tel varchar(20),
+    short_number varchar(20),
     company_id int,
     company varchar(255),
     department varchar(255),

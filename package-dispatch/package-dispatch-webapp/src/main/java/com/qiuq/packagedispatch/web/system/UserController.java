@@ -39,7 +39,7 @@ import com.qiuq.packagedispatch.web.HttpSessionUtil;
  */
 @Controller
 @RequestMapping(value = "/user")
-public class UserController extends AbstractResourceController<User> {
+public class UserController extends AbstractResourceController<Map<String, Object>> {
 
     private UserService userService;
 
@@ -58,12 +58,12 @@ public class UserController extends AbstractResourceController<User> {
     }
 
     @Override
-    protected ResourceService<User> getService() {
+    protected ResourceService<Map<String, Object>> getService() {
         return userService;
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public HttpEntity<List<User>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
+    public HttpEntity<List<Map<String, Object>>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
 
         User user = HttpSessionUtil.getLoginedUser(req);
@@ -87,8 +87,8 @@ public class UserController extends AbstractResourceController<User> {
             header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
         }
 
-        List<User> list = userService.query(sort, params, rangeArr);
-        HttpEntity<List<User>> entity = new HttpEntity<List<User>>(list, header);
+        List<Map<String, Object>> list = userService.query(sort, params, rangeArr);
+        HttpEntity<List<Map<String, Object>>> entity = new HttpEntity<List<Map<String, Object>>>(list, header);
 
         return entity;
     }
@@ -128,5 +128,21 @@ public class UserController extends AbstractResourceController<User> {
         }
 
         return userService.modifyPassword(user, newPassword);
+    }
+
+    @Override
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public Map<String, Object> edit() {
+        Map<String, Object> rmap = new HashMap<String, Object>();
+        rmap.put("generatedCode", generateCode());
+        return rmap;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-2
+     */
+    protected String generateCode() {
+        return "";
     }
 }
