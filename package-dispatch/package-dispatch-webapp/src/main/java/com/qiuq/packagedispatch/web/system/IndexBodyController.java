@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.packagedispatch.bean.system.Function;
+import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.system.RoleService;
@@ -42,6 +43,35 @@ public class IndexBodyController {
             return "";
         }
 
+        Map<String, Role> roleMap = getRoleMap(user);
+        HttpSessionUtil.setRoleMap(req, roleMap);
+
+        Map<String, Boolean> funcMap = getFunctionMap(user);
+        HttpSessionUtil.setFunctionMap(req, funcMap);
+
+        return "main";
+    }
+
+    /**
+     * @param user
+     * @return
+     * @author qiushaohua 2012-5-8
+     */
+    private Map<String, Role> getRoleMap(User user) {
+        List<Role> userRoles = roleService.getUserRoles(user);
+        Map<String, Role> roleMap = new HashMap<String, Role>();
+        for (Role role : userRoles) {
+            roleMap.put(role.getId() + "", role);
+        }
+        return roleMap;
+    }
+
+    /**
+     * @param user
+     * @return
+     * @author qiushaohua 2012-5-7
+     */
+    private Map<String, Boolean> getFunctionMap(User user) {
         Map<String, Boolean> funcMap = new HashMap<String, Boolean>();
         if (user.getType() == Type.TYPE_SELF) {
             List<Function> funcs = roleService.getAccessableFunctions(user);
@@ -56,8 +86,6 @@ public class IndexBodyController {
                 funcMap.put("account", true);
             }
         }
-        HttpSessionUtil.setFunctionMap(req, funcMap);
-
-        return "main";
+        return funcMap;
     }
 }

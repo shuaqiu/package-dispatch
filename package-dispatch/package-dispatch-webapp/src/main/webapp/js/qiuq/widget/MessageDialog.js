@@ -15,14 +15,12 @@ define([
         okButtonLabel : message["okButtonLabel"],
         okButton : null,
         onOk : function() {
-            console.info("onOk");
         },
 
         isShowCancelButton : false,
         cancelButtonLabel : message["cancelButtonLabel"],
         cancelButton : null,
         onCancel : function() {
-            console.info("onCancel");
         },
 
         postCreate : function() {
@@ -34,7 +32,7 @@ define([
                 }
             });
 
-            this._createButton();
+            this._createButtons();
             var b = domconstruct.create("div", {
                 className : "msgButtonBar"
             });
@@ -47,7 +45,7 @@ define([
 
             var c = domconstruct.create("div");
 
-            var icon = domconstruct.create("div", {
+            domconstruct.create("div", {
                 className : "msgIcon " + this.iconClass,
             }, c);
             new ContentPane({
@@ -62,62 +60,100 @@ define([
             this.set("content", m);
         },
 
-        _createButton : function() {
+        _createButtons : function() {
             if (this.isShowOkButton) {
-                var action = lang.hitch(this, function() {
-                    if (this.onOk && lang.isFunction(this.onOk)) {
-                        this.onOk();
-                    }
-                    this.hide();
-                });
-                this.okButton = new Button({
-                    label : this.okButtonLabel,
-                    onClick : function() {
-                        action();
-                    }
-                });
+                // var action = lang.hitch(this, function() {
+                // if (this.onOk && lang.isFunction(this.onOk)) {
+                // this.onOk();
+                // }
+                // this.hide();
+                // });
+                // this.okButton = new Button({
+                // label : this.okButtonLabel,
+                // onClick : function() {
+                // action();
+                // }
+                // });
+                this.okButton = this._createButton(this.okButtonLabel, this.onOk);
             }
 
             if (this.isShowCancelButton) {
-                var action = lang.hitch(this, function() {
-                    if (this.onCancel && lang.isFunction(this.onCancel)) {
-                        this.onCancel();
-                    }
-                    this.hide();
-                });
-                this.cancelButton = new Button({
-                    label : this.cancelButtonLabel,
-                    onClick : function() {
-                        action();
-                    }
-                });
+                // var action = lang.hitch(this, function() {
+                // if (this.onCancel && lang.isFunction(this.onCancel)) {
+                // this.onCancel();
+                // }
+                // this.hide();
+                // });
+                // this.cancelButton = new Button({
+                // label : this.cancelButtonLabel,
+                // onClick : function() {
+                // action();
+                // }
+                // });
+                this.cancelButton = this._createButton(this.cancelButtonLabel, this.onCancel);
             }
+        },
+
+        _createButton : function(label, clickCallback) {
+            var action = lang.hitch(this, function() {
+                if (clickCallback && lang.isFunction(clickCallback)) {
+                    clickCallback();
+                }
+                this.hide();
+            });
+            return new Button({
+                label : label,
+                onClick : function() {
+                    action();
+                }
+            });
         }
     });
 
-    function alert(content) {
-        new MessageDialog({
+    function alert(content, onOk) {
+        var dialog = new MessageDialog({
             title : message["alertTitle"],
             iconClass : "alertIcon",
             content : content
-        }).show();
+        });
+
+        if (onOk && lang.isFunction(onOk)) {
+            dialog.onOk = onOk;
+        }
+
+        dialog.show();
     }
 
-    function error(content) {
-        new MessageDialog({
+    function error(content, onOk) {
+        var dialog = new MessageDialog({
             title : message["errTitle"],
             iconClass : "errorIcon",
             content : content
-        }).show();
+        });
+
+        if (onOk && lang.isFunction(onOk)) {
+            dialog.onOk = onOk;
+        }
+
+        dialog.show();
     }
 
-    function confirm(content, okMethod, cancelMethod) {
-        new MessageDialog({
+    function confirm(content, onOk, onCancel) {
+        var dialog = new MessageDialog({
             title : message["confirmTitle"],
             iconClass : "confirmIcon",
             content : content,
             isShowCancelButton : true
-        }).show();
+        });
+
+        if (onOk && lang.isFunction(onOk)) {
+            dialog.onOk = onOk;
+        }
+        if (onCancel && lang.isFunction(onCancel)) {
+            dialog.onCancel = onCancel;
+        }
+
+        dialog.show();
     }
 
     return {

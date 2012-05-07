@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.qiuq.packagedispatch.bean.system.Company;
-import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
@@ -113,11 +112,6 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     public boolean insert(Company com) {
         String sql = "insert into sys_company(code, name, address, parent_id, full_id, type)"
                 + " values(:code, :name, :address, :parentId, :fullId, :type)";
-
-        com.setParentId(-1);
-        com.setFullId("-1");
-        com.setType(Type.TYPE_CUSTOMER);
-
         return doInsert(sql, new BeanPropertySqlParameterSource(com));
     }
 
@@ -132,6 +126,17 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
         String sql = "update sys_company set code = :code, name = :name, address = :address where id = :id";
 
         return doUpdate(sql, new BeanPropertySqlParameterSource(com));
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-3
+     */
+    public int getMaxCode() {
+        String sql = "select max(cast(code as int)) from sys_company";
+        SqlParameterSource paramMap = null;
+        int maxCode = jdbcTemplate.queryForInt(sql, paramMap);
+        return maxCode;
     }
 
 }

@@ -119,6 +119,12 @@ define([
                 MessageDialog.alert(message["success"]);
                 registry.byId(id.dialogId).destroyRecursive();
             } else {
+                if (result.errCode == "NOT_LOGINED") {
+                    require([ "qiuq/login" ], function(login) {
+                        login.reLogin();
+                    });
+                    return;
+                }
                 MessageDialog.error(message["err." + result.errCode]);
             }
         });

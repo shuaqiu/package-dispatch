@@ -206,7 +206,8 @@ public class OrderController extends AbstractResourceController<Order> {
      */
     private void sendIdentityToSender(Order t) {
         String content = notifyTemplateForSender.format(new Object[] {
-                t.getSenderIdentityCode()
+                t.getSenderIdentityCode(), t.getReceiverName(), t.getReceiverTel(), t.getReceiverCompany(),
+                t.getReceiverAddress(), t.getGoodsName(), t.getQuantity()
         });
         smsSender.send(content, t.getSenderTel());
     }
@@ -218,7 +219,7 @@ public class OrderController extends AbstractResourceController<Order> {
     private void sendIdentityToReceiver(Order t) {
         String content = notifyTemplateForReceiver.format(new Object[] {
                 t.getReceiverIdentityCode(), t.getSenderName(), t.getSenderTel(), t.getSenderCompany(),
-                t.getGoodsName(), t.getQuantity()
+                t.getSenderAddress(), t.getGoodsName(), t.getQuantity()
         });
         smsSender.send(content, t.getReceiverTel());
     }

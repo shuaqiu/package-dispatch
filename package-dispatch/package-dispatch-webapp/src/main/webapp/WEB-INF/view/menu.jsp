@@ -36,9 +36,6 @@
       <c:if test="${function.employer }">
         <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){showTab(['qiuq/system/user'], {title: '员工管理', href: 'web/user/list'}, this.id);}">员工管理</div>
       </c:if>
-      <c:if test="${function.employerRole }">
-        <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){showTab(['qiuq/system/role'], {title: '员工角色管理', href: 'web/role/list'}, this.id);}">员工角色管理</div>
-      </c:if>
       <c:if test="${function.account }">
         <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){showTab(['qiuq/system/account'], {title: '账号管理', href: 'web/customer/list'}, this.id);}">账号管理</div>
       </c:if>

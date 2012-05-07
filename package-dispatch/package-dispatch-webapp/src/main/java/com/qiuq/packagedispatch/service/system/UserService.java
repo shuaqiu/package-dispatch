@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qiuq.common.OperateResult;
-import com.qiuq.packagedispatch.bean.system.Role;
+import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 import com.qiuq.packagedispatch.repository.system.UserRepository;
@@ -59,16 +59,6 @@ public class UserService extends AbstractResourceService<Map<String, Object>> {
     }
 
     /**
-     * @param user
-     * @return
-     * @author qiushaohua 2012-3-23
-     */
-    @Transactional(readOnly = true)
-    public List<Role> getUserRoles(User user) {
-        return null;
-    }
-
-    /**
      * @param sort
      * @param params
      * @param range
@@ -109,5 +99,34 @@ public class UserService extends AbstractResourceService<Map<String, Object>> {
     @Transactional
     public OperateResult modifyPassword(User user, String newPassword) {
         return userRepository.modifyPassword(user, newPassword);
+    }
+
+    /**
+     * @param alias
+     * @param id
+     * @return
+     * @author qiushaohua 2012-5-3
+     */
+    @Transactional(readOnly = true)
+    public int getUserCount(String alias, int id) {
+        return userRepository.getUserCount(alias, id);
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-4
+     */
+    @Transactional(readOnly = true)
+    public int getMaxUserCodes() {
+        return userRepository.getMaxCode(Type.TYPE_SELF);
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-4
+     */
+    @Transactional(readOnly = true)
+    public int getMaxCustomerCodes() {
+        return userRepository.getMaxCode(Type.TYPE_CUSTOMER);
     }
 }

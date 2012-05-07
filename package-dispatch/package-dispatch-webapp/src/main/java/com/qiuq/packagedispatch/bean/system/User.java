@@ -35,7 +35,7 @@ public class User implements Type {
 
     private String code;
     private String name;
-    private String alias;
+    private String loginAccount;
     private String password;
     private String salt;
 
@@ -102,13 +102,13 @@ public class User implements Type {
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public String getAlias() {
-        return alias;
+    public String getLoginAccount() {
+        return loginAccount;
     }
 
     /** @author qiushaohua 2012-3-19 */
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setLoginAccount(String loginAccount) {
+        this.loginAccount = loginAccount;
     }
 
     /** @author qiushaohua 2012-3-19 */

@@ -29,14 +29,41 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public T query(@PathVariable int id) {
+        OperateResult beforeResult = beforeQuery(id);
+        if (beforeResult.isOk() == false) {
+            return null;
+        }
         T t = getService().query(id);
+        afterQuery(id, t);
         return t;
+    }
+
+    /**
+     * @param id
+     * @return
+     * @author qiushaohua 2012-5-8
+     */
+    protected OperateResult beforeQuery(int id) {
+        return OperateResult.OK;
+    }
+
+    /**
+     * @param id
+     * @param t
+     * @author qiushaohua 2012-5-8
+     */
+    protected void afterQuery(int id, T t) {
     }
 
     @Override
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public OperateResult insert(@RequestBody T t) {
+        OperateResult beforeResult = beforeInsert(t);
+        if (beforeResult.isOk() == false) {
+            return beforeResult;
+        }
+
         boolean isInserted = getService().insert(t);
         if (isInserted) {
             return OperateResult.OK;
@@ -45,10 +72,24 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         }
     }
 
+    /**
+     * @param t
+     * @return
+     * @author qiushaohua 2012-5-8
+     */
+    protected OperateResult beforeInsert(T t) {
+        return OperateResult.OK;
+    }
+
     @Override
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseBody
     public OperateResult update(@PathVariable int id, @RequestBody T t) {
+        OperateResult beforeResult = beforeUpdate(t);
+        if (beforeResult.isOk() == false) {
+            return beforeResult;
+        }
+
         boolean isUpdated = getService().update(id, t);
         if (isUpdated) {
             return OperateResult.OK;
@@ -57,16 +98,39 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         }
     }
 
+    /**
+     * @param t
+     * @return
+     * @author qiushaohua 2012-5-8
+     */
+    protected OperateResult beforeUpdate(T t) {
+        return OperateResult.OK;
+    }
+
     @Override
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public OperateResult delete(@PathVariable int id) {
+        OperateResult beforeResult = beforeDelete(id);
+        if (beforeResult.isOk() == false) {
+            return beforeResult;
+        }
+
         boolean isDeleted = getService().delete(id);
         if (isDeleted) {
             return OperateResult.OK;
         } else {
             return new OperateResult(ErrCode.DELETE_FAIL, "delete resource fail");
         }
+    }
+
+    /**
+     * @param t
+     * @return
+     * @author qiushaohua 2012-5-8
+     */
+    protected OperateResult beforeDelete(int id) {
+        return OperateResult.OK;
     }
 
     /**

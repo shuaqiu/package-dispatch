@@ -19,12 +19,15 @@
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-<!--                 <value>classpath*:/sys.properties</value> -->
                 <value>classpath*:/sysconfig.xml</value>
             </list>
         </property>
     </bean>
-    
-    <bean class="com.qiuq.common.sms.WebRequestSmsSender"/>
+
+    <bean class="com.qiuq.common.sms.WebRequestSmsSender" />
+
+    <bean id="codeGeneratorFormatter" class="java.text.DecimalFormat">
+        <constructor-arg value="000000"></constructor-arg>
+    </bean>
 </beans>
 

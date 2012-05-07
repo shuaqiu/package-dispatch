@@ -3,10 +3,7 @@
  */
 package com.qiuq.packagedispatch.web.system;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -17,10 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.system.Company;
+import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.system.CompanyService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
+import com.qiuq.packagedispatch.web.CodeGenerator;
 
 /**
  * Manage the company for customers
@@ -34,10 +34,18 @@ public class CompanyController extends AbstractResourceController<Company> {
 
     private CompanyService companyService;
 
+    private CodeGenerator codeGenerator;
+
     /** @author qiushaohua 2012-3-24 */
     @Autowired
     public void setCompanyService(CompanyService companyService) {
         this.companyService = companyService;
+    }
+
+    /** @author qiushaohua 2012-5-3 */
+    @Autowired
+    public void setCodeGenerator(CodeGenerator codeGenerator) {
+        this.codeGenerator = codeGenerator;
     }
 
     @Override
@@ -63,20 +71,14 @@ public class CompanyController extends AbstractResourceController<Company> {
     }
 
     @Override
-    @RequestMapping(value = "/edit", method = RequestMethod.GET)
-    public Map<String, Object> edit() {
-        Map<String, Object> rmap = new HashMap<String, Object>();
-        rmap.put("generatedCode", generateCode());
-        return rmap;
+    protected OperateResult beforeInsert(Company t) {
+        t.setCode(codeGenerator.generateCompanyCode());
+
+        t.setParentId(-1);
+        t.setFullId("-1");
+        t.setType(Type.TYPE_CUSTOMER);
+
+        return super.beforeInsert(t);
     }
 
-    /**
-     * @return
-     * @author qiushaohua 2012-5-2
-     */
-    private Object generateCode() {
-        Set<String> codes = companyService.getCurrentCodes();
-
-        return null;
-    }
 }

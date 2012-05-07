@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qiuq.packagedispatch.bean.system.Function;
+import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 import com.qiuq.packagedispatch.repository.system.RoleRepository;
@@ -67,4 +68,13 @@ public class RoleService extends AbstractResourceService<Map<String, Object>> {
         return roleRepository.getAccessableFunctions(user);
     }
 
+    /**
+     * @param user
+     * @return
+     * @author qiushaohua 2012-5-7
+     */
+    @Transactional(readOnly = true)
+    public List<Role> getUserRoles(User user) {
+        return roleRepository.getUserRoles(user);
+    }
 }

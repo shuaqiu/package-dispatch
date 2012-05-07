@@ -6,6 +6,7 @@ define([
         "dijit/registry",
         "./tab",
         "./widget/MessageDialog",
+        "./widget/LoadingDialog",
         "dojo/i18n!./nls/resource",
         "dojo/data/ObjectStore",
         "dojo/store/JsonRest",
@@ -16,7 +17,8 @@ define([
         "dijit/MenuBarItem",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
-        "dijit/form/Button" ], function(domform, xhr, lang, Deferred, registry, tab, MessageDialog, message) {
+        "dijit/form/Button" ], function(domform, xhr, lang, Deferred, registry, tab, MessageDialog, LoadingDialog,
+        message) {
 
     return {
         resourceUrl : null,
@@ -59,9 +61,13 @@ define([
                 return;
             }
 
+            var dialog = new LoadingDialog({});
+            dialog.show();
+
             var saved = lang.hitch(this, this._saved);
             this._saveByXhr(data).then(function(result) {
                 saved(result);
+                dialog.hide();
             });
         },
 

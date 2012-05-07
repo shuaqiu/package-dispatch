@@ -1,6 +1,6 @@
 set identity_insert sys_company on
 insert into sys_company(id, code, name, address, parent_id, full_id, type)
-values (0, 'huixin', '惠信', 'address', -1, -1, 1)
+values (0, '000000', '慧信', 'address', -1, -1, 1)
 set identity_insert sys_company off
 
 insert into sys_role(id, code, name)
@@ -8,7 +8,7 @@ values (0, 'administrators', '系统管理员')
 
 set identity_insert sys_user on
 insert into sys_user(id,  code, name, alias, password, salt, tel, company_id, company, department, address, type, customer_type, state )
-values (0, 'admin', '系统管理员', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '', '00000000000', 0, '惠信', '惠信', 'address', 1, null, 1)
+values (0, '000000', '系统管理员', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '', '00000000000', 0, '慧信', '慧信', '', 1, null, 1)
 set identity_insert sys_user off
 
 insert into sys_user_role(user_id, role_id)
@@ -42,8 +42,6 @@ insert into sys_function(id, code, name)
 values (106, 'customer', '客户管理')
 insert into sys_function(id, code, name)
 values (107, 'employer', '员工管理')
-insert into sys_function(id, code, name)
-values (108, 'employerRole', '员工角色管理')
 
 insert into sys_function(id, code, name)
 values (201, 'order', '自主下单')

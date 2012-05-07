@@ -80,6 +80,9 @@ public class AlarmController extends AbstractResourceController<Order> {
     @ResponseBody
     public List<Order> getNewAlarm(WebRequest req) {
         Map<String, Boolean> functionMap = HttpSessionUtil.getFunctionMap(req);
+        if (functionMap == null) {
+            return new ArrayList<Order>();
+        }
         Boolean isHasFunction = functionMap.get("alarm");
         if (isHasFunction == null || !isHasFunction) {
             return new ArrayList<Order>();

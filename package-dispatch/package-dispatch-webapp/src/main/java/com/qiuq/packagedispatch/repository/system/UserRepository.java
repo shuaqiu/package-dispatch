@@ -46,10 +46,11 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
             user.setId(rs.getInt("id"));
             user.setCode(rs.getString("code"));
             user.setName(rs.getString("name"));
-            user.setAlias(rs.getString("alias"));
+            user.setLoginAccount(rs.getString("login_account"));
             user.setPassword(rs.getString("password"));
             user.setSalt(rs.getString("salt"));
             user.setTel(rs.getString("tel"));
+            user.setShortNumber(rs.getString("short_number"));
             user.setCompanyId(rs.getInt("company_id"));
             user.setCompany(rs.getString("company"));
             user.setDepartment(rs.getString("department"));
@@ -95,7 +96,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
      * @author qiushaohua 2012-4-28
      */
     public User getUser(String usercode) {
-        String sql = "select * from sys_user where code = :usercode or alias = :usercode";
+        String sql = "select * from sys_user where code = :usercode or login_account = :usercode";
 
         SqlParameterSource paramMap = new MapSqlParameterSource("usercode", usercode);
         try {
@@ -113,14 +114,30 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
      * @author qiushaohua 2012-3-27
      */
     public List<Map<String, Object>> query(String sort, Map<String, Object> params, long[] range) {
-        String sql = "select usr.*, role.role_id, row_number() over(" + orderBy(sort) + ") as rownum"
-                + " from sys_user usr left join sys_user_role role on usr.id = role.user_id"
-                + " where usr.id > 0 and usr.state = " + User.STATE_VALID;
+        StringBuilder sql = new StringBuilder();
+        sql.append(" select ");
+        sql.append("  usr.id as id");
+        sql.append(", usr.code as code");
+        sql.append(", usr.login_account as loginAccount");
+        sql.append(", usr.name as name");
+        sql.append(", usr.tel as tel");
+        sql.append(", usr.short_number as shortNumber");
+        sql.append(", usr.company_id as companyId");
+        sql.append(", usr.company as company");
+        sql.append(", usr.department as department");
+        sql.append(", usr.type as type");
+        sql.append(", usr.customer_type as customerType");
+        sql.append(", usr.state as state");
+        sql.append(", role.role_id as roleId");
+        sql.append(", row_number() over(" + orderBy(sort) + ") as rownum");
+        sql.append(" from sys_user usr left join sys_user_role role on usr.id = role.user_id");
+        sql.append(" where usr.id > 0 and usr.state = " + User.STATE_VALID);
+
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
 
-        sql += buildCondition(params, paramMap);
+        sql.append(buildCondition(params, paramMap));
 
-        String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
+        String rangeQuerySql = sqlUtil.toRangeQuerySql(sql.toString(), range);
         return jdbcTemplate.query(rangeQuerySql, paramMap, new ColumnMapRowMapper());
     }
 
@@ -164,7 +181,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
         String query = Converter.toString(params.get("query"));
         if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or alias like :query or name like :query or address like :query)";
+            sql += " and (code like :query or login_account like :query or name like :query or address like :query)";
             paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
         }
 
@@ -210,6 +227,24 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         return new OperateResult(ErrCode.UPDATE_FAIL, "Update password fail");
     }
 
+    /**
+     * @param loginAccount
+     * @param id
+     * @return
+     * @author qiushaohua 2012-5-3
+     */
+    public int getUserCount(String loginAccount, int id) {
+        String sql = "select count(*) from sys_user where login_account = :loginAccount";
+        MapSqlParameterSource paramMap = new MapSqlParameterSource("loginAccount", loginAccount);
+
+        if (id != -1) {
+            sql += " and id != :id";
+            paramMap.addValue("id", id);
+        }
+
+        return jdbcTemplate.queryForInt(sql, paramMap);
+    }
+
     @Override
     public Map<String, Object> query(int id) {
         return doQuery("sys_user", id, new ColumnMapRowMapper());
@@ -217,31 +252,55 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     @Override
     public boolean delete(int id) {
-        return doDelete("sys_user", id);
+        boolean isDeleted = doDelete("sys_user", id);
+        if (isDeleted) {
+            deleteRole(id);
+        }
+        return isDeleted;
+    }
+
+    private boolean deleteRole(int id) {
+        String sql = "delete from sys_user_role where user_id = :userId";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource("userId", id);
+        jdbcTemplate.update(sql, paramMap);
+        return true;
     }
 
     @Override
     public boolean insert(Map<String, Object> map) {
-        String sql = "insert into sys_user(code, name, password, salt, tel, company_id, company, department, address, type, customer_type, state)"
-                + " values(:code, :name, :password, :salt, :tel, :companyId, :company, :department, :address, :type, :customerType, :state)";
-
-        User user = Converter.mapToBean(map, User.class);
+        String sql = "insert into sys_user(code, login_account, name, password, salt, tel, short_number, company_id, company, department, address, type, customer_type, state)"
+                + " values(:code, :loginAccount, :name, :password, :salt, :tel, :shortNumber, :companyId, :company, :department, :address, :type, :customerType, :state)";
 
         String salt = createSalt();
-        String password = passwordEncoder.encodePassword(user.getPassword(), salt);
-        user.setSalt(salt);
-        user.setPassword(password);
+        String password = passwordEncoder.encodePassword(Converter.toString(map.get("password")), salt);
 
-        if (user.getType() == Type.TYPE_SELF) {
-            user.setCustomerType(null);
+        int type = Converter.toInt(map.get("type"));
+        Integer customerType = Converter.toInt(map.get("customerType"));
+        if (type == Type.TYPE_SELF) {
+            customerType = null;
         }
 
-        user.setState(User.STATE_VALID);
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("code", map.get("code"));
+        paramMap.addValue("loginAccount", map.get("loginAccount"));
+        paramMap.addValue("name", map.get("name"));
+        paramMap.addValue("password", password);
+        paramMap.addValue("salt", salt);
+        paramMap.addValue("tel", map.get("tel"));
+        paramMap.addValue("shortNumber", map.get("shortNumber"));
+        paramMap.addValue("companyId", map.get("companyId"));
+        paramMap.addValue("company", map.get("company"));
+        paramMap.addValue("department", map.get("department"));
+        paramMap.addValue("address", map.get("address"));
+        paramMap.addValue("type", type);
+        paramMap.addValue("customerType", customerType);
+        paramMap.addValue("state", User.STATE_VALID);
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        boolean isUserInserted = doInsert(sql, new BeanPropertySqlParameterSource(user), generatedKeyHolder);
+        boolean isUserInserted = doInsert(sql, paramMap, generatedKeyHolder);
 
-        if (isUserInserted && map.containsKey("role_id")) {
+        if (isUserInserted && map.containsKey("roleId")) {
             int id = generatedKeyHolder.getKey().intValue();
             map.put("id", id);
             return insertRole(map);
@@ -250,22 +309,30 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         return isUserInserted;
     }
 
-    public boolean insertRole(Map<String, Object> t) {
-        String sql = "insert into sys_user_role(user_id, role_id) values (:id, :role_id)";
+    private boolean insertRole(Map<String, Object> t) {
+        String sql = "insert into sys_user_role(user_id, role_id) values (:id, :roleId)";
         MapSqlParameterSource paramMap = new MapSqlParameterSource(t);
         return doInsert(sql, paramMap);
     }
 
+    /**
+     * @return
+     * @author qiushaohua 2012-4-23
+     */
+    protected String createSalt() {
+        return System.currentTimeMillis() + "";
+    }
+
     @Override
     public boolean update(int id, Map<String, Object> map) {
-        String sql = "update sys_user set name = :name, tel = :tel, company_id = :companyId, company = :company,"
-                + " department = :department, address = :address, type = :type, customer_type = :customerType"
+        String sql = "update sys_user set login_account = :loginAccount, name = :name, tel = :tel, short_number = :shortNumber, company_id = :companyId, "
+                + " company = :company, department = :department, address = :address, customer_type = :customerType"
                 + " where id = :id";
 
         User user = Converter.mapToBean(map, User.class);
 
         boolean isUserUpdated = doUpdate(sql, new BeanPropertySqlParameterSource(user));
-        if (isUserUpdated && map.containsKey("role_id")) {
+        if (isUserUpdated && map.containsKey("roleId")) {
             return updateRole(map);
         }
 
@@ -273,7 +340,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     private boolean updateRole(Map<String, Object> map) {
-        String sql = "update sys_user_role set role_id = :role_id where user_id = :id";
+        String sql = "update sys_user_role set role_id = :roleId where user_id = :id";
         MapSqlParameterSource paramMap = new MapSqlParameterSource(map);
         boolean doUpdate = doUpdate(sql, paramMap);
         if (!doUpdate) {
@@ -284,11 +351,15 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     /**
+     * @param typeSelf
      * @return
-     * @author qiushaohua 2012-4-23
+     * @author qiushaohua 2012-5-4
      */
-    protected String createSalt() {
-        return System.currentTimeMillis() + "";
+    public int getMaxCode(int type) {
+        String sql = "select max(cast(code as int)) code from sys_user where type = :type";
+        SqlParameterSource paramMap = new MapSqlParameterSource("type", type);
+        int maxCode = jdbcTemplate.queryForInt(sql, paramMap);
+        return maxCode;
     }
 
 }

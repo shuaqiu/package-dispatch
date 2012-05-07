@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.system.Function;
+import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
@@ -123,6 +124,19 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
             return insert(t);
         }
         return doUpdate;
+    }
+
+    /**
+     * @param user
+     * @return
+     * @author qiushaohua 2012-5-7
+     */
+    public List<Role> getUserRoles(User user) {
+        String sql = "select role.* from sys_role role left join sys_user_role userRole on role.id = userRole.role_id"
+                + " where userRole.user_id = :userId";
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource("userId", user.getId());
+        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(Role.class));
     }
 
 }

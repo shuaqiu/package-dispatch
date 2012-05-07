@@ -54,4 +54,13 @@ public class CompanyService extends AbstractResourceService<Company> {
     public long matchedRecordCount(String query) {
         return companyRepository.matchedRecordCount(query);
     }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-3
+     */
+    @Transactional(readOnly = true)
+    public int getMaxCode() {
+        return companyRepository.getMaxCode();
+    }
 }

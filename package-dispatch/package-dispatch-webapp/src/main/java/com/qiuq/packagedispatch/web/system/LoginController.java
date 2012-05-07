@@ -102,6 +102,9 @@ public class LoginController {
         HttpSessionUtil.removeLoginedUser(req);
         HttpSessionUtil.removeLoginedCredit(req);
 
+        HttpSessionUtil.removeRoleMap(req);
+        HttpSessionUtil.removeFunctionMap(req);
+
         return OperateResult.OK;
     }
 }

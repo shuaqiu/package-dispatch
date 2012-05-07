@@ -11,18 +11,18 @@
       <div>
         <table class="formTable">
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_editing_code">员工编号: </label></td>
-            <td><input id="user_editing_code" name="code" readonly="readonly" value="${generatedCode }" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工的登录帐号', required: true" /></td>
+            <td class="labelCell"><label for="user_editing_code">员工编号: </label></td>
+            <td><input id="user_editing_code" name="code" readonly="readonly" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工编号由系统自动生成'" /></td>
           </tr>
           <tr>
-            <td class="labelCell"><em>*</em><label for="user_editing_alias">登录帐号: </label></td>
-            <td><input id="user_editing_alias" name="alias" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工的登录帐号', required: true" /></td>
+            <td class="labelCell"><em>*</em><label for="user_editing_account">登录帐号: </label></td>
+            <td><input id="user_editing_account" name="loginAccount" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工的登录帐号', required: true" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="user_editing_name">姓名: </label></td>
             <td><input id="user_editing_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工的姓名', required: true" /></td>
           </tr>
-          <tr>
+          <tr id="user_editing_password_row">
             <td class="labelCell"><em>*</em><label for="user_editing_password">密码: </label></td>
             <td><input id="user_editing_password" name="password" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工的密码', type: 'password', required: true" /></td>
           </tr>
@@ -32,7 +32,7 @@
           </tr>
           <tr>
             <td class="labelCell"><label for="user_editing_short_number">短号: </label></td>
-            <td><input id="user_editing_short_number" name="short_number" maxlength="20" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工的短号'" /></td>
+            <td><input id="user_editing_short_number" name="shortNumber" maxlength="20" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '员工的短号'" /></td>
           </tr>
           <tr>
             <td class="labelCell"><label for="user_editing_department">部门: </label></td>
@@ -40,14 +40,14 @@
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="user_editing_role">角色: </label></td>
-            <td><select id="user_editing_role" name="role_id" data-dojo-type="dijit.form.Select" data-dojo-props="placeHolder: '员工的角色'">
+            <td><select id="user_editing_role" name="roleId" data-dojo-type="dijit.form.Select" data-dojo-props="placeHolder: '员工的角色'">
                 <option value="3">收件人员/派件人员</option>
                 <option value="4">中转人员</option>
                 <option value="2">调度员</option>
                 <option value="1">值班经理</option>
-                <c:if test="${user.id == 0 }">
-                  <option value="0">系统管理员</option>
-                </c:if>
+                <%--                 <c:if test="${role['0'] != null }"> --%>
+                <option value="0">系统管理员</option>
+                <%--                 </c:if> --%>
             </select></td>
           </tr>
         </table>

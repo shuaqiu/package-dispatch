@@ -6,11 +6,13 @@ define([
         "../selection",
         "../widget/ResourceGrid",
         "../widget/MessageDialog",
+        "../widget/LoadingDialog",
         "dojo/i18n!./nls/order",
         "dojo/date/locale",
         "dojo/date/stamp",
         "dijit/form/CheckBox",
-        "dijit/form/Textarea" ], function(lang, xhr, registry, resource, selection, ResourceGrid, MessageDialog, message) {
+        "dijit/form/Textarea" ], function(lang, xhr, registry, resource, selection, ResourceGrid, MessageDialog,
+        LoadingDialog, message) {
 
     return lang.mixin({}, resource, selection, {
         resourceUrl : "web/order",
@@ -60,36 +62,51 @@ define([
         },
 
         resendIdentityToSender : function(orderId) {
+            var dialog = new LoadingDialog({});
+            dialog.show();
+
             xhr.get({
-                url :  this.resourceUrl + "/" + orderId + "/identity/sender"
-            }).then(function(result){
-                if(result.ok){
+                url : this.resourceUrl + "/" + orderId + "/identity/sender"
+            }).then(function(result) {
+                dialog.hide();
+
+                if (result.ok) {
                     MessageDialog.alert(message["resendIdentityToSenderSucc"]);
-                }else{
+                } else {
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
         },
-        
+
         resendIdentityToReceiver : function(orderId) {
+            var dialog = new LoadingDialog({});
+            dialog.show();
+            
             xhr.get({
-                url :  this.resourceUrl + "/" + orderId + "/identity/receiver"
-            }).then(function(result){
-                if(result.ok){
+                url : this.resourceUrl + "/" + orderId + "/identity/receiver"
+            }).then(function(result) {
+                dialog.hide();
+                
+                if (result.ok) {
                     MessageDialog.alert(message["resendIdentityToReceiverSucc"]);
-                }else{
+                } else {
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
         },
-        
-        regenerateReceiverIdentity : function(orderId){
+
+        regenerateReceiverIdentity : function(orderId) {
+            var dialog = new LoadingDialog({});
+            dialog.show();
+            
             xhr.put({
-                url :  this.resourceUrl + "/" + orderId + "/identity/receiver"
-            }).then(function(result){
-                if(result.ok){
+                url : this.resourceUrl + "/" + orderId + "/identity/receiver"
+            }).then(function(result) {
+                dialog.hide();
+                
+                if (result.ok) {
                     MessageDialog.alert(message["regenerateReceiverIdentitySucc"]);
-                }else{
+                } else {
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });

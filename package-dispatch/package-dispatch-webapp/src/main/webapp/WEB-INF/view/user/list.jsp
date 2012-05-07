@@ -9,12 +9,12 @@
         storeTarget: 'web/user/',
         structure: [
             {name: '员工编号', field: 'code', width: '150px'},
-            {name: '登录账户', field: 'alias', width: '150px'},
+            {name: '登录账户', field: 'loginAccount', width: '150px'},
             {name: '姓名', field: 'name', width: '150px'},
             {name: '电话', field: 'tel', width: '120px'},
-            {name: '短号', field: 'short_number', width: '120px'},
+            {name: '短号', field: 'shortNumber', width: '120px'},
             {name: '部门', field: 'department', width: '250px'},
-            {name: '角色', field: 'role_id', width: '250px',
+            {name: '角色', field: 'roleId', width: '250px',
                 formatter: function(value){
                     switch(value){
                         case 3: 

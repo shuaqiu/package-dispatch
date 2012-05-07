@@ -49,7 +49,9 @@
 
     require([ "qiuq/login", "qiuq/order/alarm", "dojo/domReady!" ], function(login, alarm) {
         login.tryLogin().then(function(){
-            alarm.startCheck();
+            setTimeout(function(){
+                alarm.startCheck();
+            }, 5000);
         });
     });
 
