@@ -37,24 +37,12 @@ define([
             });
         },
 
-        _getValidData : function() {
-            var form = document.forms[this.editingForm];
-
-            var dijitForm = registry.byNode(form);
-            if (dijitForm.isValid() == false) {
-                MessageDialog.error(message["err.INVALID"]);
-                return null;
+        _customErrorCallback : function(result) {
+            if (result.errCode == "DUPLICATE") {
+                MessageDialog.error(message["err.DUPLICATE"]);
+                return false;
             }
-
-            this._checkAccount(true).then(function(result) {
-                if (result.count > 0) {
-                    // some other user has the same alias
-                    MessageDialog.error(message["err.DUPLICATE_ALIAS"]);
-                    return null;
-                }
-            });
-
-            return domform.toJson(form);
+            return true;
         },
 
         _initForm : function(item) {
@@ -62,7 +50,7 @@ define([
             var password = registry.byId("user_editing_password");
             password.set("value", "password");
             password.destroyRecursive();
-            
+
             var form = document.forms[this.editingForm];
 
             for ( var p in item) {

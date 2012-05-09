@@ -18,6 +18,8 @@ public enum ErrCode {
 
     INVALID,
 
+    DUPLICATE,
+
     NOT_LOGINED,
 
     INSERT_FAIL,

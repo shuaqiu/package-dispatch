@@ -151,7 +151,34 @@ public class UserController extends AbstractResourceController<Map<String, Objec
 
     @Override
     protected OperateResult beforeInsert(Map<String, Object> t) {
-        t.put("code", codeGenerator.generateUserCode());
+        String loginAccount = Converter.toString(t.get("loginAccount"));
+        int id = Converter.toInt(t.get("id"));
+        int count = userService.getUserCount(loginAccount, id);
+        if (count > 0) {
+            return new OperateResult(ErrCode.DUPLICATE, "such account is already exist");
+        }
+
+        t.put("code", generateCode());
         return super.beforeInsert(t);
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-8
+     */
+    protected String generateCode() {
+        return codeGenerator.generateUserCode();
+    }
+
+    @Override
+    protected OperateResult beforeUpdate(Map<String, Object> t) {
+        String loginAccount = Converter.toString(t.get("loginAccount"));
+        int id = Converter.toInt(t.get("id"));
+        int count = userService.getUserCount(loginAccount, id);
+        if (count > 0) {
+            return new OperateResult(ErrCode.DUPLICATE, "such account is already exist");
+        }
+
+        return super.beforeUpdate(t);
     }
 }

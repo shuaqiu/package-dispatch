@@ -84,7 +84,7 @@ public class CodeGenerator {
      * @author qiushaohua 2012-5-3
      */
     public String generateCustomerCode() {
-        int maxCode = userService.getMaxUserCodes();
+        int maxCode = userService.getMaxCustomerCodes();
         Code code = generateNewCode(maxCode, 300000);
 
         return code.code;
@@ -97,6 +97,9 @@ public class CodeGenerator {
      * @author qiushaohua 2012-5-4
      */
     private Code generateNewCode(int maxCode, int initCodeValue) {
+        if (maxCode == 0) {
+            maxCode = initCodeValue;
+        }
         Code code = new Code(maxCode + 1);
         return code;
     }

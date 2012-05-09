@@ -111,8 +111,15 @@ define([
                 }
                 tab.close(this.editingTab);
             } else {
+                if (!this._customErrorCallback(result)) {
+                    return;
+                }
                 MessageDialog.error(message["err." + result.errCode]);
             }
+        },
+
+        _customErrorCallback : function(result) {
+            return true;
         },
 
         doModify : function() {

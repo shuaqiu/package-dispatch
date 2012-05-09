@@ -29,14 +29,18 @@
       <div>
         <table class="formTable">
           <tr>
+            <td class="labelCell"><label for="user_editing_code">编号: </label></td>
+            <td><input id="user_editing_code" name="code" readonly="readonly" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '编号由系统自动生成'" /></td>
+          </tr>
+          <tr>
             <td class="labelCell"><em>*</em><label for="customer_editing_alias">登录帐号: </label></td>
-            <td><input id="customer_editing_alias" name="alias" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的登录帐号', required: true" /></td>
+            <td><input id="customer_editing_alias" name="loginAccount" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的登录帐号', required: true" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="customer_editing_name">姓名: </label></td>
             <td><input id="customer_editing_name" name="name" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的姓名', required: true" /></td>
           </tr>
-          <tr>
+          <tr id="customer_editing_password_row">
             <td class="labelCell"><em>*</em><label for="customer_editing_password">密码: </label></td>
             <td><input id="customer_editing_password" name="password" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的密码', type: 'password', required: true" /></td>
           </tr>
@@ -63,7 +67,7 @@
           <c:if test="${user.type == 1 }">
             <tr>
               <td class="labelCell"><label for="customer_editing_customerType">客户类型: </label></td>
-              <td><select id="customer_editing_customerType" name="customer_type" data-dojo-type="dijit.form.Select" data-dojo-props="placeHolder: '客户类型'">
+              <td><select id="customer_editing_customerType" name="customerType" data-dojo-type="dijit.form.Select" data-dojo-props="placeHolder: '客户类型'">
                   <option value="0">普通客户</option>
                   <option value="1">客户管理员</option>
               </select></td>

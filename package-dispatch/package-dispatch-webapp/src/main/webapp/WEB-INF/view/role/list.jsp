@@ -8,7 +8,7 @@
         listGrid : 'role_list_grid',
         storeTarget: 'web/role/',
         structure: [
-            {name: '登录账户', field: 'code', width: '150px'},
+            {name: '登录帐号', field: 'code', width: '150px'},
             {name: '姓名', field: 'name', width: '150px'},
             {name: '电话', field: 'tel', width: '120px'},
             {name: '部门', field: 'department', width: '250px'},

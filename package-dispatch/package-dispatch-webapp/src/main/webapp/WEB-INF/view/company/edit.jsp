@@ -10,8 +10,8 @@
       <div>
         <table class="formTable">
           <tr>
-            <td class="labelCell"><em>*</em><label for="company_editing_code">编码: </label></td>
-            <td><input id="company_editing_code" name="code" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '客户公司的编码', required: true" /></td>
+            <td class="labelCell"><label for="company_editing_code">编码: </label></td>
+            <td><input id="company_editing_code" name="code" readonly="readonly" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '客户公司编号由系统自动生成'" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="company_editing_name">公司名称: </label></td>

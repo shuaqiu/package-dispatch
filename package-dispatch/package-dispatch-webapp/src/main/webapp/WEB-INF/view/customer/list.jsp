@@ -10,7 +10,8 @@
         listGrid : 'customer_list_grid',
         storeTarget: 'web/customer/',
         structure: [
-            {name: '登录账户', field: 'alias', width: '150px'},
+            {name: '编号', field: 'code', width: '100px'},
+            {name: '登录帐号', field: 'loginAccount', width: '150px'},
             {name: '姓名', field: 'name', width: '150px'},
             {name: '电话', field: 'tel', width: '120px'},
             {name: '公司', field: 'company', width: '200px'},
@@ -21,7 +22,7 @@
                     if(item['type'] == 1){
                         return ''
                     }
-                    if(item['customer_type'] == 1){
+                    if(item['customerType'] == 1){
                         return '客户管理员';
                     }
                     return '普通客户';
@@ -47,7 +48,8 @@
         listGrid : 'customer_list_grid',
         storeTarget: 'web/customer/',
         structure: [
-            {name: '登录账户', field: 'code', width: '150px'},
+            {name: '编号', field: 'code', width: '100px'},
+            {name: '登录帐号', field: 'loginAccount', width: '150px'},
             {name: '姓名', field: 'name', width: '150px'},
             {name: '电话', field: 'tel', width: '120px'},
             {name: '部门', field: 'department', width: '150px'},

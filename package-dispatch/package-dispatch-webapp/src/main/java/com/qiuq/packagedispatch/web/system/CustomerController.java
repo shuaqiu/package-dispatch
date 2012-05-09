@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.system.Type;
 
 /**
@@ -37,8 +36,7 @@ public class CustomerController extends UserController {
     }
 
     @Override
-    protected OperateResult beforeInsert(Map<String, Object> t) {
-        t.put("code", codeGenerator.generateCustomerCode());
-        return super.beforeInsert(t);
+    protected String generateCode() {
+        return codeGenerator.generateCustomerCode();
     }
 }

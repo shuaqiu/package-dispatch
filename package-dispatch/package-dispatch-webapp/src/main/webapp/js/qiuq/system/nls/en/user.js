@@ -6,5 +6,5 @@ define({
     "err.INSERT_FAIL": "Fail to Create Employer!",
     "err.UPDATE_FAIL": "Fail to Modify Employer!",
     "err.DELETE_FAIL": "Fail to Delete Employer!",
-    "err.DUPLICATE_ALIAS" : "The account name is already exist, please assign a new one!"
+    "err.DUPLICATE" : "The account name is already exist, please assign a new one!"
 });

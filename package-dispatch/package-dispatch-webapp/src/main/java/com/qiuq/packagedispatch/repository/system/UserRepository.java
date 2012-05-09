@@ -125,6 +125,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         sql.append(", usr.company_id as companyId");
         sql.append(", usr.company as company");
         sql.append(", usr.department as department");
+        sql.append(", usr.address as address");
         sql.append(", usr.type as type");
         sql.append(", usr.customer_type as customerType");
         sql.append(", usr.state as state");
