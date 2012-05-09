@@ -24,6 +24,9 @@
   <c:if test="${function.outStorage }">
     <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/storage'], {title: '快件出库', href: 'web/storage/delete'}, this.id);}">快件出库</div>
   </c:if>
+<%--   <c:if test="${function.history }"> --%>
+    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/history'], {title: '历史订单', href: 'web/order/history/list'}, this.id);}">历史订单</div>
+<%--   </c:if> --%>
   <div data-dojo-type="dijit.PopupMenuBarItem">
     <span>系统管理</span>
     <div data-dojo-type="dijit.DropDownMenu">

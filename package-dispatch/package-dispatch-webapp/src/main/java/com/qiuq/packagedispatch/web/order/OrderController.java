@@ -5,6 +5,7 @@ package com.qiuq.packagedispatch.web.order;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -97,7 +97,7 @@ public class OrderController extends AbstractResourceController<Order> {
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
-            return null;
+            return new HttpEntity<List<Order>>(new ArrayList<Order>());
         }
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -107,37 +107,26 @@ public class OrderController extends AbstractResourceController<Order> {
         params.put("processing", 1);
         params.put("query", query);
 
-        long[] rangeArr = range(range);
-
-        HttpHeaders header = new HttpHeaders();
-        if (rangeArr != null) {
-            long count = orderService.matchedRecordCount(params);
-            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
-        }
-
-        List<Order> list = orderService.query(sort, params, range(range));
-        HttpEntity<List<Order>> entity = new HttpEntity<List<Order>>(list, header);
-
-        return entity;
+        return doQuery(sort, range, params);
     }
 
     @Override
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
-    public OperateResult insert(@RequestBody Order t) {
+    protected OperateResult beforeInsert(Order t) {
         String senderIdentityCode = generateSenderIdentityCode();
         String receiverIdentityCode = generateReceiverIdentityCode(senderIdentityCode);
         t.setSenderIdentityCode(senderIdentityCode);
         t.setReceiverIdentityCode(receiverIdentityCode);
         t.setState(State.NEW_ORDER.ordinal());
         t.setStateDescribe(State.NEW_ORDER.getDescribe());
-        OperateResult insert = super.insert(t);
+        return super.beforeInsert(t);
+    }
 
-        if (insert.isOk()) {
+    @Override
+    protected OperateResult afterInsert(Order t, boolean isInserted) {
+        if (isInserted) {
             new Thread(new SmsNotifier(t)).start();
         }
-
-        return insert;
+        return super.afterInsert(t, isInserted);
     }
 
     /**
@@ -230,13 +219,19 @@ public class OrderController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-28
      */
     @RequestMapping(value = "/{orderId}/identity/sender", method = RequestMethod.GET)
+    @ResponseBody
     public OperateResult resendIdentityToSender(@PathVariable int orderId) {
         Order order = query(orderId);
         if (order == null) {
             return new OperateResult(ErrCode.NOT_FOUND, "not such order");
         }
-        sendIdentityToSender(order);
-        return OperateResult.OK;
+        try {
+            sendIdentityToSender(order);
+            return OperateResult.OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new OperateResult(ErrCode.OPERATE_FAIL, "fail to resend");
     }
 
     /**
@@ -245,13 +240,19 @@ public class OrderController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-28
      */
     @RequestMapping(value = "/{orderId}/identity/receiver", method = RequestMethod.GET)
+    @ResponseBody
     public OperateResult resendIdentityToReceiver(@PathVariable int orderId) {
         Order order = query(orderId);
         if (order == null) {
             return new OperateResult(ErrCode.NOT_FOUND, "not such order");
         }
-        sendIdentityToReceiver(order);
-        return OperateResult.OK;
+        try {
+            sendIdentityToReceiver(order);
+            return OperateResult.OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new OperateResult(ErrCode.OPERATE_FAIL, "fail to resend");
     }
 
     /**
@@ -260,6 +261,7 @@ public class OrderController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-28
      */
     @RequestMapping(value = "/{orderId}/identity/receiver", method = RequestMethod.PUT)
+    @ResponseBody
     public OperateResult regenerateReceiverIdentity(@PathVariable int orderId) {
         Order order = query(orderId);
         if (order == null) {
@@ -273,8 +275,13 @@ public class OrderController extends AbstractResourceController<Order> {
         }
 
         order.setReceiverIdentityCode(code);
-        sendIdentityToReceiver(order);
-        return OperateResult.OK;
+        try {
+            sendIdentityToReceiver(order);
+            return OperateResult.OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new OperateResult(ErrCode.OPERATE_FAIL, "fail to resend");
     }
 
     @RequestMapping(value = "/view/{orderId}", method = RequestMethod.GET)
@@ -290,5 +297,62 @@ public class OrderController extends AbstractResourceController<Order> {
         r.put("scheduleDetail", scheduleDetail);
 
         return "order/view";
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
+    @RequestMapping(value = "/history/list", method = RequestMethod.GET)
+    public String historylist() {
+        return "order/history";
+    }
+
+    /**
+     * @param req
+     * @param sort
+     * @param query
+     * @param range
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
+    @RequestMapping(value = "/history", method = RequestMethod.GET)
+    public HttpEntity<List<Order>> history(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
+            @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new HttpEntity<List<Order>>(new ArrayList<Order>());
+        }
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        if (user.getType() == Type.TYPE_CUSTOMER) {
+            params.put("senderId", user.getId());
+        }
+        params.put("state", State.DELIVERED.ordinal());
+        params.put("query", query);
+
+        return doQuery(sort, range, params);
+    }
+
+    /**
+     * @param sort
+     * @param range
+     * @param params
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
+    private HttpEntity<List<Order>> doQuery(String sort, String range, Map<String, Object> params) {
+        long[] rangeArr = range(range);
+
+        HttpHeaders header = new HttpHeaders();
+        if (rangeArr != null) {
+            long count = orderService.matchedRecordCount(params);
+            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
+        }
+
+        List<Order> list = orderService.query(sort, params, range(range));
+        HttpEntity<List<Order>> entity = new HttpEntity<List<Order>>(list, header);
+
+        return entity;
     }
 }

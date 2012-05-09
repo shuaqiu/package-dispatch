@@ -22,6 +22,8 @@ public enum ErrCode {
 
     NOT_LOGINED,
 
+    OPERATE_FAIL,
+
     INSERT_FAIL,
 
     UPDATE_FAIL,

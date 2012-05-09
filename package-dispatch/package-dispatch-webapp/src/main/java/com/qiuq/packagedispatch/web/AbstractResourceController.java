@@ -65,11 +65,9 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         }
 
         boolean isInserted = getService().insert(t);
-        if (isInserted) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.INSERT_FAIL, "add new resource fail");
-        }
+
+        return afterInsert(t, isInserted);
+
     }
 
     /**
@@ -79,6 +77,20 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
      */
     protected OperateResult beforeInsert(T t) {
         return OperateResult.OK;
+    }
+
+    /**
+     * @param t
+     * @param isInserted
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
+    protected OperateResult afterInsert(T t, boolean isInserted) {
+        if (isInserted) {
+            return OperateResult.OK;
+        } else {
+            return new OperateResult(ErrCode.INSERT_FAIL, "add new resource fail");
+        }
     }
 
     @Override
@@ -91,11 +103,7 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         }
 
         boolean isUpdated = getService().update(id, t);
-        if (isUpdated) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.UPDATE_FAIL, "update resource fail");
-        }
+        return afterUpdate(t, isUpdated);
     }
 
     /**
@@ -105,6 +113,20 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
      */
     protected OperateResult beforeUpdate(T t) {
         return OperateResult.OK;
+    }
+
+    /**
+     * @param t
+     * @param isUpdated
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
+    protected OperateResult afterUpdate(T t, boolean isUpdated) {
+        if (isUpdated) {
+            return OperateResult.OK;
+        } else {
+            return new OperateResult(ErrCode.UPDATE_FAIL, "update resource fail");
+        }
     }
 
     @Override
@@ -117,11 +139,7 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         }
 
         boolean isDeleted = getService().delete(id);
-        if (isDeleted) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.DELETE_FAIL, "delete resource fail");
-        }
+        return afterDelete(isDeleted);
     }
 
     /**
@@ -131,6 +149,20 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
      */
     protected OperateResult beforeDelete(int id) {
         return OperateResult.OK;
+    }
+
+    /**
+     * @param t
+     * @param isDeleted
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
+    protected OperateResult afterDelete(boolean isDeleted) {
+        if (isDeleted) {
+            return OperateResult.OK;
+        } else {
+            return new OperateResult(ErrCode.DELETE_FAIL, "delete resource fail");
+        }
     }
 
     /**

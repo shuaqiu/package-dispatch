@@ -9,5 +9,9 @@ define({
     "resendIdentityToReceiverSucc" : "重發驗證碼給收件人成功",
     "regenerateReceiverIdentitySucc" : "重新生成驗證碼成功並已經發送給收件人",
 
-    "err.NOT_FOUND" : "沒有這個訂單"
+    "err.NOT_FOUND" : "沒有這個訂單",
+        
+    "err.UPDATE_FAIL" : "重新生成驗證碼失敗",
+    "err.OPERATE_FAIL.sender" : "重發流水號失敗",
+    "err.OPERATE_FAIL.receiver" : "重發驗證碼失敗"
 });

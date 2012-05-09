@@ -66,13 +66,18 @@ define([
             dialog.show();
 
             xhr.get({
-                url : this.resourceUrl + "/" + orderId + "/identity/sender"
+                url : this.resourceUrl + "/" + orderId + "/identity/sender",
+                handleAs : "json"
             }).then(function(result) {
                 dialog.hide();
 
                 if (result.ok) {
                     MessageDialog.alert(message["resendIdentityToSenderSucc"]);
                 } else {
+                    if(result.errCode == "OPERATE_FAIL"){
+                        MessageDialog.error(message["err.OPERATE_FAIL.sender"]);
+                        return;
+                    }
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
@@ -83,13 +88,18 @@ define([
             dialog.show();
             
             xhr.get({
-                url : this.resourceUrl + "/" + orderId + "/identity/receiver"
+                url : this.resourceUrl + "/" + orderId + "/identity/receiver",
+                handleAs : "json"
             }).then(function(result) {
                 dialog.hide();
                 
                 if (result.ok) {
                     MessageDialog.alert(message["resendIdentityToReceiverSucc"]);
                 } else {
+                    if(result.errCode == "OPERATE_FAIL"){
+                        MessageDialog.error(message["err.OPERATE_FAIL.receiver"]);
+                        return;
+                    }
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
@@ -100,13 +110,18 @@ define([
             dialog.show();
             
             xhr.put({
-                url : this.resourceUrl + "/" + orderId + "/identity/receiver"
+                url : this.resourceUrl + "/" + orderId + "/identity/receiver",
+                handleAs : "json"
             }).then(function(result) {
                 dialog.hide();
                 
                 if (result.ok) {
                     MessageDialog.alert(message["regenerateReceiverIdentitySucc"]);
                 } else {
+                    if(result.errCode == "OPERATE_FAIL"){
+                        MessageDialog.error(message["err.OPERATE_FAIL.receiver"]);
+                        return;
+                    }
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
