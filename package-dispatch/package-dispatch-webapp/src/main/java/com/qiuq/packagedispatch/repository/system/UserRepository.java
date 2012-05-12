@@ -64,10 +64,18 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
     private PasswordEncoder passwordEncoder;
 
+    private RoleRepository roleRepository;
+
     /** @author qiushaohua 2012-3-24 */
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    /** @author qiushaohua 2012-5-12 */
+    @Autowired
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -269,10 +277,30 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     @Override
-    public boolean insert(Map<String, Object> map) {
+    public OperateResult insert(Map<String, Object> map) {
         String sql = "insert into sys_user(code, login_account, name, password, salt, tel, short_number, company_id, company, department, address, type, customer_type, state)"
                 + " values(:code, :loginAccount, :name, :password, :salt, :tel, :shortNumber, :companyId, :company, :department, :address, :type, :customerType, :state)";
 
+        MapSqlParameterSource paramMap = buildUserParamMap(map);
+
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        OperateResult isUserInserted = doInsert(sql, paramMap, generatedKeyHolder);
+
+        if (isUserInserted.isOk() && map.containsKey("roleId")) {
+            int id = generatedKeyHolder.getKey().intValue();
+            map.put("id", id);
+            return roleRepository.insert(map);
+        }
+
+        return isUserInserted;
+    }
+
+    /**
+     * @param map
+     * @return
+     * @author qiushaohua 2012-5-12
+     */
+    private MapSqlParameterSource buildUserParamMap(Map<String, Object> map) {
         String salt = createSalt();
         String password = passwordEncoder.encodePassword(Converter.toString(map.get("password")), salt);
 
@@ -297,23 +325,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
         paramMap.addValue("type", type);
         paramMap.addValue("customerType", customerType);
         paramMap.addValue("state", User.STATE_VALID);
-
-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        boolean isUserInserted = doInsert(sql, paramMap, generatedKeyHolder);
-
-        if (isUserInserted && map.containsKey("roleId")) {
-            int id = generatedKeyHolder.getKey().intValue();
-            map.put("id", id);
-            return insertRole(map);
-        }
-
-        return isUserInserted;
-    }
-
-    private boolean insertRole(Map<String, Object> t) {
-        String sql = "insert into sys_user_role(user_id, role_id) values (:id, :roleId)";
-        MapSqlParameterSource paramMap = new MapSqlParameterSource(t);
-        return doInsert(sql, paramMap);
+        return paramMap;
     }
 
     /**
@@ -325,30 +337,19 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     @Override
-    public boolean update(int id, Map<String, Object> map) {
+    public OperateResult update(Map<String, Object> map) {
         String sql = "update sys_user set login_account = :loginAccount, name = :name, tel = :tel, short_number = :shortNumber, company_id = :companyId, "
                 + " company = :company, department = :department, address = :address, customer_type = :customerType"
                 + " where id = :id";
 
         User user = Converter.mapToBean(map, User.class);
 
-        boolean isUserUpdated = doUpdate(sql, new BeanPropertySqlParameterSource(user));
-        if (isUserUpdated && map.containsKey("roleId")) {
-            return updateRole(map);
+        OperateResult isUserUpdated = doUpdate(sql, new BeanPropertySqlParameterSource(user));
+        if (isUserUpdated.isOk() && map.containsKey("roleId")) {
+            return roleRepository.update(map);
         }
 
         return isUserUpdated;
-    }
-
-    private boolean updateRole(Map<String, Object> map) {
-        String sql = "update sys_user_role set role_id = :roleId where user_id = :id";
-        MapSqlParameterSource paramMap = new MapSqlParameterSource(map);
-        boolean doUpdate = doUpdate(sql, paramMap);
-        if (!doUpdate) {
-            return insertRole(map);
-        }
-        return doUpdate;
-
     }
 
     /**

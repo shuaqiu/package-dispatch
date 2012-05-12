@@ -64,9 +64,9 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
             return beforeResult;
         }
 
-        boolean isInserted = getService().insert(t);
+        OperateResult insertResult = getService().insert(t);
 
-        return afterInsert(t, isInserted);
+        return afterInsert(t, insertResult);
 
     }
 
@@ -81,16 +81,12 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
 
     /**
      * @param t
-     * @param isInserted
+     * @param insertResult
      * @return
      * @author qiushaohua 2012-5-10
      */
-    protected OperateResult afterInsert(T t, boolean isInserted) {
-        if (isInserted) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.INSERT_FAIL, "add new resource fail");
-        }
+    protected OperateResult afterInsert(T t, OperateResult insertResult) {
+        return insertResult;
     }
 
     @Override
@@ -102,8 +98,8 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
             return beforeResult;
         }
 
-        boolean isUpdated = getService().update(id, t);
-        return afterUpdate(t, isUpdated);
+        OperateResult updateResult = getService().update(t);
+        return afterUpdate(t, updateResult);
     }
 
     /**
@@ -117,16 +113,12 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
 
     /**
      * @param t
-     * @param isUpdated
+     * @param updateResult
      * @return
      * @author qiushaohua 2012-5-10
      */
-    protected OperateResult afterUpdate(T t, boolean isUpdated) {
-        if (isUpdated) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.UPDATE_FAIL, "update resource fail");
-        }
+    protected OperateResult afterUpdate(T t, OperateResult updateResult) {
+        return updateResult;
     }
 
     @Override

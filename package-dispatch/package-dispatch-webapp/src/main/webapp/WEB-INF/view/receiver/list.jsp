@@ -9,7 +9,7 @@
         storeTarget: 'web/receiver/',
         structure: [
             {name: '姓名', field: 'name', width: '150px'},
-            {name: '电话', field: 'tel', width: '100px'},
+            {name: '电话', field: 'tel', width: '120px'},
             {name: '公司', field: 'company', width: '250px'},
             {name: '地址', field: 'address', width: '250px'}
         ],

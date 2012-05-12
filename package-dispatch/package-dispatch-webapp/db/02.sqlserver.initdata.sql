@@ -7,7 +7,7 @@ insert into sys_role(id, code, name)
 values (0, 'administrators', '系统管理员')
 
 set identity_insert sys_user on
-insert into sys_user(id,  code, name, alias, password, salt, tel, company_id, company, department, address, type, customer_type, state )
+insert into sys_user(id,  code, name, login_account, password, salt, tel, company_id, company, department, address, type, customer_type, state )
 values (0, '000000', '系统管理员', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '', '00000000000', 0, '慧信', '慧信', '', 1, null, 1)
 set identity_insert sys_user off
 

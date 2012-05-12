@@ -5,6 +5,8 @@ package com.qiuq.packagedispatch.service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.common.OperateResult;
+
 /**
  * @author qiushaohua 2012-3-27
  * @version 0.0.1
@@ -12,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface ResourceService<T> {
 
-    public T query(int id);
+    T query(int id);
 
-    public boolean insert(T t);
+    OperateResult insert(T t);
 
     boolean delete(int id);
 
-    boolean update(int id, T t);
+    OperateResult update(T t);
 }

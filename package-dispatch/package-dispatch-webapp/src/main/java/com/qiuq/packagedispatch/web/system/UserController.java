@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -25,9 +26,11 @@ import org.springframework.web.context.request.WebRequest;
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
+import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
+import com.qiuq.packagedispatch.service.system.CompanyService;
 import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.CodeGenerator;
@@ -49,6 +52,8 @@ public class UserController extends AbstractResourceController<Map<String, Objec
 
     protected CodeGenerator codeGenerator;
 
+    private CompanyService companyService;
+
     /** @author qiushaohua 2012-3-27 */
     @Autowired
     public void setUserService(UserService userService) {
@@ -65,6 +70,12 @@ public class UserController extends AbstractResourceController<Map<String, Objec
     @Autowired
     public void setCodeGenerator(CodeGenerator codeGenerator) {
         this.codeGenerator = codeGenerator;
+    }
+
+    /** @author qiushaohua 2012-5-13 */
+    @Autowired
+    public void setCompanyService(CompanyService companyService) {
+        this.companyService = companyService;
     }
 
     @Override
@@ -140,10 +151,10 @@ public class UserController extends AbstractResourceController<Map<String, Objec
         return userService.modifyPassword(user, newPassword);
     }
 
-    @RequestMapping(value = "/check/{alias}")
+    @RequestMapping(value = "/check/{loginAccount}")
     @ResponseBody
-    public Map<String, Integer> getUserCount(@PathVariable String alias, @RequestParam(defaultValue = "-1") int id) {
-        int count = userService.getUserCount(alias, id);
+    public Map<String, Integer> getUserCount(@PathVariable String loginAccount, @RequestParam(defaultValue = "-1") int id) {
+        int count = userService.getUserCount(loginAccount, id);
         Map<String, Integer> rmap = new HashMap<String, Integer>();
         rmap.put("count", count);
         return rmap;
@@ -151,11 +162,18 @@ public class UserController extends AbstractResourceController<Map<String, Objec
 
     @Override
     protected OperateResult beforeInsert(Map<String, Object> t) {
-        String loginAccount = Converter.toString(t.get("loginAccount"));
-        int id = Converter.toInt(t.get("id"));
-        int count = userService.getUserCount(loginAccount, id);
-        if (count > 0) {
-            return new OperateResult(ErrCode.DUPLICATE, "such account is already exist");
+        OperateResult checkResult = checkLoginAccount(t);
+        if (!checkResult.isOk()) {
+            return checkResult;
+        }
+
+        int companyId = Converter.toInt(t.get("companyId"), -1);
+        if (companyId == -1) {
+            companyId = getCompanyId(t);
+            if (companyId == -1) {
+                return new OperateResult(ErrCode.OPERATE_FAIL, "could not insert the company");
+            }
+            t.put("companyId", companyId);
         }
 
         t.put("code", generateCode());
@@ -172,13 +190,59 @@ public class UserController extends AbstractResourceController<Map<String, Objec
 
     @Override
     protected OperateResult beforeUpdate(Map<String, Object> t) {
+        OperateResult checkResult = checkLoginAccount(t);
+        if (!checkResult.isOk()) {
+            return checkResult;
+        }
+
+        int companyId = Converter.toInt(t.get("companyId"), -1);
+        if (companyId == -1) {
+            companyId = getCompanyId(t);
+            if (companyId == -1) {
+                return new OperateResult(ErrCode.OPERATE_FAIL, "could not insert the company");
+            }
+            t.put("companyId", companyId);
+        }
+
+        return super.beforeUpdate(t);
+    }
+
+    /**
+     * @param t
+     * @author qiushaohua 2012-5-12
+     * @return
+     */
+    private OperateResult checkLoginAccount(Map<String, Object> t) {
         String loginAccount = Converter.toString(t.get("loginAccount"));
         int id = Converter.toInt(t.get("id"));
         int count = userService.getUserCount(loginAccount, id);
         if (count > 0) {
             return new OperateResult(ErrCode.DUPLICATE, "such account is already exist");
         }
+        return OperateResult.OK;
+    }
 
-        return super.beforeUpdate(t);
+    private int getCompanyId(Map<String, Object> map) {
+        String name = Converter.toString(map.get("company"));
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", name);
+        params.put("nameOp", "=");
+        List<Company> companys = companyService.query("+id", params, null);
+        if (companys.size() > 0) {
+            return companys.get(0).getId();
+        }
+
+        Company company = new Company();
+        company.setCode(codeGenerator.generateCompanyCode());
+        company.setName(name);
+        company.setAddress(Converter.toString(map.get("address")));
+
+        OperateResult insertResult = companyService.insert(company);
+        if (insertResult.isOk()) {
+            GeneratedKeyHolder keyHolder = (GeneratedKeyHolder) insertResult.getObj();
+            return keyHolder.getKey().intValue();
+        }
+        return -1;
     }
 }

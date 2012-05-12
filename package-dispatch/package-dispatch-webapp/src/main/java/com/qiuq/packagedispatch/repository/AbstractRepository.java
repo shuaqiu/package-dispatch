@@ -12,6 +12,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.common.ErrCode;
+import com.qiuq.common.OperateResult;
+
 /**
  * @author qiushaohua 2012-3-27
  * @version 0.0.1
@@ -120,13 +123,16 @@ public abstract class AbstractRepository {
      * @return
      * @author qiushaohua 2012-4-4
      */
-    protected <T> boolean doInsert(String sql, SqlParameterSource paramSource) {
+    protected OperateResult doInsert(String sql, SqlParameterSource paramSource) {
         try {
-            int update = jdbcTemplate.update(sql, paramSource);
-            return update == 1;
+            int inserted = jdbcTemplate.update(sql, paramSource);
+            if (inserted == 1) {
+                return OperateResult.OK;
+            }
+            return new OperateResult(ErrCode.INSERT_FAIL, "inserted row is not equals 1");
         } catch (DataAccessException e) {
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage(), e);
         }
-        return false;
     }
 
     /**
@@ -136,13 +142,16 @@ public abstract class AbstractRepository {
      * @return
      * @author qiushaohua 2012-5-2
      */
-    protected <T> boolean doInsert(String sql, SqlParameterSource paramSource, KeyHolder generatedKeyHolder) {
+    protected OperateResult doInsert(String sql, SqlParameterSource paramSource, KeyHolder generatedKeyHolder) {
         try {
-            int update = jdbcTemplate.update(sql, paramSource, generatedKeyHolder);
-            return update == 1;
+            int inserted = jdbcTemplate.update(sql, paramSource, generatedKeyHolder);
+            if (inserted == 1) {
+                return new OperateResult(true, generatedKeyHolder);
+            }
+            return new OperateResult(ErrCode.INSERT_FAIL, "inserted row is not equals 1");
         } catch (DataAccessException e) {
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage(), e);
         }
-        return false;
     }
 
     /**
@@ -151,12 +160,15 @@ public abstract class AbstractRepository {
      * @return
      * @author qiushaohua 2012-4-4
      */
-    protected <T> boolean doUpdate(String sql, SqlParameterSource paramSource) {
+    protected OperateResult doUpdate(String sql, SqlParameterSource paramSource) {
         try {
-            int update = jdbcTemplate.update(sql, paramSource);
-            return update == 1;
+            int updated = jdbcTemplate.update(sql, paramSource);
+            if (updated == 1) {
+                return OperateResult.OK;
+            }
+            return new OperateResult(ErrCode.UPDATE_FAIL, "update row is not equals 1");
         } catch (DataAccessException e) {
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage(), e);
         }
-        return false;
     }
 }

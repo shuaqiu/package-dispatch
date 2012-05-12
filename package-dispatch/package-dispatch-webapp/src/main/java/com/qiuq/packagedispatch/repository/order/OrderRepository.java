@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
@@ -40,11 +41,11 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
 
     @Override
     public boolean delete(int id) {
-        return false;
+        throw new UnsupportedOperationException("delete an order is not supported");
     }
 
     @Override
-    public boolean insert(Order t) {
+    public OperateResult insert(Order t) {
         String sql = "insert into dispatch_order(sender_id, sender_name, sender_tel, sender_company, sender_address,"
                 + " receiver_id, receiver_name, receiver_tel, receiver_company, receiver_address,"
                 + " goods_name, quantity, bar_code, sender_identity_code, receiver_identity_code, state, state_describe)"
@@ -55,8 +56,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
     }
 
     @Override
-    public boolean update(int id, Order t) {
-        return false;
+    public OperateResult update(Order t) {
+        throw new UnsupportedOperationException("update an order is not supported");
     }
 
     /**

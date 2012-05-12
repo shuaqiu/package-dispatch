@@ -6,14 +6,18 @@ package com.qiuq.packagedispatch.repository.system;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.common.OperateResult;
+import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -48,39 +52,89 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
 
     /**
      * @param sort
-     * @param query
+     * @param params
      * @param range
      * @return
      * @author qiushaohua 2012-3-24
      */
-    public List<Company> query(String sort, String query, long[] range) {
+    public List<Company> query(String sort, Map<String, Object> params, long[] range) {
         String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from sys_company where id > 0";
-        SqlParameterSource paramMap = null;
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
 
-        if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
-            paramMap = new MapSqlParameterSource("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildCondition(params, paramMap);
 
         String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
         return jdbcTemplate.query(rangeQuerySql, paramMap, new CompanyRowMapper());
     }
 
     /**
-     * @param query
+     * @param params
      * @return
      * @author qiushaohua 2012-4-3
      */
-    public long matchedRecordCount(String query) {
+    public long matchedRecordCount(Map<String, Object> params) {
         String sql = "select count(*) from sys_company where id > 0";
-        SqlParameterSource paramMap = null;
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
 
-        if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
-            paramMap = new MapSqlParameterSource("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildCondition(params, paramMap);
 
         return jdbcTemplate.queryForLong(sql, paramMap);
+    }
+
+    /**
+     * @param params
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2012-5-12
+     */
+    private String buildCondition(Map<String, Object> params, MapSqlParameterSource paramMap) {
+        String sql = "";
+        if (params == null || params.size() == 0) {
+            return sql;
+        }
+
+        int companyId = Converter.toInt(params.get("companyId"), -1);
+        if (companyId != -1) {
+            sql += " and company_id = :companyId";
+            paramMap.addValue("companyId", companyId);
+        }
+
+        String query = Converter.toString(params.get("query"));
+        if (StringUtils.hasText(query)) {
+            sql += " and (code like :query or name like :query or address like :query)";
+            paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
+        }
+
+        sql += buildCondition(params, "code", paramMap);
+        sql += buildCondition(params, "name", paramMap);
+        sql += buildCondition(params, "address", paramMap);
+
+        return sql;
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2012-5-12
+     */
+    protected String buildCondition(Map<String, Object> params, String key, MapSqlParameterSource paramMap) {
+        String name = Converter.toString(params.get(key));
+        if (!StringUtils.hasText(name)) {
+            return "";
+        }
+
+        String op = Converter.toString(params.get(key + "Op"), "like").toLowerCase();
+        if (op.equals("like") || op.equals("not like")) {
+            paramMap.addValue(key, "%" + sqlUtil.escapeLikeValue(name) + "%");
+        } else {
+            paramMap.addValue(key, name);
+        }
+
+        // " and key op :key"
+        String sql = " and " + key + " " + op + " :" + key;
+        return sql;
     }
 
     /**
@@ -109,20 +163,20 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
      * @return
      */
     @Override
-    public boolean insert(Company com) {
+    public OperateResult insert(Company com) {
         String sql = "insert into sys_company(code, name, address, parent_id, full_id, type)"
                 + " values(:code, :name, :address, :parentId, :fullId, :type)";
-        return doInsert(sql, new BeanPropertySqlParameterSource(com));
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        return doInsert(sql, new BeanPropertySqlParameterSource(com), generatedKeyHolder);
     }
 
     /**
-     * @param id
      * @param com
      * @return
      * @author qiushaohua 2012-3-26
      */
     @Override
-    public boolean update(int id, Company com) {
+    public OperateResult update(Company com) {
         String sql = "update sys_company set code = :code, name = :name, address = :address where id = :id";
 
         return doUpdate(sql, new BeanPropertySqlParameterSource(com));

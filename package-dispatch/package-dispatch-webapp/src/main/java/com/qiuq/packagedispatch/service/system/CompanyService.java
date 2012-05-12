@@ -4,6 +4,7 @@
 package com.qiuq.packagedispatch.service.system;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,24 +36,24 @@ public class CompanyService extends AbstractResourceService<Company> {
 
     /**
      * @param sort
-     * @param query
+     * @param params
      * @param range
      * @return
      * @author qiushaohua 2012-3-24
      */
     @Transactional(readOnly = true)
-    public List<Company> query(String sort, String query, long[] range) {
-        return companyRepository.query(sort, query, range);
+    public List<Company> query(String sort, Map<String, Object> params, long[] range) {
+        return companyRepository.query(sort, params, range);
     }
 
     /**
-     * @param query
+     * @param params
      * @return
      * @author qiushaohua 2012-4-3
      */
     @Transactional(readOnly = true)
-    public long matchedRecordCount(String query) {
-        return companyRepository.matchedRecordCount(query);
+    public long matchedRecordCount(Map<String, Object> params) {
+        return companyRepository.matchedRecordCount(params);
     }
 
     /**

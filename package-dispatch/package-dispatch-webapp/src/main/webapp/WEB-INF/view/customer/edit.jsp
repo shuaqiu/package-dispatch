@@ -53,7 +53,14 @@
             <tr>
               <td class="labelCell"><em>*</em><label for="customer_editing_company">公司: </label></td>
               <td><input id="customer_editing_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
-                data-dojo-props="placeHolder: '用户的公司', required: true, onFocus: function(){require(['qiuq/system/customer'], function(selection){selection.showSelectionDialog();});}" /></td>
+                data-dojo-props="placeHolder: '用户的公司', required: true,
+                    onKeyUp: function(event){
+                        require(['qiuq/system/customer'], function(customer){
+                            customer.suggest(event.target);
+                            customer.onCompanyKeyUps();
+                        });
+                    }" />
+                <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/system/customer'], function(selection){selection.showSelectionDialog()})}" /></td>
             </tr>
           </c:if>
           <tr>
@@ -62,7 +69,7 @@
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="customer_editing_address">地址: </label></td>
-            <td><input id="customer_editing_address" name="address" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户公司的地址', required: true" /></td>
+            <td><input id="customer_editing_address" name="address" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '用户的地址', required: true" /></td>
           </tr>
           <c:if test="${user.type == 1 }">
             <tr>

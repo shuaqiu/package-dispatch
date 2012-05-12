@@ -3,7 +3,9 @@
  */
 package com.qiuq.packagedispatch.web.system;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -58,13 +60,16 @@ public class CompanyController extends AbstractResourceController<Company> {
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
         long[] rangeArr = range(range);
 
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("query", query);
+
         HttpHeaders header = new HttpHeaders();
         if (rangeArr != null) {
-            long count = companyService.matchedRecordCount(query);
+            long count = companyService.matchedRecordCount(params);
             header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
         }
 
-        List<Company> list = companyService.query(sort, query, rangeArr);
+        List<Company> list = companyService.query(sort, params, rangeArr);
         HttpEntity<List<Company>> entity = new HttpEntity<List<Company>>(list, header);
 
         return entity;

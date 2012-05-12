@@ -122,11 +122,11 @@ public class OrderController extends AbstractResourceController<Order> {
     }
 
     @Override
-    protected OperateResult afterInsert(Order t, boolean isInserted) {
-        if (isInserted) {
+    protected OperateResult afterInsert(Order t, OperateResult insertResult) {
+        if (insertResult.isOk()) {
             new Thread(new SmsNotifier(t)).start();
         }
-        return super.afterInsert(t, isInserted);
+        return super.afterInsert(t, insertResult);
     }
 
     /**

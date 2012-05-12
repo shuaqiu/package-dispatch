@@ -5,6 +5,7 @@ package com.qiuq.packagedispatch.service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 
 /**
@@ -23,7 +24,7 @@ public abstract class AbstractResourceService<T> implements ResourceService<T> {
 
     @Override
     @Transactional
-    public boolean insert(T t) {
+    public OperateResult insert(T t) {
         return getRepository().insert(t);
     }
 
@@ -35,8 +36,8 @@ public abstract class AbstractResourceService<T> implements ResourceService<T> {
 
     @Override
     @Transactional
-    public boolean update(int id, T t) {
-        return getRepository().update(id, t);
+    public OperateResult update(T t) {
+        return getRepository().update(t);
     }
 
 }

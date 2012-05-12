@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.customer.ReceiverCompany;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -86,13 +87,13 @@ public class ReceiverCompanyRepository extends AbstractRepository implements Res
     }
 
     @Override
-    public boolean insert(ReceiverCompany t) {
+    public OperateResult insert(ReceiverCompany t) {
         String sql = "insert into customer_receiver_company(user_id, name, address) values(:userId, :name, :address)";
         return doInsert(sql, new BeanPropertySqlParameterSource(t));
     }
 
     @Override
-    public boolean update(int id, ReceiverCompany t) {
+    public OperateResult update(ReceiverCompany t) {
         String sql = "update customer_receiver_company set user_id = :userId, name = :name, address = :address where id = :id";
         return doUpdate(sql, new BeanPropertySqlParameterSource(t));
     }

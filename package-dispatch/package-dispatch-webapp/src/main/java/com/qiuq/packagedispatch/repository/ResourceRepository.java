@@ -3,6 +3,8 @@
  */
 package com.qiuq.packagedispatch.repository;
 
+import com.qiuq.common.OperateResult;
+
 
 /**
  * @author qiushaohua 2012-3-27
@@ -12,9 +14,9 @@ public interface ResourceRepository<T> {
 
     public T query(int id);
 
-    boolean insert(T t);
+    OperateResult insert(T t);
 
     boolean delete(int id);
 
-    boolean update(int id, T t);
+    OperateResult update(T t);
 }

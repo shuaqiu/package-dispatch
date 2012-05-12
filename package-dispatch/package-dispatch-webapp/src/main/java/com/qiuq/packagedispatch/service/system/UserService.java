@@ -102,14 +102,14 @@ public class UserService extends AbstractResourceService<Map<String, Object>> {
     }
 
     /**
-     * @param alias
+     * @param loginAccount
      * @param id
      * @return
      * @author qiushaohua 2012-5-3
      */
     @Transactional(readOnly = true)
-    public int getUserCount(String alias, int id) {
-        return userRepository.getUserCount(alias, id);
+    public int getUserCount(String loginAccount, int id) {
+        return userRepository.getUserCount(loginAccount, id);
     }
 
     /**

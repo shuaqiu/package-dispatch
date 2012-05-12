@@ -28,5 +28,7 @@ public enum ErrCode {
 
     UPDATE_FAIL,
 
-    DELETE_FAIL;
+    DELETE_FAIL,
+
+    EXCEPTION;
 }

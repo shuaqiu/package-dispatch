@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.system.Function;
 import com.qiuq.packagedispatch.bean.system.Role;
@@ -104,8 +105,8 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
     }
 
     @Override
-    public boolean insert(Map<String, Object> t) {
-        String sql = "insert into sys_user_role(user_id, role_id) values (:id, :role_id)";
+    public OperateResult insert(Map<String, Object> t) {
+        String sql = "insert into sys_user_role(user_id, role_id) values (:id, :roleId)";
         MapSqlParameterSource paramMap = new MapSqlParameterSource(t);
         return doInsert(sql, paramMap);
     }
@@ -116,11 +117,11 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
     }
 
     @Override
-    public boolean update(int id, Map<String, Object> t) {
-        String sql = "update sys_user_role set role_id = :role_id where user_id = :id";
+    public OperateResult update(Map<String, Object> t) {
+        String sql = "update sys_user_role set role_id = :roleId where user_id = :id";
         MapSqlParameterSource paramMap = new MapSqlParameterSource(t);
-        boolean doUpdate = doUpdate(sql, paramMap);
-        if (!doUpdate) {
+        OperateResult doUpdate = doUpdate(sql, paramMap);
+        if (!doUpdate.isOk()) {
             return insert(t);
         }
         return doUpdate;
