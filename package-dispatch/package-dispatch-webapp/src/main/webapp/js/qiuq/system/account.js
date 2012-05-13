@@ -31,26 +31,18 @@ define([
             password.set("value", "password");
             password.destroyRecursive();
 
-            var form = document.forms[this.editingForm];
+            lang.hitch(this, resource._initForm)(item);
+        },
 
-            for ( var p in item) {
-                if (p == "customerType") {
-                    var customerType = registry.byId("customer_editing_customerType");
-                    if (customerType != null) {
-                        customerType.set("value", item[p]);
-                    }
-                    return;
+        _initFormItem : function(item, form, p) {
+            if (p == "customerType") {
+                var customerType = registry.byId("customer_editing_customerType");
+                if (customerType != null) {
+                    customerType.set("value", item[p]);
                 }
-
-                var elem = form[p];
-                if (elem) {
-                    if (elem.id) {
-                        registry.byId(elem.id).set("value", item[p]);
-                    } else {
-                        elem.value = item[p];
-                    }
-                }
+                return;
             }
+            lang.hitch(this, resource._initFormItem)(item, form, p);
         }
     });
 });

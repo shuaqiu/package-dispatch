@@ -3,11 +3,8 @@
  */
 package com.qiuq.packagedispatch.web.system;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.qiuq.packagedispatch.bean.system.Type;
 
@@ -20,11 +17,6 @@ import com.qiuq.packagedispatch.bean.system.Type;
 @Controller
 @RequestMapping(value = "/customer")
 public class CustomerController extends UserController {
-
-    @RequestMapping(value = "/company", method = RequestMethod.GET)
-    public Map<String, Object> company(){
-        return null;
-    }
 
     /**
      * @return

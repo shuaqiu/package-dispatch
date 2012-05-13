@@ -37,28 +37,6 @@ public class RoleService extends AbstractResourceService<Map<String, Object>> {
     }
 
     /**
-     * @param sort
-     * @param params
-     * @param range
-     * @return
-     * @author qiushaohua 2012-4-8
-     */
-    @Transactional(readOnly = true)
-    public List<Map<String, Object>> query(String sort, Map<String, Object> params, long[] range) {
-        return roleRepository.query(sort, params, range);
-    }
-
-    /**
-     * @param params
-     * @return
-     * @author qiushaohua 2012-4-8
-     */
-    @Transactional(readOnly = true)
-    public long matchedRecordCount(Map<String, Object> params) {
-        return roleRepository.matchedRecordCount(params);
-    }
-
-    /**
      * @param user
      * @return
      * @author qiushaohua 2012-4-12

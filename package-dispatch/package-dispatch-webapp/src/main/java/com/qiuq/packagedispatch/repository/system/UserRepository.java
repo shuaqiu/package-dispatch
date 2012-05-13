@@ -18,11 +18,11 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
+import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
@@ -121,6 +121,7 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
      * @return
      * @author qiushaohua 2012-3-27
      */
+    @Override
     public List<Map<String, Object>> query(String sort, Map<String, Object> params, long[] range) {
         StringBuilder sql = new StringBuilder();
         sql.append(" select ");
@@ -155,8 +156,9 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
      * @return
      * @author qiushaohua 2012-4-4
      */
+    @Override
     public long matchedRecordCount(Map<String, Object> params) {
-        String sql = "select count(*) from sys_user where id > 0 and state = " + User.STATE_VALID;
+        String sql = "select count(*) from sys_user usr where usr.id > 0 and usr.state = " + User.STATE_VALID;
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
 
         sql += buildCondition(params, paramMap);
@@ -176,23 +178,11 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
             return sql;
         }
 
-        int type = Converter.toInt(params.get("type"), -1);
-        if (type != -1) {
-            sql += " and type = :type";
-            paramMap.addValue("type", type);
-        }
-
-        int companyId = Converter.toInt(params.get("companyId"), -1);
-        if (companyId != -1) {
-            sql += " and company_id = :companyId";
-            paramMap.addValue("companyId", companyId);
-        }
+        sql += buildIntCondition(params, "type", "usr", paramMap);
+        sql += buildIntCondition(params, "companyId", "usr", paramMap);
 
         String query = Converter.toString(params.get("query"));
-        if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or login_account like :query or name like :query or address like :query)";
-            paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildQueryCondition(query, paramMap, "usr.code", "usr.login_account", "usr.name", "usr.address");
 
         return sql;
     }
@@ -260,11 +250,13 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
     }
 
     @Override
-    public boolean delete(int id) {
-        boolean isDeleted = doDelete("sys_user", id);
-        if (isDeleted) {
+    public OperateResult delete(int id) {
+        OperateResult isDeleted = doDelete("sys_user", id);
+        if (isDeleted.isOk()) {
             deleteRole(id);
         }
+        // TODO need to update those table that relative with user
+
         return isDeleted;
     }
 
@@ -344,8 +336,43 @@ public class UserRepository extends AbstractRepository implements ResourceReposi
 
         User user = Converter.mapToBean(map, User.class);
 
-        OperateResult isUserUpdated = doUpdate(sql, new BeanPropertySqlParameterSource(user));
-        if (isUserUpdated.isOk() && map.containsKey("roleId")) {
+        BeanPropertySqlParameterSource paramMap = new BeanPropertySqlParameterSource(user);
+        OperateResult isUserUpdated = doUpdate(sql, paramMap);
+
+        if (!isUserUpdated.isOk()) {
+            return isUserUpdated;
+        }
+
+        if (user.getType() == Type.TYPE_SELF) {
+            // update the scheduler info in processing order
+            sql = "update dispatch_order set scheduler_name = :name, scheduler_tel = :tel"
+                    + " where scheduler_id = :id and state < " + State.DELIVERED.ordinal();
+            jdbcTemplate.update(sql, paramMap);
+
+            // update the current handler info in processing order
+            sql = "update dispatch_order set handler_name = :name, handler_tel = :tel"
+                    + " where handler_id = :id and state < " + State.DELIVERED.ordinal();
+            jdbcTemplate.update(sql, paramMap);
+
+            // // update the schedule info in processing order
+            // sql = "update dispatch_schedule_detail set handler_name = :name, handler_tel = :tel"
+            // + " where handler_id = :id and order_id in (select id from dispatch_order where state < "
+            // + State.DELIVERED.ordinal() + ")";
+            // jdbcTemplate.update(sql, paramMap);
+            //
+            // // update the schedule info in processing order
+            // sql = "update dispatch_handle_detail set handler_name = :name, handler_tel = :tel"
+            // + " where handler_id = :id and order_id in (select id from dispatch_order where state < "
+            // + State.DELIVERED.ordinal() + ")";
+            // jdbcTemplate.update(sql, paramMap);
+        } else {
+            // update the sender info in processing order
+            sql = "update dispatch_order set sender_name = :name, sender_tel = :tel, sender_company = :company, sender_address = :address"
+                    + " where sender_id = :id and state < " + State.DELIVERED.ordinal();
+            jdbcTemplate.update(sql, paramMap);
+        }
+
+        if (map.containsKey("roleId")) {
             return roleRepository.update(map);
         }
 

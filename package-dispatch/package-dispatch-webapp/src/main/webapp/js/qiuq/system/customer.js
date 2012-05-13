@@ -42,7 +42,7 @@ define([
 
         _selectedItem : null,
 
-        onCompanyKeyUps : function() {
+        onCompanyKeyUp : function() {
             if (this._selectedItem == null) {
                 return;
             }
@@ -58,7 +58,7 @@ define([
         },
 
         _initForm : function(item) {
-            account._initForm(item);
+            lang.hitch(this, account._initForm)(item);
             this._selectedItem = {
                 id : item.companyId,
                 name : item.company

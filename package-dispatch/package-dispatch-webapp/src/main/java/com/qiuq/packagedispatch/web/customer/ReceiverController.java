@@ -3,17 +3,18 @@
  */
 package com.qiuq.packagedispatch.web.customer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.packagedispatch.bean.customer.Receiver;
@@ -33,6 +34,7 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
 
     private ReceiverService receiverService;
 
+
     /** @author qiushaohua 2012-3-31 */
     @Autowired
     public void setReceiverService(ReceiverService receiverService) {
@@ -45,25 +47,17 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     public HttpEntity<List<Receiver>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
-            return null;
+            return new HttpEntity<List<Receiver>>(new ArrayList<Receiver>());
         }
 
-        long[] rangeArr = range(range);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("userId", user.getId());
+        params.put("query", query);
 
-        HttpHeaders header = new HttpHeaders();
-        if (rangeArr != null) {
-            long count = receiverService.matchedRecordCount(user.getId(), query);
-            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
-        }
-
-        List<Receiver> list = receiverService.query(user.getId(), sort, query, range(range));
-        HttpEntity<List<Receiver>> entity = new HttpEntity<List<Receiver>>(list, header);
-
-        return entity;
+        return doQuery(sort, params, range);
     }
 }

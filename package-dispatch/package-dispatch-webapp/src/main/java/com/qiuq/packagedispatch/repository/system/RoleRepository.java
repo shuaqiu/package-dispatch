@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
@@ -36,6 +35,7 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
      * @return
      * @author qiushaohua 2012-3-27
      */
+    @Override
     public List<Map<String, Object>> query(String sort, Map<String, Object> params, long[] range) {
         String sql = "select usr.*, role.role_id, row_number() over(" + orderBy(sort) + ") as rownum"
                 + " from sys_user usr left join sys_user_role role on usr.id = role.user_id"
@@ -53,6 +53,7 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
      * @return
      * @author qiushaohua 2012-4-4
      */
+    @Override
     public long matchedRecordCount(Map<String, Object> params) {
         String sql = "select count(*) from sys_user where id > 0 and state = " + User.STATE_VALID + " and type = "
                 + Type.TYPE_SELF;
@@ -76,10 +77,7 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
         }
 
         String query = Converter.toString(params.get("query"));
-        if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
-            paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildQueryCondition(query, paramMap, "code", "login_account", "name", "address");
 
         return sql;
     }
@@ -101,7 +99,12 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
 
     @Override
     public Map<String, Object> query(int id) {
-        return null;
+        throw new UnsupportedOperationException("select a role by id is not supported");
+    }
+
+    @Override
+    public OperateResult delete(int id) {
+        throw new UnsupportedOperationException("delete a role by id is not supported");
     }
 
     @Override
@@ -109,11 +112,6 @@ public class RoleRepository extends AbstractRepository implements ResourceReposi
         String sql = "insert into sys_user_role(user_id, role_id) values (:id, :roleId)";
         MapSqlParameterSource paramMap = new MapSqlParameterSource(t);
         return doInsert(sql, paramMap);
-    }
-
-    @Override
-    public boolean delete(int id) {
-        return false;
     }
 
     @Override

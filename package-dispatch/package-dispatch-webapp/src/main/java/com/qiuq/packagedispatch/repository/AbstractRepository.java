@@ -3,6 +3,10 @@
  */
 package com.qiuq.packagedispatch.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
+import com.qiuq.common.convert.Converter;
 
 /**
  * @author qiushaohua 2012-3-27
@@ -104,17 +109,19 @@ public abstract class AbstractRepository {
      * @return
      * @author qiushaohua 2012-3-31
      */
-    protected boolean doDelete(String table, int id) {
+    protected OperateResult doDelete(String table, int id) {
         String sql = "delete from " + table + " where id = :id";
         SqlParameterSource paramMap = new MapSqlParameterSource("id", id);
 
         try {
             int update = jdbcTemplate.update(sql, paramMap);
-            return update == 1;
+            if (update == 1) {
+                return OperateResult.OK;
+            }
+            return new OperateResult(ErrCode.INSERT_FAIL, "delete row is not equals 1");
         } catch (DataAccessException e) {
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
         }
-
-        return false;
     }
 
     /**
@@ -131,7 +138,7 @@ public abstract class AbstractRepository {
             }
             return new OperateResult(ErrCode.INSERT_FAIL, "inserted row is not equals 1");
         } catch (DataAccessException e) {
-            return new OperateResult(ErrCode.EXCEPTION, e.getMessage(), e);
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
         }
     }
 
@@ -150,7 +157,7 @@ public abstract class AbstractRepository {
             }
             return new OperateResult(ErrCode.INSERT_FAIL, "inserted row is not equals 1");
         } catch (DataAccessException e) {
-            return new OperateResult(ErrCode.EXCEPTION, e.getMessage(), e);
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
         }
     }
 
@@ -168,7 +175,128 @@ public abstract class AbstractRepository {
             }
             return new OperateResult(ErrCode.UPDATE_FAIL, "update row is not equals 1");
         } catch (DataAccessException e) {
-            return new OperateResult(ErrCode.EXCEPTION, e.getMessage(), e);
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
         }
     }
+
+    /**
+     * @param params
+     * @param key
+     * @param paramMap
+     * @return " and key params.get(key + "Op") :key"
+     * @author qiushaohua 2012-5-13
+     */
+    protected String buildIntCondition(Map<String, Object> params, String key, MapSqlParameterSource paramMap) {
+        return buildIntCondition(params, key, null, paramMap);
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param table
+     * @param paramMap
+     * @return " and table.key params.get(key + "Op") :key"
+     * @author qiushaohua 2012-5-14
+     */
+    protected String buildIntCondition(Map<String, Object> params, String key, String table,
+            MapSqlParameterSource paramMap) {
+        int value = Converter.toInt(params.get(key), -1);
+        if (value == -1) {
+            return "";
+        }
+
+        String op = Converter.toString(params.get(key + "Op"), "=").toLowerCase();
+        paramMap.addValue(key, value);
+        // " and table.key op :key"
+        String sql = " and " + buildColumn(table, key) + " " + op + " :" + key;
+        return sql;
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param paramMap
+     * @return " and key params.get(key + "Op") :key"
+     * @author qiushaohua 2012-5-12
+     */
+    protected String buildStringCondition(Map<String, Object> params, String key, MapSqlParameterSource paramMap) {
+        return buildStringCondition(params, key, null, paramMap);
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param table
+     * @param paramMap
+     * @return " and table.key params.get(key + "Op") :key"
+     * @author qiushaohua 2012-5-14
+     */
+    protected String buildStringCondition(Map<String, Object> params, String key, String table,
+            MapSqlParameterSource paramMap) {
+        String value = Converter.toString(params.get(key));
+        if (!StringUtils.hasText(value)) {
+            return "";
+        }
+
+        String op = Converter.toString(params.get(key + "Op"), "like").toLowerCase();
+        if (op.equals("like") || op.equals("not like")) {
+            paramMap.addValue(key, "%" + sqlUtil.escapeLikeValue(value) + "%");
+        } else {
+            paramMap.addValue(key, value);
+        }
+
+        // " and table.key op :key"
+        String sql = " and " + buildColumn(table, key) + " " + op + " :" + key;
+        return sql;
+    }
+
+    /**
+     * @param table
+     * @param key
+     * @return
+     * @author qiushaohua 2012-5-14
+     */
+    protected String buildColumn(String table, String key) {
+        String col = "";
+        if (StringUtils.hasText(table)) {
+            col += table;
+            if (!table.endsWith(".")) {
+                col += ".";
+            }
+        }
+        col += underscoreName(key);
+        return col;
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2012-5-13
+     */
+    protected String buildQueryCondition(String query, MapSqlParameterSource paramMap, String...fields) {
+        if(fields == null || fields.length == 0){
+            return "";
+        }
+
+        if (!StringUtils.hasText(query)) {
+            return "";
+        }
+
+        paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
+
+        // and (field0 like :query or field1 like :query ...)
+        StringBuilder sql = new StringBuilder();
+        sql.append(" and (");
+        List<String> s = new ArrayList<String>();
+        for(String field : fields){
+            s.add(field + " like :query");
+        }
+        sql.append(StringUtils.collectionToDelimitedString(s, " or "));
+        sql.append(" )");
+
+        return sql.toString();
+    }
+
 }

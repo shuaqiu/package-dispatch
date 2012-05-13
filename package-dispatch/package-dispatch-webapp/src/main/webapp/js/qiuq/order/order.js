@@ -3,7 +3,7 @@ define([
         "dojo/_base/xhr",
         "dijit/registry",
         "../resource",
-        "../selection",
+        "../suggest",
         "../widget/ResourceGrid",
         "../widget/MessageDialog",
         "../widget/LoadingDialog",
@@ -11,10 +11,10 @@ define([
         "dojo/date/locale",
         "dojo/date/stamp",
         "dijit/form/CheckBox",
-        "dijit/form/Textarea" ], function(lang, xhr, registry, resource, selection, ResourceGrid, MessageDialog,
+        "dijit/form/Textarea" ], function(lang, xhr, registry, resource, suggest, ResourceGrid, MessageDialog,
         LoadingDialog, message) {
 
-    return lang.mixin({}, resource, selection, {
+    return lang.mixin({}, resource, suggest, {
         resourceUrl : "web/order",
         listGrid : "order_list_grid",
 
@@ -34,7 +34,7 @@ define([
         }, {
             name : message["tel"],
             field : "tel",
-            width : "100px"
+            width : "120px"
         }, {
             name : message["company"],
             field : "company",
@@ -46,12 +46,41 @@ define([
         } ],
 
         doSelect : function(item) {
+            this._selectedItem = item;
+            
             var form = document.forms[this.editingForm];
             form["receiverId"].value = item["id"];
             registry.byId(form["receiverName"].id).set("value", item["name"]);
             registry.byId(form["receiverTel"].id).set("value", item["tel"]);
             registry.byId(form["receiverCompany"].id).set("value", item["company"]);
             registry.byId(form["receiverAddress"].id).set("value", item["address"]);
+        },
+
+        _selectedItem : null,
+
+        onReceiverKeyUp : function() {
+            if (this._selectedItem == null) {
+                return;
+            }
+
+            var form = document.forms[this.editingForm];
+
+            var company = registry.byId(form["receiverName"].id).get("value");
+            if (company != this._selectedItem["name"]) {
+                form["receiverId"].value = "-1";
+            } else {
+                form["receiverId"].value = this._selectedItem["id"];
+            }
+        },
+
+        _initForm : function(item) {
+            lang.hitch(this, resource._initForm)(item);
+            this._selectedItem = {
+                id : item.receiverId,
+                name : item.receiverName,
+                tel : receiverTel,
+                company : item.receiverCompany
+            };
         },
 
         doView : function(orderId) {
@@ -127,21 +156,4 @@ define([
             });
         }
     });
-    //
-    // function showSuggestReceiver(obj) {
-    // var value = registry.byId(obj.id).get("value");
-    // var reg = new RegExp(".*" + value + ".*");
-    // initReceiverTable({
-    // "name" : reg
-    // }, false).then(function(html) {
-    // new Dialog({
-    // "title" : "Receiver",
-    // "content" : html,
-    // style : {
-    // width : "600px",
-    // height : "400px"
-    // }
-    // }).show();
-    // });
-    // }
 });

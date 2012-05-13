@@ -4,9 +4,7 @@
 <html>
 <body>
   <form name="receiver_editing_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
-    <input type="hidden" name="id" />
-    <input type="hidden" name="userId" value="${user.id }" />
-    <input type="hidden" name="companyId" />
+    <input type="hidden" name="id" /> <input type="hidden" name="userId" value="${user.id }" /> <input type="hidden" name="companyId" />
     <fieldset>
       <legend>收件人信息</legend>
       <div>
@@ -22,7 +20,14 @@
           <tr>
             <td class="labelCell"><em>*</em><label for="receiver_editing_company">公司: </label></td>
             <td><input id="receiver_editing_company" name="company" data-dojo-type="dijit.form.ValidationTextBox"
-                data-dojo-props="placeHolder: '收件人的公司', required: true, onClick: function(){require(['qiuq/customer/receiver'], function(selection){selection.showSelectionDialog();});}" /></td>
+              data-dojo-props="placeHolder: '收件人的公司', required: true, 
+                    onKeyUp: function(event){
+                        require(['qiuq/customer/receiver'], function(customer){
+                            customer.suggest(event.target);
+                            customer.onCompanyKeyUp();
+                        });
+                    }" />
+              <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/customer/receiver'], function(selection){selection.showSelectionDialog()})}" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="receiver_editing_address">地址: </label></td>

@@ -14,10 +14,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
+import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -57,6 +57,7 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
      * @return
      * @author qiushaohua 2012-3-24
      */
+    @Override
     public List<Company> query(String sort, Map<String, Object> params, long[] range) {
         String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from sys_company where id > 0";
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
@@ -72,6 +73,7 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
      * @return
      * @author qiushaohua 2012-4-3
      */
+    @Override
     public long matchedRecordCount(Map<String, Object> params) {
         String sql = "select count(*) from sys_company where id > 0";
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
@@ -93,47 +95,13 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
             return sql;
         }
 
-        int companyId = Converter.toInt(params.get("companyId"), -1);
-        if (companyId != -1) {
-            sql += " and company_id = :companyId";
-            paramMap.addValue("companyId", companyId);
-        }
+        sql += buildStringCondition(params, "code", paramMap);
+        sql += buildStringCondition(params, "name", paramMap);
+        sql += buildStringCondition(params, "address", paramMap);
 
         String query = Converter.toString(params.get("query"));
-        if (StringUtils.hasText(query)) {
-            sql += " and (code like :query or name like :query or address like :query)";
-            paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildQueryCondition(query, paramMap, "code", "name", "address");
 
-        sql += buildCondition(params, "code", paramMap);
-        sql += buildCondition(params, "name", paramMap);
-        sql += buildCondition(params, "address", paramMap);
-
-        return sql;
-    }
-
-    /**
-     * @param params
-     * @param key
-     * @param paramMap
-     * @return
-     * @author qiushaohua 2012-5-12
-     */
-    protected String buildCondition(Map<String, Object> params, String key, MapSqlParameterSource paramMap) {
-        String name = Converter.toString(params.get(key));
-        if (!StringUtils.hasText(name)) {
-            return "";
-        }
-
-        String op = Converter.toString(params.get(key + "Op"), "like").toLowerCase();
-        if (op.equals("like") || op.equals("not like")) {
-            paramMap.addValue(key, "%" + sqlUtil.escapeLikeValue(name) + "%");
-        } else {
-            paramMap.addValue(key, name);
-        }
-
-        // " and key op :key"
-        String sql = " and " + key + " " + op + " :" + key;
         return sql;
     }
 
@@ -153,7 +121,7 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
      * @author qiushaohua 2012-3-26
      */
     @Override
-    public boolean delete(int id) {
+    public OperateResult delete(int id) {
         return doDelete("sys_company", id);
     }
 
@@ -179,7 +147,20 @@ public class CompanyRepository extends AbstractRepository implements ResourceRep
     public OperateResult update(Company com) {
         String sql = "update sys_company set code = :code, name = :name, address = :address where id = :id";
 
-        return doUpdate(sql, new BeanPropertySqlParameterSource(com));
+        SqlParameterSource paramSource = new BeanPropertySqlParameterSource(com);
+        OperateResult updateResult = doUpdate(sql, paramSource);
+        if (updateResult.isOk()) {
+            // update the company info of user
+            sql = "update sys_user set company = :name where company_id = :id";
+            jdbcTemplate.update(sql, paramSource);
+
+            // and update the processing order
+            sql = "update dispatch_order set sender_company = :name"
+                    + " where sender_id in (select id from sys_user where company_id = :id"
+                    + "   and state < " + State.DELIVERED.ordinal();
+            jdbcTemplate.update(sql, paramSource);
+        }
+        return updateResult;
     }
 
     /**

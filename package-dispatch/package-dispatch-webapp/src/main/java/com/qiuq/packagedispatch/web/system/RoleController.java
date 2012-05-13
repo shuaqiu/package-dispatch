@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,13 +20,15 @@ import com.qiuq.packagedispatch.service.system.RoleService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 
 /**
- * Manage the user
+ * Manage the user role
  * 
  * @author qiushaohua 2012-3-27
  * @version 0.0.1
+ * @deprecated by qiushaohua 2012-5-13 used the user controller directly
  */
 @Controller
 @RequestMapping(value = "/role")
+@Deprecated
 public class RoleController extends AbstractResourceController<Map<String, Object>> {
 
     private RoleService roleService;
@@ -51,17 +52,6 @@ public class RoleController extends AbstractResourceController<Map<String, Objec
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("query", query);
 
-        long[] rangeArr = range(range);
-
-        HttpHeaders header = new HttpHeaders();
-        if (rangeArr != null) {
-            long count = roleService.matchedRecordCount(params);
-            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
-        }
-
-        List<Map<String, Object>> list = roleService.query(sort, params, rangeArr);
-        HttpEntity<List<Map<String, Object>>> entity = new HttpEntity<List<Map<String, Object>>>(list, header);
-
-        return entity;
+        return doQuery(sort, params, range);
     }
 }

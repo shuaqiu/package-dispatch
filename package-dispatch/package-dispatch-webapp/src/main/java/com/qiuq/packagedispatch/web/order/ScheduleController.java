@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,25 +70,18 @@ public class ScheduleController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-4-5
      */
     @RequestMapping(method = RequestMethod.GET)
-    public HttpEntity<List<Order>> query(@RequestParam(defaultValue = "+id") String sort,
+    public HttpEntity<List<Order>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new HttpEntity<List<Order>>(new ArrayList<Order>());
+        }
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", State.NEW_ORDER.ordinal());// only these new order need to be scheduled
         params.put("query", query);
 
-        long[] rangeArr = range(range);
-
-        HttpHeaders header = new HttpHeaders();
-        if (rangeArr != null) {
-            long count = orderService.matchedRecordCount(params);
-            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
-        }
-
-        List<Order> list = orderService.query(sort, params, range(range));
-        HttpEntity<List<Order>> entity = new HttpEntity<List<Order>>(list, header);
-
-        return entity;
+        return doQuery(sort, params, range);
     }
 
     /**

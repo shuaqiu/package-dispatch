@@ -6,7 +6,6 @@ package com.qiuq.packagedispatch.service.order;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ import com.qiuq.packagedispatch.service.AbstractResourceService;
 @Service
 public class OrderService extends AbstractResourceService<Order> {
 
-    private OrderRepository orderRepository;
+    public OrderRepository orderRepository;
 
     /** @author qiushaohua 2012-4-4 */
     @Autowired
@@ -43,28 +42,6 @@ public class OrderService extends AbstractResourceService<Order> {
     @Override
     protected ResourceRepository<Order> getRepository() {
         return orderRepository;
-    }
-
-    /**
-     * @param sort
-     * @param params
-     * @param range
-     * @return
-     * @author qiushaohua 2012-4-4
-     */
-    @Transactional(readOnly = true)
-    public List<Order> query(String sort, Map<String, Object> params, long[] range) {
-        return orderRepository.query(sort, params, range);
-    }
-
-    /**
-     * @param params
-     * @return
-     * @author qiushaohua 2012-4-4
-     */
-    @Transactional(readOnly = true)
-    public long matchedRecordCount(Map<String, Object> params) {
-        return orderRepository.matchedRecordCount(params);
     }
 
     /**

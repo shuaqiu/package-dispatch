@@ -3,13 +3,13 @@
  */
 package com.qiuq.packagedispatch.web.system;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -48,16 +48,23 @@ public class UserController extends AbstractResourceController<Map<String, Objec
 
     private UserService userService;
 
+    private CompanyService companyService;
+
     private PasswordEncoder passwordEncoder;
 
     protected CodeGenerator codeGenerator;
 
-    private CompanyService companyService;
 
     /** @author qiushaohua 2012-3-27 */
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    /** @author qiushaohua 2012-5-13 */
+    @Autowired
+    public void setCompanyService(CompanyService companyService) {
+        this.companyService = companyService;
     }
 
     /** @author qiushaohua 2012-4-23 */
@@ -72,12 +79,6 @@ public class UserController extends AbstractResourceController<Map<String, Objec
         this.codeGenerator = codeGenerator;
     }
 
-    /** @author qiushaohua 2012-5-13 */
-    @Autowired
-    public void setCompanyService(CompanyService companyService) {
-        this.companyService = companyService;
-    }
-
     @Override
     protected ResourceService<Map<String, Object>> getService() {
         return userService;
@@ -86,10 +87,9 @@ public class UserController extends AbstractResourceController<Map<String, Objec
     @RequestMapping(method = RequestMethod.GET)
     public HttpEntity<List<Map<String, Object>>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
-
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
-            return null;
+            return new HttpEntity<List<Map<String, Object>>>(new ArrayList<Map<String, Object>>());
         }
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -100,18 +100,7 @@ public class UserController extends AbstractResourceController<Map<String, Objec
             params.put("companyId", user.getCompanyId());
         }
 
-        long[] rangeArr = range(range);
-
-        HttpHeaders header = new HttpHeaders();
-        if (rangeArr != null) {
-            long count = userService.matchedRecordCount(params);
-            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
-        }
-
-        List<Map<String, Object>> list = userService.query(sort, params, rangeArr);
-        HttpEntity<List<Map<String, Object>>> entity = new HttpEntity<List<Map<String, Object>>>(list, header);
-
-        return entity;
+        return doQuery(sort, params, range);
     }
 
     /**

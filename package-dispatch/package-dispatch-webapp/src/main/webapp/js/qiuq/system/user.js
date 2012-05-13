@@ -51,23 +51,15 @@ define([
             password.set("value", "password");
             password.destroyRecursive();
 
-            var form = document.forms[this.editingForm];
+            lang.hitch(this, resource._initForm)(item);
+        },
 
-            for ( var p in item) {
-                if (p == "roleId") {
-                    registry.byId("user_editing_role").set("value", item[p]);
-                    return;
-                }
-
-                var elem = form[p];
-                if (elem) {
-                    if (elem.id) {
-                        registry.byId(elem.id).set("value", item[p]);
-                    } else {
-                        elem.value = item[p];
-                    }
-                }
+        _initFormItem : function(item, form, p) {
+            if (p == "roleId") {
+                registry.byId("user_editing_role").set("value", item[p]);
+                return;
             }
+            lang.hitch(this, resource._initFormItem)(item, form, p);
         }
     });
 });

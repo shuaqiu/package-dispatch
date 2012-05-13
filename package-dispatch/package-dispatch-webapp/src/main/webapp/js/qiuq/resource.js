@@ -151,13 +151,17 @@ define([
             var form = document.forms[this.editingForm];
 
             for ( var p in item) {
-                var elem = form[p];
-                if (elem) {
-                    if (elem.id) {
-                        registry.byId(elem.id).set("value", item[p]);
-                    } else {
-                        elem.value = item[p];
-                    }
+                this._initFormItem(item, form, p);
+            }
+        },
+
+        _initFormItem : function(item, form, p) {
+            var elem = form[p];
+            if (elem) {
+                if (elem.id) {
+                    registry.byId(elem.id).set("value", item[p]);
+                } else {
+                    elem.value = item[p];
                 }
             }
         },

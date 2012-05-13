@@ -3,8 +3,13 @@
  */
 package com.qiuq.packagedispatch.web;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.service.ResourceService;
 
@@ -130,12 +134,12 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
             return beforeResult;
         }
 
-        boolean isDeleted = getService().delete(id);
-        return afterDelete(isDeleted);
+        OperateResult isDeleted = getService().delete(id);
+        return afterDelete(id, isDeleted);
     }
 
     /**
-     * @param t
+     * @param id
      * @return
      * @author qiushaohua 2012-5-8
      */
@@ -144,17 +148,13 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
     }
 
     /**
-     * @param t
-     * @param isDeleted
+     * @param id
+     * @param deleteResult
      * @return
      * @author qiushaohua 2012-5-10
      */
-    protected OperateResult afterDelete(boolean isDeleted) {
-        if (isDeleted) {
-            return OperateResult.OK;
-        } else {
-            return new OperateResult(ErrCode.DELETE_FAIL, "delete resource fail");
-        }
+    protected OperateResult afterDelete(int id, OperateResult deleteResult) {
+        return deleteResult;
     }
 
     /**
@@ -184,6 +184,22 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         return null;
     }
 
+    protected Map<String, Object> parseParameter(MultiValueMap<String, String> params) {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+
+        for (String key : params.keySet()) {
+            List<String> list = params.get(key);
+            if (list == null || list.size() == 0) {
+            } else if (list.size() == 1) {
+                map.put(key, list.get(0));
+            } else {
+                map.put(key, list);
+            }
+        }
+
+        return map;
+    }
+
     /**
      * @return
      * @author qiushaohua 2012-4-3
@@ -200,5 +216,27 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
     public Map<String, Object> edit() {
         return null;
+    }
+
+    /**
+     * @param sort
+     * @param params
+     * @param range
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
+    protected HttpEntity<List<T>> doQuery(String sort, Map<String, Object> params, String range) {
+        long[] rangeArr = range(range);
+
+        HttpHeaders header = new HttpHeaders();
+        if (rangeArr != null) {
+            long count = getService().matchedRecordCount(params);
+            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
+        }
+
+        List<T> list = getService().query(sort, params, range(range));
+        HttpEntity<List<T>> entity = new HttpEntity<List<T>>(list, header);
+
+        return entity;
     }
 }

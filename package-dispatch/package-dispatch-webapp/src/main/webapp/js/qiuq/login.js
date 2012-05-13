@@ -183,14 +183,6 @@ define([
             "url" : "web/index/body"
         }).then(function(content) {
             // destroy all current widget first
-            // var children = document.body.children;
-            // for ( var i = 0; i < children.length; i++) {
-            // var widget = registry.byNode(children[i]);
-            // if (widget) {
-            // widget.destroyRecursive();
-            // }
-            // }
-
             var widgets = registry.findWidgets(document.body);
             for ( var i = 0; i < widgets.length; i++) {
                 widgets[i].destroyRecursive();

@@ -3,11 +3,9 @@
  */
 package com.qiuq.packagedispatch.service.customer;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.qiuq.packagedispatch.bean.customer.ReceiverCompany;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -32,30 +30,6 @@ public class ReceiverCompanyService extends AbstractResourceService<ReceiverComp
     @Override
     protected ResourceRepository<ReceiverCompany> getRepository() {
         return receiverCompanyRepository;
-    }
-
-    /**
-     * @param userId
-     * @param sort
-     * @param query
-     * @param range
-     * @return
-     * @author qiushaohua 2012-4-1
-     */
-    @Transactional(readOnly = true)
-    public List<ReceiverCompany> query(int userId, String sort, String query, long[] range) {
-        return receiverCompanyRepository.query(userId, sort, query, range);
-    }
-
-    /**
-     * @param userId
-     * @param query
-     * @return
-     * @author qiushaohua 2012-4-4
-     */
-    @Transactional(readOnly = true)
-    public long matchedRecordCount(int userId, String query) {
-        return receiverCompanyRepository.matchedRecordCount(userId, query);
     }
 
 }

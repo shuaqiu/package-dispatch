@@ -14,7 +14,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,7 +26,9 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
+import com.qiuq.common.convert.Converter;
 import com.qiuq.common.sms.SmsSender;
+import com.qiuq.packagedispatch.bean.customer.Receiver;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
@@ -34,6 +36,7 @@ import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
+import com.qiuq.packagedispatch.service.customer.ReceiverService;
 import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
@@ -48,6 +51,8 @@ public class OrderController extends AbstractResourceController<Order> {
 
     private OrderService orderService;
 
+    private ReceiverService receiverService;
+
     private SmsSender smsSender;
 
     private MessageFormat notifyTemplateForSender;
@@ -59,6 +64,12 @@ public class OrderController extends AbstractResourceController<Order> {
     @Autowired
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    /** @author qiushaohua 2012-5-14 */
+    @Autowired
+    public void setReceiverService(ReceiverService receiverService) {
+        this.receiverService = receiverService;
     }
 
     /** @author qiushaohua 2012-4-28 */
@@ -104,14 +115,27 @@ public class OrderController extends AbstractResourceController<Order> {
         if (user.getType() == Type.TYPE_CUSTOMER) {
             params.put("senderId", user.getId());
         }
-        params.put("processing", 1);
+
+        // state < State.DELIVERED, means the processing order
+        params.put("state", State.DELIVERED.ordinal());
+        params.put("stateOp", "<");
+
         params.put("query", query);
 
-        return doQuery(sort, range, params);
+        return doQuery(sort, params, range);
     }
 
     @Override
     protected OperateResult beforeInsert(Order t) {
+        int receiverId = Converter.toInt(t.getReceiverId(), -1);
+        if (receiverId <= 0) {
+            receiverId = getReceiverId(t);
+            if (receiverId <= 0) {
+                return new OperateResult(ErrCode.OPERATE_FAIL, "could not insert the receiver");
+            }
+            t.setReceiverId(receiverId);
+        }
+
         String senderIdentityCode = generateSenderIdentityCode();
         String receiverIdentityCode = generateReceiverIdentityCode(senderIdentityCode);
         t.setSenderIdentityCode(senderIdentityCode);
@@ -127,6 +151,32 @@ public class OrderController extends AbstractResourceController<Order> {
             new Thread(new SmsNotifier(t)).start();
         }
         return super.afterInsert(t, insertResult);
+    }
+
+    private int getReceiverId(Order t) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("userId", t.getSenderId());
+        params.put("name", t.getReceiverName());
+        params.put("nameOp", "=");
+        List<Receiver> companys = receiverService.query("+id", params, null);
+        if (companys.size() > 0) {
+            return companys.get(0).getId();
+        }
+
+        Receiver receiver = new Receiver();
+        receiver.setUserId(t.getSenderId());
+        receiver.setName(t.getReceiverName());
+        receiver.setTel(t.getReceiverTel());
+        receiver.setCompanyId(-1);
+        receiver.setCompany(t.getReceiverCompany());
+        receiver.setAddress(t.getReceiverAddress());
+
+        OperateResult insertResult = receiverService.insert(receiver);
+        if (insertResult.isOk()) {
+            GeneratedKeyHolder keyHolder = (GeneratedKeyHolder) insertResult.getObj();
+            return keyHolder.getKey().intValue();
+        }
+        return -1;
     }
 
     /**
@@ -331,28 +381,6 @@ public class OrderController extends AbstractResourceController<Order> {
         params.put("state", State.DELIVERED.ordinal());
         params.put("query", query);
 
-        return doQuery(sort, range, params);
-    }
-
-    /**
-     * @param sort
-     * @param range
-     * @param params
-     * @return
-     * @author qiushaohua 2012-5-10
-     */
-    private HttpEntity<List<Order>> doQuery(String sort, String range, Map<String, Object> params) {
-        long[] rangeArr = range(range);
-
-        HttpHeaders header = new HttpHeaders();
-        if (rangeArr != null) {
-            long count = orderService.matchedRecordCount(params);
-            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
-        }
-
-        List<Order> list = orderService.query(sort, params, range(range));
-        HttpEntity<List<Order>> entity = new HttpEntity<List<Order>>(list, header);
-
-        return entity;
+        return doQuery(sort, params, range);
     }
 }

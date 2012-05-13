@@ -38,8 +38,14 @@
           <tr>
             <td class="labelCell"><em>*</em><label for="order_editing_receiverName">姓名: </label></td>
             <td><input id="order_editing_receiverName" name="receiverName" data-dojo-type="dijit.form.ValidationTextBox"
-              data-dojo-props="placeHolder: '收件人的姓名', required: true, onKeyUp: function(event){require(['qiuq/order/order'], function(order){order.showSuggestReceiver(event.target)})}" />
-              <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/order/order'], function(selection){selection.showSelectionDialog()})}" /></td>
+              data-dojo-props="placeHolder: '收件人的姓名', required: true,
+                    onKeyUp: function(event){
+                        require(['qiuq/order/order'], function(order){
+                            order.suggest(event.target);
+                            order.onReceiverKeyUp();
+                        });
+                    }" />
+              <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/order/order'], function(selection){selection.showSelectionDialog();});}" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="order_editing_receiverTel">电话号码: </label></td>
@@ -47,7 +53,8 @@
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="order_editing_receiverCompany">公司: </label></td>
-            <td><input id="order_editing_receiverCompany" name="receiverCompany" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="value: '', placeHolder: '收件人的公司名称', required: true" /></td>
+            <td><input id="order_editing_receiverCompany" name="receiverCompany" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="value: '', placeHolder: '收件人的公司名称', required: true" />
+            <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/customer/receiver'], function(selection){selection.showSelectionDialog();});}" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="order_editing_receiverAddress">地址: </label></td>

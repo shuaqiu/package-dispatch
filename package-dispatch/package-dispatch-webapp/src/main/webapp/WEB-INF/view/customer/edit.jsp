@@ -57,7 +57,7 @@
                     onKeyUp: function(event){
                         require(['qiuq/system/customer'], function(customer){
                             customer.suggest(event.target);
-                            customer.onCompanyKeyUps();
+                            customer.onCompanyKeyUp();
                         });
                     }" />
                 <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '选择', onClick: function(){require(['qiuq/system/customer'], function(selection){selection.showSelectionDialog()})}" /></td>

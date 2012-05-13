@@ -3,6 +3,8 @@
  */
 package com.qiuq.packagedispatch.repository.order;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
@@ -11,11 +13,11 @@ import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
@@ -34,14 +36,65 @@ import com.qiuq.packagedispatch.repository.ResourceRepository;
 @Repository
 public class OrderRepository extends AbstractRepository implements ResourceRepository<Order> {
 
-    @Override
-    public Order query(int id) {
-        return doQuery("dispatch_order", id, BeanPropertyRowMapper.newInstance(Order.class));
+    private final class OrderRowMapper implements RowMapper<Order> {
+        @Override
+        public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Order order = new Order();
+
+            order.setId(rs.getInt("id"));
+
+            order.setSenderId(rs.getInt("sender_id"));
+            order.setSenderName(rs.getString("sender_name"));
+            order.setSenderTel(rs.getString("sender_tel"));
+            order.setSenderCompany(rs.getString("sender_company"));
+            order.setSenderAddress(rs.getString("sender_address"));
+
+            order.setReceiverId(rs.getInt("receiver_id"));
+            order.setReceiverName(rs.getString("receiver_name"));
+            order.setReceiverTel(rs.getString("receiver_tel"));
+            order.setReceiverCompany(rs.getString("receiver_company"));
+            order.setReceiverAddress(rs.getString("receiver_address"));
+
+            order.setOrderTime(rs.getTimestamp("order_time"));
+            order.setGoodsName(rs.getString("goods_name"));
+            order.setQuantity(rs.getString("quantity"));
+
+            order.setBarCode(rs.getString("bar_code"));
+            order.setSenderIdentityCode(rs.getString("sender_identity_code"));
+            order.setReceiverIdentityCode(rs.getString("receiver_identity_code"));
+
+            // order.setFetchTime(rs.getTimestamp("fetch_time"));
+            // order.setDeliverTime(rs.getTimestamp("deliver_time"));
+
+            // order.setSchedulerId(rs.getInt("schedule_id"));
+            // order.setSchedulerName(rs.getString("scheduler_name"));
+            // order.setSchedulerTel(rs.getString("scheduler_tel"));
+            // order.setScheduleTime(rs.getTimestamp("schedule_time"));
+            //
+            // order.setHandlerId(rs.getInt("handler_id"));
+            // order.setHandlerName(rs.getString("handler_name"));
+            // order.setHandlerTel(rs.getString("handler_tel"));
+
+            order.setState(rs.getInt("state"));
+            order.setStateDescribe(rs.getString("state_describe"));
+
+            return order;
+        }
     }
 
     @Override
-    public boolean delete(int id) {
+    public OperateResult delete(int id) {
         throw new UnsupportedOperationException("delete an order is not supported");
+    }
+
+    @Override
+    public OperateResult update(Order t) {
+        throw new UnsupportedOperationException("update an order is not supported");
+    }
+
+    @Override
+    public Order query(int id) {
+        return doQuery("dispatch_order", id, new OrderRowMapper());
     }
 
     @Override
@@ -55,11 +108,6 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         return doInsert(sql, new BeanPropertySqlParameterSource(t));
     }
 
-    @Override
-    public OperateResult update(Order t) {
-        throw new UnsupportedOperationException("update an order is not supported");
-    }
-
     /**
      * @param sort
      * @param params
@@ -67,6 +115,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @return
      * @author qiushaohua 2012-4-4
      */
+    @Override
     public List<Order> query(String sort, Map<String, Object> params, long[] range) {
         String sql = "select *, row_number() over(" + orderBy(sort) + ") as rownum from dispatch_order";
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
@@ -74,7 +123,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         sql += buildCondition(params, paramMap);
 
         String rangeQuerySql = sqlUtil.toRangeQuerySql(sql, range);
-        List<Order> list = jdbcTemplate.query(rangeQuerySql, paramMap, BeanPropertyRowMapper.newInstance(Order.class));
+        List<Order> list = jdbcTemplate.query(rangeQuerySql, paramMap, new OrderRowMapper());
         return list;
     }
 
@@ -83,6 +132,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @return
      * @author qiushaohua 2012-4-4
      */
+    @Override
     public long matchedRecordCount(Map<String, Object> params) {
         String sql = "select count(*) from dispatch_order";
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
@@ -104,24 +154,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
             return sql;
         }
 
-        int senderId = Converter.toInt(params.get("senderId"), -1);
-        if (senderId != -1) {
-            sql += " and sender_id = :senderId";
-            paramMap.addValue("senderId", senderId);
-        }
-
-        int state = Converter.toInt(params.get("state"), -1);
-        if (state != -1) {
-            sql += " and state = :state";
-            paramMap.addValue("state", state);
-        }
-
-        int processing = Converter.toInt(params.get("processing"), -1);
-        if (processing != -1) {
-            sql += " and state != :receivedState and state != :cancelState";
-            paramMap.addValue("receivedState", State.DELIVERED.ordinal());
-            paramMap.addValue("cancelState", State.CANCELED.ordinal());
-        }
+        sql += buildIntCondition(params, "senderId", paramMap);
+        sql += buildIntCondition(params, "state", paramMap);
 
         int transiting = Converter.toInt(params.get("transiting"), -1);
         if (transiting != -1) {
@@ -132,10 +166,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         }
 
         String query = Converter.toString(params.get("query"));
-        if (StringUtils.hasText(query)) {
-            sql += " and (bar_code like :query or sender_name like :query or sender_tel like :query or receiver_name like :query or receiver_tel like :query)";
-            paramMap.addValue("query", "%" + sqlUtil.escapeLikeValue(query) + "%");
-        }
+        sql += buildQueryCondition(query, paramMap, "bar_code", "sender_name", "sender_tel", "receiver_name",
+                "receiver_tel");
 
         return sql.replaceFirst(" and ", " where ");
     }
@@ -261,7 +293,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         String sql = "select * from dispatch_order where bar_code = :barcode";
         SqlParameterSource paramMap = new MapSqlParameterSource("barcode", barcode);
         try {
-            return jdbcTemplate.queryForObject(sql, paramMap, BeanPropertyRowMapper.newInstance(Order.class));
+            return jdbcTemplate.queryForObject(sql, paramMap, new OrderRowMapper());
         } catch (DataAccessException e) {
             // not such bar code or more than one order has such bar code
             return null;
@@ -353,6 +385,6 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         paramMap.addValue("fetchedState", State.FETCHED.ordinal());
         paramMap.addValue("transitingState", State.TRANSITING.ordinal());
         paramMap.addValue("outStorageState", State.OUT_STORAGE.ordinal());
-        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(Order.class));
+        return jdbcTemplate.query(sql, paramMap, new OrderRowMapper());
     }
 }

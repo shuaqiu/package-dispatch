@@ -59,28 +59,6 @@ public class UserService extends AbstractResourceService<Map<String, Object>> {
     }
 
     /**
-     * @param sort
-     * @param params
-     * @param range
-     * @return
-     * @author qiushaohua 2012-3-27
-     */
-    @Transactional(readOnly = true)
-    public List<Map<String, Object>> query(String sort, Map<String, Object> params, long[] range) {
-        return userRepository.query(sort, params, range);
-    }
-
-    /**
-     * @param params
-     * @return
-     * @author qiushaohua 2012-4-4
-     */
-    @Transactional(readOnly = true)
-    public long matchedRecordCount(Map<String, Object> params) {
-        return userRepository.matchedRecordCount(params);
-    }
-
-    /**
      * @param fetcher
      * @return
      * @author qiushaohua 2012-4-6

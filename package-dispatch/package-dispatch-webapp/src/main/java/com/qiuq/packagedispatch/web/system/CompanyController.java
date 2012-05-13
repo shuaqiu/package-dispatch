@@ -3,26 +3,29 @@
  */
 package com.qiuq.packagedispatch.web.system;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.system.Company;
 import com.qiuq.packagedispatch.bean.system.Type;
+import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.system.CompanyService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.CodeGenerator;
+import com.qiuq.packagedispatch.web.HttpSessionUtil;
 
 /**
  * Manage the company for customers
@@ -56,23 +59,17 @@ public class CompanyController extends AbstractResourceController<Company> {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public HttpEntity<List<Company>> query(@RequestParam(defaultValue = "+id") String sort,
+    public HttpEntity<List<Company>> query(WebRequest req, @RequestParam(defaultValue = "+id") String sort,
             @RequestParam(required = false) String query, @RequestHeader(value = "Range", required = false) String range) {
-        long[] rangeArr = range(range);
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new HttpEntity<List<Company>>(new ArrayList<Company>());
+        }
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("query", query);
 
-        HttpHeaders header = new HttpHeaders();
-        if (rangeArr != null) {
-            long count = companyService.matchedRecordCount(params);
-            header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
-        }
-
-        List<Company> list = companyService.query(sort, params, rangeArr);
-        HttpEntity<List<Company>> entity = new HttpEntity<List<Company>>(list, header);
-
-        return entity;
+        return doQuery(sort, params, range);
     }
 
     @Override
