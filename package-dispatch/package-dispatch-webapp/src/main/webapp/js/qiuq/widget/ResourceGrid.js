@@ -149,7 +149,23 @@ define([
             }
 
             this._grid = new EnhancedGrid(option);
+
+            if (this.doModify && lang.isFunction(this.doModify)) {
+                // if modifiable, add the function that it can be modified by double click it. @ 2012-5-14
+                this.connect(this._grid, "onRowDblClick", this._onRowDblClick);
+            }
+
             return this._grid;
+        },
+
+        _onRowDblClick : function(evt) {
+            // var idx = evt.rowIndex;
+            // var item = this._grid.getItem(idx);
+            this.doModify();
+        },
+
+        onRowClick : function(item, idx) {
+
         },
 
         destroy : function(/* Boolean */preserveDom) {
