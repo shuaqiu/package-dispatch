@@ -1,4 +1,5 @@
 define([
+        "dojo/string",
         "dojo/_base/lang",
         "dojo/_base/xhr",
         "dijit/registry",
@@ -11,7 +12,7 @@ define([
         "dojo/date/locale",
         "dojo/date/stamp",
         "dijit/form/CheckBox",
-        "dijit/form/Textarea" ], function(lang, xhr, registry, resource, suggest, ResourceGrid, MessageDialog,
+        "dijit/form/Textarea" ], function(string, lang, xhr, registry, resource, suggest, ResourceGrid, MessageDialog,
         LoadingDialog, message) {
 
     var order = lang.mixin({}, resource, suggest, {
@@ -77,6 +78,18 @@ define([
         _customErrorCallback : function(result) {
             this._selectedItem = null;
             return true;
+        },
+
+        _getValidData : function() {
+            var form = document.forms[this.editingForm];
+
+            if (string.trim(registry.byId(form["goodsName"].id).get("value")) == ""
+                    || string.trim(registry.byId(form["quantity"].id).get("value")) == "") {
+                MessageDialog.error(message["err.INVALID"]);
+                return null;
+            }
+
+            return lang.hitch(this, resource._getValidDate)();
         },
 
         doView : function(orderId) {
@@ -191,7 +204,8 @@ define([
             if (registry.byId(form["receiverCompany"].id).get("value") != order._selectedItem["company"]) {
                 form["receiverId"].value = "-1";
             } else if (registry.byId(form["receiverName"].id).get("value") == order._selectedItem["name"]) {
-                // selected name is the same as current name value, and selected company name is the same as current company value too.
+                // selected name is the same as current name value, and selected company name is the same as current
+                // company value too.
                 form["receiverId"].value = order._selectedItem["id"];
             }
         }

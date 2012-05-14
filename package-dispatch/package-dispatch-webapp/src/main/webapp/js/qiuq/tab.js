@@ -21,14 +21,17 @@ define([
             var panel = registry.byId(panelId);
             if (panel) {
                 if (forceReload) {
-                    if (conf.title) {
-                        panel.set("title", conf.title);
-                    }
-                    if (conf.content) {
-                        panel.set("content", conf.content);
-                    }
-                    if (conf.href) {
-                        panel.set("href", conf.href);
+                    for ( var p in conf) {
+                        if (p.indexOf("on") == 0) {
+                            // reset the panel event, as the name of these events are start with "on"
+                            panel[p] = conf[p];
+                        } else {
+                            // try to set other properties
+                            try {
+                                panel.set(p, conf[p]);
+                            } catch (e) {
+                            }
+                        }
                     }
                 }
                 return panel;

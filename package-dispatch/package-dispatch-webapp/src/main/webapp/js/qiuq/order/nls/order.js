@@ -10,6 +10,7 @@ define({
         "resendIdentityToReceiverSucc" : "重发验证码给收件人成功",
         "regenerateReceiverIdentitySucc" : "重新生成验证码成功并已发送给收件人",
 
+        "err.INVALID" : "请填写必填的字段!",
         "err.NOT_FOUND" : "没有这个订单",
         
         "err.UPDATE_FAIL" : "重新生成验证码失败",

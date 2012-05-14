@@ -14,6 +14,12 @@ define([
 
         doSave : function() {
             var barcodes = registry.byId(this.inBarcode).get("value");
+            if (string.trim(barcodes) == "") {
+                MessageDialog.error(message["err.NULL_BARCODE"]);
+                return;
+            }
+
+            var self = this;
             xhr.post({
                 url : this.resourceUrl,
                 content : {
@@ -22,8 +28,8 @@ define([
                 handleAs : "json"
             }).then(function(result) {
                 if (result.ok) {
-                    MessageDialog.alert(this._createMessage(result, message["inSuccess"]));
-                    registry.byId(this.inBarcode).set("value", "");
+                    MessageDialog.alert(self._createMessage(result, message["inSuccess"]));
+                    registry.byId(self.inBarcode).set("value", "");
                 } else {
                     if (result.errCode == "NOT_LOGINED") {
                         require([ "qiuq/login" ], function(login) {
@@ -38,7 +44,17 @@ define([
 
         doDelete : function() {
             var handlerCode = registry.byId(this.outHandler).get("value");
+            if (string.trim(handlerCode) == "") {
+                MessageDialog.error(message["err.NULL_HANDLER_CODE"]);
+                return;
+            }
             var barcodes = registry.byId(this.outBarcode).get("value");
+            if (string.trim(barcodes) == "") {
+                MessageDialog.error(message["err.NULL_BARCODE"]);
+                return;
+            }
+
+            var self = this;
             xhr.del({
                 url : this.resourceUrl,
                 content : {
@@ -48,8 +64,8 @@ define([
                 handleAs : "json"
             }).then(function(result) {
                 if (result.ok) {
-                    MessageDialog.alert(this._createMessage(result, message["outSuccess"]));
-                    registry.byId(this.outBarcode).set("value", "");
+                    MessageDialog.alert(self._createMessage(result, message["outSuccess"]));
+                    registry.byId(self.outBarcode).set("value", "");
                 } else {
                     if (result.errCode == "NOT_LOGINED") {
                         require([ "qiuq/login" ], function(login) {
@@ -65,8 +81,8 @@ define([
                 }
             });
         },
-        
-        _createMessage : function(result, okMsg){
+
+        _createMessage : function(result, okMsg) {
             var msg = [];
             if (result.obj.OK) {
                 msg.push(okMsg + ": " + result.obj.OK.join(", "));

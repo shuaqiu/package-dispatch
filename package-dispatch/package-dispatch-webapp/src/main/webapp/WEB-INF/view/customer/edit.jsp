@@ -29,8 +29,8 @@
       <div>
         <table class="formTable">
           <tr>
-            <td class="labelCell"><label for="user_editing_code">编号: </label></td>
-            <td><input id="user_editing_code" name="code" readonly="readonly" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '编号由系统自动生成'" /></td>
+            <td class="labelCell"><label for="customer_editing_code">编号: </label></td>
+            <td><input id="customer_editing_code" name="code" readonly="readonly" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '编号由系统自动生成'" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="customer_editing_alias">登录帐号: </label></td>

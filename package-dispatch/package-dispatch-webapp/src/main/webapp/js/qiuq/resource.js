@@ -130,9 +130,6 @@ define([
                 return;
             }
 
-            var item = items[0];
-            var _initForm = lang.hitch(this, this._initForm);
-
             var deferred = new Deferred();
             tab.show([], {
                 title : this.modifyTabName,
@@ -142,8 +139,9 @@ define([
                 }
             }, this.editingTab, true);
 
+            var self = this;
             deferred.then(function() {
-                _initForm(item);
+                self._initForm(items[0]);
             });
         },
 

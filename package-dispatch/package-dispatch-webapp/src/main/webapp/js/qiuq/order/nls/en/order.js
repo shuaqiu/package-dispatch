@@ -9,6 +9,7 @@ define({
     "resendIdentityToReceiverSucc" : "success to resend the identity number to receiver",
     "regenerateReceiverIdentitySucc" : "success to regenerate the identity number and has been sent to receiver",
 
+    "err.INVALID" : "Please input these necessary fields!",
     "err.NOT_FOUND" : "Not such order",
         
     "err.UPDATE_FAIL" : "fail to regenerate the identiry number",
