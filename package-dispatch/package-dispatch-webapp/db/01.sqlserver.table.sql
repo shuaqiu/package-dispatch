@@ -20,7 +20,7 @@ create table sys_user(
     id int not null identity(1,1),
     code varchar(255),
     name varchar(255),
-    alias varchar(255),
+    login_account varchar(255),
     password varchar(255),
     salt varchar(255),
     tel varchar(20),

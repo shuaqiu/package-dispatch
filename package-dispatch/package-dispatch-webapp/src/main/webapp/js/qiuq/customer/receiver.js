@@ -20,11 +20,11 @@ define([
         selectionDialog : "receiver_editing_company_dialog",
         selectionStoreTarget : "web/receivercompany",
         selectionStructure : [ {
-            name : "名称",
+            name : message["name"],
             field : "name",
             width : "150px"
         }, {
-            name : "地址",
+            name : message["address"],
             field : "address",
             width : "250px"
         } ],
@@ -33,9 +33,7 @@ define([
             this._selectedItem = item;
 
             var form = document.forms[this.editingForm];
-            if(form["companId"]){
-                form["companyId"].value = item["id"];
-            }
+            form["companyId"].value = item["id"];
             registry.byId(form["company"].id).set("value", item["name"]);
             registry.byId(form["address"].id).set("value", item["address"]);
         },

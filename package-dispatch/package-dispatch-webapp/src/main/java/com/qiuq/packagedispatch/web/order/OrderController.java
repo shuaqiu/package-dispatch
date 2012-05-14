@@ -26,7 +26,6 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
-import com.qiuq.common.convert.Converter;
 import com.qiuq.common.sms.SmsSender;
 import com.qiuq.packagedispatch.bean.customer.Receiver;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
@@ -127,7 +126,7 @@ public class OrderController extends AbstractResourceController<Order> {
 
     @Override
     protected OperateResult beforeInsert(Order t) {
-        int receiverId = Converter.toInt(t.getReceiverId(), -1);
+        int receiverId = t.getReceiverId();
         if (receiverId <= 0) {
             receiverId = getReceiverId(t);
             if (receiverId <= 0) {
@@ -158,6 +157,9 @@ public class OrderController extends AbstractResourceController<Order> {
         params.put("userId", t.getSenderId());
         params.put("name", t.getReceiverName());
         params.put("nameOp", "=");
+        params.put("company", t.getReceiverCompany());
+        params.put("companyOp", "=");
+
         List<Receiver> companys = receiverService.query("+id", params, null);
         if (companys.size() > 0) {
             return companys.get(0).getId();

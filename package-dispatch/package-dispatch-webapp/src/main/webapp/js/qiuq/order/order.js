@@ -14,7 +14,7 @@ define([
         "dijit/form/Textarea" ], function(lang, xhr, registry, resource, suggest, ResourceGrid, MessageDialog,
         LoadingDialog, message) {
 
-    return lang.mixin({}, resource, suggest, {
+    var order = lang.mixin({}, resource, suggest, {
         resourceUrl : "web/order",
         listGrid : "order_list_grid",
 
@@ -47,7 +47,7 @@ define([
 
         doSelect : function(item) {
             this._selectedItem = item;
-            
+
             var form = document.forms[this.editingForm];
             form["receiverId"].value = item["id"];
             registry.byId(form["receiverName"].id).set("value", item["name"]);
@@ -65,22 +65,18 @@ define([
 
             var form = document.forms[this.editingForm];
 
-            var company = registry.byId(form["receiverName"].id).get("value");
-            if (company != this._selectedItem["name"]) {
-                form["receiverId"].value = "-1";
-            } else {
+            var receiverName = registry.byId(form["receiverName"].id).get("value");
+            var receiverCompany = registry.byId(form["receiverCompany"].id).get("value");
+            if (receiverName == this._selectedItem["name"] && receiverCompany == this._selectedItem["company"]) {
                 form["receiverId"].value = this._selectedItem["id"];
+            } else {
+                form["receiverId"].value = "-1";
             }
         },
 
-        _initForm : function(item) {
-            lang.hitch(this, resource._initForm)(item);
-            this._selectedItem = {
-                id : item.receiverId,
-                name : item.receiverName,
-                tel : receiverTel,
-                company : item.receiverCompany
-            };
+        _customErrorCallback : function(result) {
+            this._selectedItem = null;
+            return true;
         },
 
         doView : function(orderId) {
@@ -103,7 +99,7 @@ define([
                 if (result.ok) {
                     MessageDialog.alert(message["resendIdentityToSenderSucc"]);
                 } else {
-                    if(result.errCode == "OPERATE_FAIL"){
+                    if (result.errCode == "OPERATE_FAIL") {
                         MessageDialog.error(message["err.OPERATE_FAIL.sender"]);
                         return;
                     }
@@ -115,17 +111,17 @@ define([
         resendIdentityToReceiver : function(orderId) {
             var dialog = new LoadingDialog({});
             dialog.show();
-            
+
             xhr.get({
                 url : this.resourceUrl + "/" + orderId + "/identity/receiver",
                 handleAs : "json"
             }).then(function(result) {
                 dialog.hide();
-                
+
                 if (result.ok) {
                     MessageDialog.alert(message["resendIdentityToReceiverSucc"]);
                 } else {
-                    if(result.errCode == "OPERATE_FAIL"){
+                    if (result.errCode == "OPERATE_FAIL") {
                         MessageDialog.error(message["err.OPERATE_FAIL.receiver"]);
                         return;
                     }
@@ -137,17 +133,17 @@ define([
         regenerateReceiverIdentity : function(orderId) {
             var dialog = new LoadingDialog({});
             dialog.show();
-            
+
             xhr.put({
                 url : this.resourceUrl + "/" + orderId + "/identity/receiver",
                 handleAs : "json"
             }).then(function(result) {
                 dialog.hide();
-                
+
                 if (result.ok) {
                     MessageDialog.alert(message["regenerateReceiverIdentitySucc"]);
                 } else {
-                    if(result.errCode == "OPERATE_FAIL"){
+                    if (result.errCode == "OPERATE_FAIL") {
                         MessageDialog.error(message["err.OPERATE_FAIL.receiver"]);
                         return;
                     }
@@ -156,4 +152,52 @@ define([
             });
         }
     });
+
+    var companySuggestion = lang.mixin({}, suggest, {
+        selectionDialog : "receiver_editing_company_dialog",
+        selectionStoreTarget : "web/receivercompany",
+        selectionStructure : [ {
+            name : message["company"],
+            field : "name",
+            width : "150px"
+        }, {
+            name : message["address"],
+            field : "address",
+            width : "250px"
+        } ],
+
+        doSelect : function(item) {
+            var form = document.forms[order.editingForm];
+
+            registry.byId(form["receiverCompany"].id).set("value", item["name"]);
+            var receiverAddress = registry.byId(form["receiverAddress"].id);
+            if (receiverAddress.get("value") == "") {
+                receiverAddress.set("value", item["address"]);
+            }
+
+            this.updateReceiverId(form);
+        },
+
+        onCompanyKeyUp : function() {
+            var form = document.forms[order.editingForm];
+            this.updateReceiverId(form);
+        },
+
+        updateReceiverId : function(form) {
+            if (order._selectedItem == null) {
+                return;
+            }
+
+            if (registry.byId(form["receiverCompany"].id).get("value") != order._selectedItem["company"]) {
+                form["receiverId"].value = "-1";
+            } else if (registry.byId(form["receiverName"].id).get("value") == order._selectedItem["name"]) {
+                // selected name is the same as current name value, and selected company name is the same as current company value too.
+                form["receiverId"].value = order._selectedItem["id"];
+            }
+        }
+    });
+
+    order.companySuggestion = companySuggestion;
+
+    return order;
 });
