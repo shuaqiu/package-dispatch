@@ -3,19 +3,26 @@
 
 <properties>
     <comment>系统配置</comment>
-    
-    <!--  -->
+
+    <!-- -->
     <entry key="web.rest.address">http://localhost:8080/package-dispatch-webapp</entry>
-    
-    <!-- 短信发送配置 -->
-    <entry key="web.sms.sendAddress">http://59.42.246.82:8080/Message.sv?method=sendMsg</entry>
-    <entry key="web.sms.userCode">test</entry>
-    <entry key="web.sms.userPwd">11</entry>
-    <entry key="web.sms.charset">utf-8</entry>
-    
+
+    <!-- HTTP短信发送配置 start -->
+    <entry key="web.sms.address">http://sdk2.entinfo.cn/z_send.aspx</entry>
+    <entry key="web.sms.usercode">SDK-VVV-010-03360</entry>
+    <entry key="web.sms.password">568554</entry>
+
+    <!-- 下面这几个, 除非更好了接口, 才需要进行修改 -->
+    <entry key="web.sms.method">GET</entry><!-- HTTP方法: GET/POST -->
+    <entry key="web.sms.parameter.usercode">sn</entry><!-- 账号的参数名 -->
+    <entry key="web.sms.parameter.password">pwd</entry> <!-- 密码的参数名 -->
+    <entry key="web.sms.parameter.mobile">mobile</entry><!-- 手机号码的参数名 -->
+    <entry key="web.sms.parameter.content">content</entry><!-- 发送内容的参数名 -->
+    <!-- HTTP短信发送配置 end -->
+
     <!-- 新订单短信内容 -->
-    
-    <!-- 发给寄件人的短信内容: 可以用来使用的变量为:  -->
+
+    <!-- 发给寄件人的短信内容: 可以用来使用的变量为: -->
     <!-- {0}: 寄件人的流水号 -->
     <!-- {1}: 收件人的姓名 -->
     <!-- {2}: 收件人的电话 -->
@@ -24,8 +31,8 @@
     <!-- {5}: 物品名称 -->
     <!-- {6}: 物品数量 -->
     <entry key="order.notify.sender">你的订单已生成, 流水号为: {0}</entry>
-    
-    <!-- 发给收件人的短信内容: 可以用来使用的变量为:  -->
+
+    <!-- 发给收件人的短信内容: 可以用来使用的变量为: -->
     <!-- {0}: 收件人的验证码 -->
     <!-- {1}: 寄件人的姓名 -->
     <!-- {2}: 寄件人的电话 -->

@@ -88,7 +88,9 @@
     <table class="formTable">
       <tr>
         <td class="labelCell"></td>
-        <td><button data-dojo-type="dijit.form.Button" data-dojo-props="label: '下单', onClick : function(){require(['qiuq/order/order'], function(resource){resource.doSave()})}" /></td>
+        <td>
+          <button data-dojo-type="dijit.form.Button" data-dojo-props="label: '下单', onClick : function(){require(['qiuq/order/order'], function(resource){resource.doSave()})}" />
+        </td>
       </tr>
     </table>
   </form>

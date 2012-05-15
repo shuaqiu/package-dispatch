@@ -75,9 +75,14 @@ define([
             }
         },
 
-        _customErrorCallback : function(result) {
-            this._selectedItem = null;
-            return true;
+        _saved : function(result) {
+            lang.hitch(this, resource._saved)(result);
+
+            if (result.ok) {
+                this.showPrint(result.obj.key);
+            } else {
+                this._selectedItem = null;
+            }
         },
 
         _getValidData : function() {
@@ -89,7 +94,7 @@ define([
                 return null;
             }
 
-            return lang.hitch(this, resource._getValidDate)();
+            return lang.hitch(this, resource._getValidData)();
         },
 
         doView : function(orderId) {
@@ -163,6 +168,10 @@ define([
                     MessageDialog.error(message["err." + result.errCode]);
                 }
             });
+        },
+
+        showPrint : function(orderId) {
+            window.open("web/order/print?orderId=" + orderId, "", "");
         }
     });
 

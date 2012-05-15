@@ -1,10 +1,8 @@
-<%@ page contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-<title>订单打印页面</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath }/print.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath }/print.css" media="print" />
+<link rel="stylesheet" href="print.css" />
+<link rel="stylesheet" href="print.css" media="print" />
 <style type="text/css" media="screen">
 .desc {
     position: absolute;
@@ -17,12 +15,12 @@
 <body>
   <table id="mainContent">
     <tr>
-      <td>&nbsp;<%-- ${order.senderCode } --%></td>
+      <td>&nbsp;</td>
       <td>&nbsp;</td>
     </tr>
     <tr>
       <td>${order.senderCompany }</td>
-      <td>&nbsp;<%-- ${order.receiverCode } --%></td>
+      <td>&nbsp;</td>
     </tr>
     <tr>
       <td>
@@ -66,8 +64,8 @@
             <td style="width: 25%;">${order.quantity }</td>
           </tr>
         </table>
-    </td>
-    <td>&nbsp;</td>
+      </td>
+      <td>&nbsp;</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -80,7 +78,8 @@
     </tr>
   </table>
   <div class="desc">
-    <button onclick="window.print();">打印 (第一次打印时, 请先通过打印预览调整页面设置, 设置: 1, 上下左右的边距都为0, 2, 不打印背景)</button>
+    <button value="打印" onclick="window.print();" />
+    <span>第一次打印时, 请调整设置, 设置上下左右的边距都为0, 另外也不要打印背景图</span>
   </div>
 </body>
 </html>

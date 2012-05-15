@@ -1,0 +1,31 @@
+body {
+    margin: 18em 13.4em 9em;
+    width: 46.5em;
+    height: 25em;
+    background-image: url("img/print/print.jpg");
+    background-repeat: no-repeat;
+}
+
+table {
+    border: none;
+    width: 100%;
+    border-spacing: 0.18em;
+}
+
+table table {
+    border-spacing: 0;
+}
+
+tr {
+    height: 1.6em;
+}
+
+td {
+    padding: 0;
+    padding-left: 1.5em;
+    white-space: nowrap;
+}
+
+.desc{
+    display: none;
+}

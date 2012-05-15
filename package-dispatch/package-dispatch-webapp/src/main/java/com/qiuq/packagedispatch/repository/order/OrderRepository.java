@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.qiuq.common.OperateResult;
@@ -105,7 +106,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
                 + "values(:senderId, :senderName, :senderTel, :senderCompany, :senderAddress,"
                 + " :receiverId, :receiverName, :receiverTel, :receiverCompany, :receiverAddress,"
                 + " :goodsName, :quantity, :barCode, :senderIdentityCode, :receiverIdentityCode, :state, :stateDescribe)";
-        return doInsert(sql, new BeanPropertySqlParameterSource(t));
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        return doInsert(sql, new BeanPropertySqlParameterSource(t), generatedKeyHolder);
     }
 
     /**

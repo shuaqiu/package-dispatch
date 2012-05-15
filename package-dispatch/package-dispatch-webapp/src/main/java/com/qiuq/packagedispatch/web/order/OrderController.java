@@ -385,4 +385,15 @@ public class OrderController extends AbstractResourceController<Order> {
 
         return doQuery(sort, params, range);
     }
+
+    @RequestMapping(value = "/print", method = RequestMethod.GET)
+    public Map<String, Object> print(int orderId) {
+        Order t = orderService.query(orderId);
+        t.setGoodsName(t.getGoodsName().replaceAll("[\\n|\\r|\\n\\r]", "<br/>"));
+        t.setQuantity(t.getQuantity().replaceAll("[\\n|\\r|\\n\\r]", "<br/>"));
+
+        Map<String, Object> rmap = new HashMap<String, Object>();
+        rmap.put("order", t);
+        return rmap;
+    }
 }

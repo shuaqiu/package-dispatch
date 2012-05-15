@@ -59,13 +59,33 @@
             }},
 </c:if>
 <c:if test="${user.type ==  2}"><%--Type.TYPE_CUSTOMER--%>
-            {name: '操作', field: 'id', width: '70px', get: function(idx, item){
-                return new dijit.form.Button({
+            {name: '操作', field: 'id', width: '150px', get: function(idx, item){
+                var div = document.createElement('div');
+                
+                new dijit.form.Button({
                     label : '查看',
                     onClick : function(){
                         require(['qiuq/order/order'], function(resource){
                             resource.doView(item['id']);
                         });
+                    }
+                }).placeAt(div);
+                
+                if(item != null && (item['state'] == 0 || item['state'] == 1)){
+                    new dijit.form.Button({
+                        label : '打印订单',
+                        onClick : function(){
+                            require(['qiuq/order/order'], function(order){
+                                order.showPrint(item['id']);
+                            });
+                        }
+                    }).placeAt(div);
+                }
+                    
+                return new dijit.layout.ContentPane({
+                    content : div,
+                    style : {
+                        padding : 0
                     }
                 });
             }},

@@ -17,12 +17,13 @@ define([
         editingTab : "customer_editing_tab",
         editingForm : "customer_editing_form",
 
-        _customErrorCallback : function(result) {
-            if (result.errCode == "DUPLICATE") {
+        _saved : function(result) {
+            if (result.ok == false && result.errCode == "DUPLICATE") {
                 MessageDialog.error(message["err.DUPLICATE"]);
-                return false;
+                return;
             }
-            return true;
+
+            lang.hitch(this, resource._saved)(result);
         },
 
         _initForm : function(item) {

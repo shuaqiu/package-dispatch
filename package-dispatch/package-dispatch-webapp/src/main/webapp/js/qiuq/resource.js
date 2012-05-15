@@ -66,8 +66,8 @@ define([
 
             var saved = lang.hitch(this, this._saved);
             this._saveByXhr(data).then(function(result) {
-                saved(result);
                 dialog.hide();
+                saved(result);
             });
         },
 
@@ -111,14 +111,11 @@ define([
                 }
                 tab.close(this.editingTab);
             } else {
-                if (!this._customErrorCallback(result)) {
-                    return;
-                }
                 MessageDialog.error(message["err." + result.errCode]);
             }
         },
 
-        _customErrorCallback : function(result) {
+        _customSaveErrorCallback : function(result) {
             return true;
         },
 

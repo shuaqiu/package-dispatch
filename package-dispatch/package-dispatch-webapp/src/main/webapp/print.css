@@ -1,0 +1,36 @@
+body {
+    margin: 324px 241px 162px;
+    width: 837px;
+    height: 450px;
+    background-image: url("img/print/print.jpg");
+    background-repeat: no-repeat;
+}
+
+table {
+    border: none;
+    width: 100%;
+    border-spacing: 4px;
+}
+
+table table {
+    border-spacing: 0;
+}
+
+tr {
+    height: 28px;
+}
+
+td {
+    padding: 0;
+    padding-left: 48px;
+    white-space: nowrap;
+    width: 50%;
+}
+
+td td {
+    padding-left: 0;
+}
+
+.desc {
+    display: none;
+}
