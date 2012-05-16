@@ -5,7 +5,9 @@
 <html>
 <body>
   <div class="details">
-    <div class="desc">处理情况</div>
+    <div class="desc">
+      <span>处理情况</span>
+    </div>
     <div class="detail">
       <div>${order.senderName }(${order.senderTel })</div>
       <div>${order.senderAddress }</div>
@@ -34,7 +36,12 @@
   <c:if test="${user.type == 1 && order.state >= 1}">
     <%--Type.TYPE_SELF--%>
     <div class="details schedule">
-      <div class="desc">调度信息</div>
+      <div class="desc">
+        <span>调度信息</span>
+        <c:if test="${order.state <= DELIVERED }">
+          (<a href="#" onclick="require(['qiuq/order/schedule'], function(schedule){schedule.doModify(${order.id});});">修改</a>)
+        </c:if>
+      </div>
       <div class="detail">
         <div>${order.senderName }(${order.senderTel })</div>
         <div>${order.senderAddress }</div>

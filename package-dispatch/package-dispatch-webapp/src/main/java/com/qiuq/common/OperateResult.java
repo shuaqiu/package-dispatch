@@ -63,4 +63,17 @@ public class OperateResult {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("{");
+        str.append("\"ok\":" + isOk);
+        str.append(",\"errCode\":\"" + errCode + "\"");
+        str.append(",\"message\":\"" + message + "\"");
+        str.append(",\"obj\":" + obj);
+        str.append("}");
+
+        return str.toString();
+    }
 }

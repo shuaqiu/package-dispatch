@@ -118,7 +118,7 @@ define([
                     MessageDialog.alert(message["resendIdentityToSenderSucc"]);
                 } else {
                     if (result.errCode == "OPERATE_FAIL") {
-                        MessageDialog.error(message["err.OPERATE_FAIL.sender"]);
+                        MessageDialog.error(message["err.OPERATE_FAIL.sender"] + result.message);
                         return;
                     }
                     MessageDialog.error(message["err." + result.errCode]);
@@ -140,7 +140,7 @@ define([
                     MessageDialog.alert(message["resendIdentityToReceiverSucc"]);
                 } else {
                     if (result.errCode == "OPERATE_FAIL") {
-                        MessageDialog.error(message["err.OPERATE_FAIL.receiver"]);
+                        MessageDialog.error(message["err.OPERATE_FAIL.receiver"] + result.message);
                         return;
                     }
                     MessageDialog.error(message["err." + result.errCode]);
@@ -162,7 +162,7 @@ define([
                     MessageDialog.alert(message["regenerateReceiverIdentitySucc"]);
                 } else {
                     if (result.errCode == "OPERATE_FAIL") {
-                        MessageDialog.error(message["err.OPERATE_FAIL.receiver"]);
+                        MessageDialog.error(message["err.OPERATE_FAIL.receiver"] + result.message);
                         return;
                     }
                     MessageDialog.error(message["err." + result.errCode]);

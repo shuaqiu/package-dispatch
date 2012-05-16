@@ -244,25 +244,27 @@ public class OrderController extends AbstractResourceController<Order> {
     /**
      * @param t
      * @author qiushaohua 2012-4-5
+     * @return
      */
-    private void sendIdentityToSender(Order t) {
+    private OperateResult sendIdentityToSender(Order t) {
         String content = notifyTemplateForSender.format(new Object[] {
                 t.getSenderIdentityCode(), t.getReceiverName(), t.getReceiverTel(), t.getReceiverCompany(),
                 t.getReceiverAddress(), t.getGoodsName(), t.getQuantity()
         });
-        smsSender.send(content, t.getSenderTel());
+        return smsSender.send(content, t.getSenderTel());
     }
 
     /**
      * @param t
      * @author qiushaohua 2012-4-5
+     * @return
      */
-    private void sendIdentityToReceiver(Order t) {
+    private OperateResult sendIdentityToReceiver(Order t) {
         String content = notifyTemplateForReceiver.format(new Object[] {
                 t.getReceiverIdentityCode(), t.getSenderName(), t.getSenderTel(), t.getSenderCompany(),
                 t.getSenderAddress(), t.getGoodsName(), t.getQuantity()
         });
-        smsSender.send(content, t.getReceiverTel());
+        return smsSender.send(content, t.getReceiverTel());
     }
 
     /**
@@ -278,8 +280,8 @@ public class OrderController extends AbstractResourceController<Order> {
             return new OperateResult(ErrCode.NOT_FOUND, "not such order");
         }
         try {
-            sendIdentityToSender(order);
-            return OperateResult.OK;
+            OperateResult result = sendIdentityToSender(order);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -299,8 +301,9 @@ public class OrderController extends AbstractResourceController<Order> {
             return new OperateResult(ErrCode.NOT_FOUND, "not such order");
         }
         try {
-            sendIdentityToReceiver(order);
-            return OperateResult.OK;
+
+            OperateResult result = sendIdentityToReceiver(order);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -328,8 +331,8 @@ public class OrderController extends AbstractResourceController<Order> {
 
         order.setReceiverIdentityCode(code);
         try {
-            sendIdentityToReceiver(order);
-            return OperateResult.OK;
+            OperateResult result = sendIdentityToReceiver(order);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }

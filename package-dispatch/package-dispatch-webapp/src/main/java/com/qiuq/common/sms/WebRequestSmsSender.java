@@ -3,15 +3,18 @@
  */
 package com.qiuq.common.sms;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.qiuq.common.ErrCode;
+import com.qiuq.common.OperateResult;
 
 /**
  * @author qiushaohua 2012-4-27
@@ -86,38 +89,63 @@ public class WebRequestSmsSender implements SmsSender {
     }
 
     @Override
-    public boolean send(String content, String... numbers) {
+    public OperateResult send(String content, String... numbers) {
         if (numbers.length == 0) {
-            return false;
+            return new OperateResult(ErrCode.NULL, "not number to send");
         }
 
         if (method == null || "GET".equals(method.toUpperCase())) {
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(address).queryParam(usercodeParameter, usercode)
-                    .queryParam(passwordParameter, password).queryParam(contentParameter, content)
-                    .queryParam(mobileParameter, (Object[]) numbers).build();
-            String resp = restTemplate.getForObject(uri.toString(), String.class);
-            return resp.startsWith("1");
-
-            // String url = address +
-            // "&userCode={userCode}&userPwd={userPwd}&msgContent={msgContent}&numbers={numbers}";
-            // Map<String, Object> restReq = new HashMap<String, Object>();
-            // restReq.put(usercodeParameter, usercode);
-            // restReq.put(passwordParameter, password);
-            // restReq.put(contentParameter, content);
-            // restReq.put(mobileParameter, StringUtils.arrayToCommaDelimitedString(numbers));
-
-            // String resp = restTemplate.getForObject(url, String.class, restReq);
-
+            return sendByGet(content, numbers);
         } else if (method.toUpperCase().equals("POST")) {
-            Map<String, Object> restReq = new HashMap<String, Object>();
-            restReq.put(usercodeParameter, usercode);
-            restReq.put(passwordParameter, password);
-            restReq.put(contentParameter, content);
-            restReq.put(mobileParameter, StringUtils.arrayToCommaDelimitedString(numbers));
-            String resp = restTemplate.postForObject(address, restReq, String.class);
-            return resp.startsWith("1");
+            return sendByPost(content, numbers);
         }
-        return false;
+        return new OperateResult(ErrCode.INVALID, "invalid send method");
+    }
+
+    /**
+     * @param content
+     * @param numbers
+     * @return
+     * @author qiushaohua 2012-5-16
+     */
+    protected OperateResult sendByGet(String content, String... numbers) {
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(address).queryParam(usercodeParameter, usercode)
+                .queryParam(passwordParameter, password).queryParam(contentParameter, content)
+                .queryParam(mobileParameter, (Object[]) numbers).build();
+        try {
+            String resp = restTemplate.getForObject(uri.toString(), String.class);
+            if (resp.startsWith("1")) {
+                return OperateResult.OK;
+            }
+            return new OperateResult(ErrCode.OPERATE_FAIL, resp);
+        } catch (RestClientException e) {
+            e.printStackTrace();
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
+        }
+    }
+
+    /**
+     * @param content
+     * @param numbers
+     * @return
+     * @author qiushaohua 2012-5-16
+     */
+    protected OperateResult sendByPost(String content, String... numbers) {
+        MultiValueMap<String, Object> restReq = new LinkedMultiValueMap<String, Object>();
+        restReq.add(usercodeParameter, usercode);
+        restReq.add(passwordParameter, password);
+        restReq.add(contentParameter, content);
+        restReq.add(mobileParameter, StringUtils.arrayToCommaDelimitedString(numbers));
+        try {
+            String resp = restTemplate.postForObject(address, restReq, String.class);
+            if (resp.startsWith("1")) {
+                return OperateResult.OK;
+            }
+            return new OperateResult(ErrCode.OPERATE_FAIL, resp);
+        } catch (RestClientException e) {
+            e.printStackTrace();
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
+        }
     }
 
 }

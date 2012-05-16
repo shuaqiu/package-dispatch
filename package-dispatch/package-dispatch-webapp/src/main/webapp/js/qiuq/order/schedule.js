@@ -27,6 +27,7 @@ define([
         editingForm : "schedule_editing_form",
 
         doModify : function(orderId) {
+            var self = this;
             showTab([], {
                 title : this.modifyTabName,
                 href : this.resourceUrl + "/edit/" + orderId

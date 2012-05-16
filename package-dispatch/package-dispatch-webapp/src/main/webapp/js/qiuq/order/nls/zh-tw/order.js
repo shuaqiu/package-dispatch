@@ -13,6 +13,8 @@ define({
     "err.NOT_FOUND" : "沒有這個訂單",
         
     "err.UPDATE_FAIL" : "重新生成驗證碼失敗",
-    "err.OPERATE_FAIL.sender" : "重發流水號失敗",
-    "err.OPERATE_FAIL.receiver" : "重發驗證碼失敗"
+    "err.OPERATE_FAIL.sender" : "重發流水號失敗, 返回值: ",
+    "err.OPERATE_FAIL.receiver" : "重發驗證碼失敗, 返回值: ",
+    
+    "err.EXCEPTION" : "短信發送接口無法連接"
 });

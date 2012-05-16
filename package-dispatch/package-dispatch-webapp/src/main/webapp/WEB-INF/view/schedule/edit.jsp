@@ -38,11 +38,13 @@
       <div class="simpleTableInfo">
         <div>
           <div style="width: 30%; float: left;">
-            <ul name="fetcher" class="" style="height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['fetcher']">
+            <ul name="fetcher" class="" style="height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['fetcher'], copyState : function(){return false;}">
+              <li data-handler="${scheduledFetcher.id }" class="dojoDndItem" dndType="fetcher" style="line-height: 25px; margin-top: 3px;">${scheduledFetcher.name } ${scheduledFetcher.tel }</li>
             </ul>
           </div>
           <div style="width: 30%; float: left; margin-left: 5%;">
-            <ul name="fetcherCandidate" class="" style="min-height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['fetcher']">
+            <ul name="fetcherCandidate" class="container" style="min-height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source"
+              data-dojo-props="accept: ['fetcher'], copyState : function(){return false;}">
               <c:forEach var="var" items="${fetcher }">
                 <li data-handler="${var.id }" class="dojoDndItem" dndType="fetcher" style="line-height: 25px; margin-top: 3px;">${var.name } ${var.tel }</li>
               </c:forEach>
@@ -56,11 +58,16 @@
       <div class="simpleTableInfo">
         <div>
           <div style="width: 30%; float: left;">
-            <ul name="transiter" class="" style="min-height: 90px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['transiter']">
+            <ul name="transiter" class="" style="min-height: 90px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source"
+              data-dojo-props="accept: ['transiter'], copyState : function(){return false;}">
+              <c:forEach var="var" items="${scheduledTransiter }">
+                <li data-handler="${var.id }" class="dojoDndItem" dndType="transiter" style="line-height: 25px; margin-top: 3px;">${var.name } ${var.tel }</li>
+              </c:forEach>
             </ul>
           </div>
           <div style="width: 30%; float: left; margin-left: 5%;">
-            <ul name="transiterCandidate" class="" style="min-height: 90px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['transiter']">
+            <ul name="transiterCandidate" class="" style="min-height: 90px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source"
+              data-dojo-props="accept: ['transiter'], copyState : function(){return false;}">
               <c:forEach var="var" items="${transiter }">
                 <li data-handler="${var.id }" class="dojoDndItem" dndType="transiter" style="line-height: 25px; margin-top: 3px;">${var.name } ${var.tel }</li>
               </c:forEach>
@@ -74,11 +81,14 @@
       <div class="simpleTableInfo">
         <div>
           <div style="width: 30%; float: left;">
-            <ul name="deliverer" class="" style="height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['deliverer']">
+            <ul name="deliverer" class="" style="height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source"
+              data-dojo-props="accept: ['deliverer'], copyState : function(){return false;}">
+              <li data-handler="${scheduledDeliverer.id }" class="dojoDndItem" dndType="fetcher" style="line-height: 25px; margin-top: 3px;">${scheduledDeliverer.name } ${scheduledDeliverer.tel }</li>
             </ul>
           </div>
           <div style="width: 30%; float: left; margin-left: 5%;">
-            <ul name="delivererCandidate" class="" style="min-height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['deliverer']">
+            <ul name="delivererCandidate" class="" style="min-height: 40px; border: 1px solid #CCCCCC" data-dojo-type="dojo.dnd.Source"
+              data-dojo-props="accept: ['deliverer'], copyState : function(){return false;}">
               <c:forEach var="var" items="${deliverer }">
                 <li data-handler="${var.id }" class="dojoDndItem" dndType="deliverer" style="line-height: 25px; margin-top: 3px;">${var.name } ${var.tel }</li>
               </c:forEach>

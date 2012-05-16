@@ -250,7 +250,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @author qiushaohua 2012-4-9
      */
     public List<ScheduleDetail> getScheduleDetail(int orderId) {
-        String sql = "select * from dispatch_schedule_detail where order_id = :orderId";
+        String sql = "select * from dispatch_schedule_detail where order_id = :orderId order by state, handle_index";
         SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
         return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(ScheduleDetail.class));
     }
@@ -261,7 +261,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @author qiushaohua 2012-4-9
      */
     public List<HandleDetail> getHandleDetail(int orderId) {
-        String sql = "select * from dispatch_handle_detail where order_id = :orderId";
+        String sql = "select * from dispatch_handle_detail where order_id = :orderId order by state, handle_index";
         SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
         return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(HandleDetail.class));
     }

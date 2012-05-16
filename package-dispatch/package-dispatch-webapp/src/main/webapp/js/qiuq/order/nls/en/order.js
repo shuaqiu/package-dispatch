@@ -14,5 +14,7 @@ define({
         
     "err.UPDATE_FAIL" : "fail to regenerate the identiry number",
     "err.OPERATE_FAIL.sender" : "fail to resend the flow number to sender",
-    "err.OPERATE_FAIL.receiver" : "fail to resend the identity number to receiver"
+    "err.OPERATE_FAIL.receiver" : "fail to resend the identity number to receiver",
+    
+    "err.EXCEPTION" : "Could not connect to the sms send interface"
 });
