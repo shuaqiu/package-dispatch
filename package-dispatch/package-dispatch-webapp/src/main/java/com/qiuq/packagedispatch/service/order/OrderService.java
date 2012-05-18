@@ -3,7 +3,6 @@
  */
 package com.qiuq.packagedispatch.service.order;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -47,65 +46,40 @@ public class OrderService extends AbstractResourceService<Order> {
     /**
      * @param user
      * @param orderId
-     * @param fetcherId
-     * @param transiterIds
-     * @param delivererId
+     * @param details
      * @return
-     * @author qiushaohua 2012-4-7
+     * @author qiushaohua 2012-5-18
      */
     @Transactional
-    public boolean schedule(User user, int orderId, int fetcherId, List<Integer> transiterIds, int delivererId) {
-        List<ScheduleDetail> details = buildScheduleDetails(orderId, fetcherId, transiterIds, delivererId);
-
+    public boolean schedule(User user, int orderId, List<ScheduleDetail> details) {
         boolean isSaved = orderRepository.insertScheduleDetails(details);
         int updated = orderRepository.updateHandlerInfo(orderId);
+
+        Integer fetcherId = details.get(0).getHandlerId();
         boolean isUpdated = orderRepository.updateOrderInfo(orderId, user, fetcherId);
 
         return isSaved && updated == details.size() && isUpdated;
     }
 
     /**
+     * @param user
      * @param orderId
-     * @param fetcherId
-     * @param transiterIds
-     * @param delivererId
+     * @param details
+     * @param toDeleteScheduleIdList
      * @return
-     * @author qiushaohua 2012-4-7
+     * @author qiushaohua 2012-5-19
      */
-    private List<ScheduleDetail> buildScheduleDetails(int orderId, int fetcherId, List<Integer> transiterIds,
-            int delivererId) {
-        List<ScheduleDetail> details = new ArrayList<ScheduleDetail>(transiterIds.size() + 2);
-
-        details.add(buildScheduleDetail(orderId, fetcherId, 1, State.FETCHED));
-
-        int index = 1;
-        for (Integer transiterId : transiterIds) {
-            details.add(buildScheduleDetail(orderId, transiterId, index++, State.TRANSITING));
+    public boolean schedule(User user, int orderId, List<ScheduleDetail> details, List<Integer> toDeleteScheduleIdList) {
+        boolean isDeleted = orderRepository.deleteScheduleDetail(toDeleteScheduleIdList);
+        if (isDeleted) {
+            boolean isSaved = orderRepository.insertScheduleDetails(details);
+            orderRepository.updateHandlerInfo(orderId);
+            return isSaved;
         }
-
-        if (delivererId != -1) {
-            details.add(buildScheduleDetail(orderId, delivererId, 1, State.DELIVERED));
-        }
-
-        return details;
+        return false;
     }
 
-    /**
-     * @param orderId
-     * @param handlerId
-     * @param handleIndex
-     * @param state
-     * @return
-     * @author qiushaohua 2012-4-7
-     */
-    private ScheduleDetail buildScheduleDetail(int orderId, int handlerId, int handleIndex, State state) {
-        ScheduleDetail detail = new ScheduleDetail();
-        detail.setOrderId(orderId);
-        detail.setHandlerId(handlerId);
-        detail.setHandleIndex(handleIndex);
-        detail.setState(state.ordinal());
-        return detail;
-    }
+
 
     /**
      * @param orderId

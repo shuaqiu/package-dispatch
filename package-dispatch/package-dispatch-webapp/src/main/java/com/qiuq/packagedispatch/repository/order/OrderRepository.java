@@ -196,6 +196,27 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
     }
 
     /**
+     * @param scheduleIdList
+     * @return
+     * @author qiushaohua 2012-5-19
+     */
+    public boolean deleteScheduleDetail(List<Integer> scheduleIdList) {
+        String sql = "delete from dispatch_schedule_detail where id = :id";
+
+        SqlParameterSource[] batchArgs = new SqlParameterSource[scheduleIdList.size()];
+
+        int index = 0;
+        for (Integer scheduleId : scheduleIdList) {
+            batchArgs[index++] = new MapSqlParameterSource("id", scheduleId);
+        }
+
+        int[] batchUpdate = jdbcTemplate.batchUpdate(sql, batchArgs);
+
+        return batchUpdate != null;
+
+    }
+
+    /**
      * @param orderId
      * @return
      * @author qiushaohua 2012-4-7

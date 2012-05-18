@@ -7,6 +7,8 @@
 <title>慧信企业配送服务系统</title>
 <!-- <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" /> -->
 <!-- <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" /> -->
+<link rel="stylesheet" href="js/dojo-1.7.2/dojo/resources/dojo.css" />
+<link rel="stylesheet" href="js/dojo-1.7.2/dojo/resources/dnd.css" />
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/claro/claro.css" />
 <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
 <link rel="stylesheet" href="style.css" />

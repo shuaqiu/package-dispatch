@@ -7,13 +7,13 @@
     border: none;
 }
 
-.claro .dijitSplitContainer-dijitContentPane,.claro .dijitBorderContainer-dijitContentPane
+.tundra .dijitSplitContainer-dijitContentPane,.tundra .dijitBorderContainer-dijitContentPane,.claro .dijitSplitContainer-dijitContentPane,.claro .dijitBorderContainer-dijitContentPane
     {
     padding-top: 2px;
     padding-bottom: 2px;
 }
 
-.claro .dijitContentPane {
+.tundra .dijitContentPane,.claro .dijitContentPane {
     padding: 0;
 }
 
@@ -178,3 +178,93 @@ em:after {
     background: #FFF;
 }
 /***************************detail style***************************************/
+
+/***************************schedule style***************************************/
+.dndContainer {
+    width: 30%;
+    float: left;
+    margin-left: 5%;
+}
+
+.dndContainer ul {
+    margin: 0;
+    padding: 5px;
+    border: 1px solid #AAAAAA;
+}
+
+.dndTarget {
+    height: 40px;
+}
+
+.dndSource {
+    min-height: 40px;
+    max-height: 300px;
+    overflow: auto;
+}
+
+.item {
+    line-height: 25px;
+    margin-top: 3px;
+    border: 1px solid #759DC0;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+    list-style: none;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+}
+
+.dojoDndItem {
+    background-color: #E5F2FE;
+}
+
+.handledItem {
+    background-color: #BBB;
+}
+
+.dojoDndItemOver {
+    background-color: #ededed;
+    cursor: pointer;
+}
+
+.dojoDndItemSelected {
+    background-color: #5bbdea;
+    color: #444;
+}
+
+.dojoDndItemAnchor {
+    background-color: #5bbdea;
+    color: black;
+}
+
+.dojoDndItemOver .dojoDndItemSelected {
+    background-color: #ededed;
+}
+
+.dojoDndItemOver .dojoDndItemAnchor {
+    background-color: #ededed;
+}
+
+.dojoDndItemBefore,.dojoDndItemBefore>td {
+    border-top: 2px solid #369;
+}
+
+.dojoDndItemAfter,.dojoDndItemAfter>td {
+    border-bottom: 2px solid #369;
+}
+
+.dojoDndAvatar {
+    border: 2px solid #ccc;
+}
+
+.dojoDndAvatarHeader {
+    background-color: #aaa;
+}
+
+.dojoDndAvatarItem {
+    background-color: #fff;
+    border-bottom: 1px solid #666;
+}
+
+.dojoDndAvatarItem .itemText {
+    font-size: 120%;
+}
+/***************************schedule style***************************************/
