@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,10 +36,18 @@ public class AlarmController extends AbstractResourceController<Order> {
 
     private OrderService orderService;
 
+    private int timeToAlarm;
+
     /** @author qiushaohua 2012-4-29 */
     @Autowired
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    /** @author qiushaohua 2012-5-19 */
+    @Value("${alarm.time}")
+    public void setTimeToAlarm(int timeToAlarm) {
+        this.timeToAlarm = timeToAlarm;
     }
 
     @Override
@@ -64,6 +73,10 @@ public class AlarmController extends AbstractResourceController<Order> {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("transiting", 1);
         params.put("query", query);
+
+        params.put("fetchTime", timeToAlarm);
+        params.put("fetchTimeFormula", "datediff(mi, fetch_time, getdate())");
+        params.put("fetchTimeOp", ">");
 
         return doQuery(sort, params, range);
     }

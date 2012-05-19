@@ -11,13 +11,15 @@
     <entry key="web.sms.address">http://sdk2.entinfo.cn/z_send.aspx</entry>
     <entry key="web.sms.usercode">SDK-VVV-010-03360</entry>
     <entry key="web.sms.password">568554</entry>
+    <entry key="web.sms.charset">gb2312</entry><!-- 使用的字符集 -->
 
     <!-- 下面这几个, 除非更好了接口, 才需要进行修改 -->
-    <entry key="web.sms.method">GET</entry><!-- HTTP方法: GET/POST -->
+    <entry key="web.sms.method">POST</entry><!-- HTTP方法: GET/POST -->
     <entry key="web.sms.parameter.usercode">sn</entry><!-- 账号的参数名 -->
     <entry key="web.sms.parameter.password">pwd</entry> <!-- 密码的参数名 -->
     <entry key="web.sms.parameter.mobile">mobile</entry><!-- 手机号码的参数名 -->
     <entry key="web.sms.parameter.content">content</entry><!-- 发送内容的参数名 -->
+
     <!-- HTTP短信发送配置 end -->
 
     <!-- 新订单短信内容 -->
@@ -41,4 +43,7 @@
     <!-- {5}: 物品名称 -->
     <!-- {6}: 物品数量 -->
     <entry key="order.notify.receiver">你有新的快件, 验证码为: {0}</entry>
+
+    <!-- 超时时间定义(单位: 分钟)(产生告警的时间) -->
+    <entry key="alarm.time">45</entry>
 </properties>

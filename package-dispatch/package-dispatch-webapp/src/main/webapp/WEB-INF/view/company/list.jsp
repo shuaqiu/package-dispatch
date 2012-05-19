@@ -6,6 +6,9 @@
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
         listGrid : 'company_list_grid',
+        queryInputProp : {
+            placeHolder : '编码/名称/地址'
+        },
         storeTarget: 'web/company/',
         structure: [
             {name: '编码', field: 'code', width: '150px'},

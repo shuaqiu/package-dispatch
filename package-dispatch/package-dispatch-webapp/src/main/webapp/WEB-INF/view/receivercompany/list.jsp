@@ -6,6 +6,9 @@
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
         listGrid : 'receivercompany_list_grid',
+        queryInputProp : {
+            placeHolder : '名称/地址'
+        },
         storeTarget: 'web/receivercompany/',
         structure: [
             {name: '公司名称', field: 'name', width: '250px'},

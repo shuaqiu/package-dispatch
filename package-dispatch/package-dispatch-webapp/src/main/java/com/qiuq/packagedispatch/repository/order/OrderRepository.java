@@ -6,6 +6,7 @@ package com.qiuq.packagedispatch.repository.order;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +65,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
             order.setSenderIdentityCode(rs.getString("sender_identity_code"));
             order.setReceiverIdentityCode(rs.getString("receiver_identity_code"));
 
-            // order.setFetchTime(rs.getTimestamp("fetch_time"));
-            // order.setDeliverTime(rs.getTimestamp("deliver_time"));
+            order.setFetchTime(rs.getTimestamp("fetch_time"));
+            order.setDeliverTime(rs.getTimestamp("deliver_time"));
 
             // order.setSchedulerId(rs.getInt("schedule_id"));
             // order.setSchedulerName(rs.getString("scheduler_name"));
@@ -159,6 +160,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         sql += buildIntCondition(params, "senderId", paramMap);
         sql += buildIntCondition(params, "state", paramMap);
 
+        sql += buildIntCondition(params, "fetchTime", paramMap);
+
         int transiting = Converter.toInt(params.get("transiting"), -1);
         if (transiting != -1) {
             sql += " and (state = :fetchedState or state = :transitingState or state = :outStorageState)";
@@ -168,8 +171,10 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         }
 
         String query = Converter.toString(params.get("query"));
-        sql += buildQueryCondition(query, paramMap, "bar_code", "sender_name", "sender_tel", "receiver_name",
-                "receiver_tel");
+        Map<String, String> fieldCondition = new HashMap<String, String>();
+        fieldCondition.put("sender_identity_code", "state < 2");
+        sql += buildQueryCondition(query, paramMap, fieldCondition, "sender_identity_code", "bar_code", "sender_name",
+                "sender_tel", "receiver_name", "receiver_tel");
 
         return sql.replaceFirst(" and ", " where ");
     }

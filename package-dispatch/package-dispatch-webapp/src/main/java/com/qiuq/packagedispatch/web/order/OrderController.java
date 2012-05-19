@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -115,9 +116,15 @@ public class OrderController extends AbstractResourceController<Order> {
             params.put("senderId", user.getId());
         }
 
-        // state < State.DELIVERED, means the processing order
-        params.put("state", State.DELIVERED.ordinal());
-        params.put("stateOp", "<");
+        // 2012-5-20 add a state query
+        String state = req.getParameter("state");
+        if (StringUtils.hasText(state)) {
+            params.put("state", State.valueOf(state).ordinal());
+        } else {
+            // state < State.DELIVERED, means the processing order
+            params.put("state", State.DELIVERED.ordinal());
+            params.put("stateOp", "<");
+        }
 
         params.put("query", query);
 

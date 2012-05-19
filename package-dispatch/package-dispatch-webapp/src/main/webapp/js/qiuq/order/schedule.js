@@ -1,5 +1,4 @@
 define([
-        "dojo/aspect",
         "dojo/query",
         "dojo/dom-attr",
         "dojo/json",
@@ -15,8 +14,8 @@ define([
         "dojo/dnd/Target",
         "dijit/form/CheckBox",
         "dijit/form/Textarea",
-        "../widget/ResourceGrid" ], function(aspect, query, attr, json, lang, xhr, registry, resource, tab,
-        MessageDialog, message) {
+        "../widget/ResourceGrid" ], function(query, attr, json, lang, xhr, registry, resource, tab, MessageDialog,
+        message) {
 
     return lang.mixin({}, resource, {
         resourceUrl : "web/schedule",
@@ -39,28 +38,47 @@ define([
         },
 
         _initForm : function() {
-            this._beforeDropExternal(fetcherTarget);
-            this._beforeDropExternal(delivererTarget);
+            // overwrite the onDropExternal method
+            fetcherTarget.onDropExternal = this.onDropExternal;
+            delivererTarget.onDropExternal = this.onDropExternal;
         },
 
-        _beforeDropExternal : function(container) {
-            aspect.before(container, "onDropExternal", function(source, nodes, copy) {
-                // query the li element within this container
-                query("li", container.parent).forEach(function(node) {
-                    // get item from container
-                    var t = container.getItem(node.id);
-                    // and then delete it
-                    container.delItem(node.id);
+        onDropExternal : function(source, nodes, copy) {
+            // query the li element within this container
+            var self = this;
+            // 
+            query("li", this.parent).forEach(function(node) {
+                // get item from container
+                var t = self.getItem(node.id);
+                // and then delete it
+                self.delItem(node.id);
 
-                    // moved to the drop source container
-                    source.setItem(node.id, {
-                        data : t.data,
-                        type : t.type
-                    });
-                })
-                // and place the nodes to the source container
-                .place(source.parent);
-            });
+                // moved to the drop source container
+                source.setItem(node.id, {
+                    data : t.data,
+                    type : t.type
+                });
+            })
+            // and place the nodes to the source container
+            .place(source.parent);
+
+            var oldCreator = this._normalizedCreator;
+            // transferring nodes from the source to the target
+            // move nodes
+            this._normalizedCreator = function(node, hint) {
+                var t = source.getItem(node.id);
+                source.delItem(node.id);
+                return {
+                    node : node,
+                    data : t.data,
+                    type : t.type
+                };
+            };
+            this.selectNone();
+            source.selectNone();
+            this.insertNodes(true, nodes, false, null);
+            source.deleteSelectedNodes();
+            this._normalizedCreator = oldCreator;
         },
 
         _getValidData : function() {

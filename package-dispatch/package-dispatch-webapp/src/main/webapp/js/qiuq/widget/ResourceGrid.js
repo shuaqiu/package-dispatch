@@ -33,7 +33,12 @@ define([
         _deleteMenuLabel : message["delete"],
 
         _queryButtonLabel : message["query"],
+        _refreshButtonLabel : message["refresh"],
+        queryInputProp : null,
         _queryInput : null,
+
+        extQueryInputs : null,
+
         _grid : null,
         _mainContainer : null,
 
@@ -69,22 +74,45 @@ define([
         },
 
         _createQuery : function() {
-            this._queryInput = new TextBox({});
+            this._queryInput = new TextBox(lang.mixin({}, this.queryInputProp));
             this.connect(this._queryInput, "onKeyUp", function(evt) {
                 if (evt.keyCode == "13") {
                     this._onQuery();
                 }
             });
+
             var queryButton = new Button({
+                iconClass : "dijitIconSearch",
                 label : this._queryButtonLabel
             });
             this.connect(queryButton, "onClick", function() {
                 this._onQuery();
             });
 
+            var refreshButton = new Button({
+                iconClass : "dijitIconUndo",
+                label : this._refreshButtonLabel
+            });
+            this.connect(refreshButton, "onClick", function() {
+                this._onQuery();
+            });
+
             var queryBar = domConstruct.create("div");
             this._queryInput.placeAt(queryBar);
+
+            // add additional query if assigned @ 2012-5-19
+            if (this.extQueryInputs != null) {
+                if (lang.isArray(this.extQueryInputs)) {
+                    for ( var i = 0; i < this.extQueryInputs.length; i++) {
+                        this.extQueryInputs[i].placeAt(queryBar);
+                    }
+                } else {
+                    this.extQueryInputs.placeAt(queryBar);
+                }
+            }
+
             queryButton.placeAt(queryBar);
+            refreshButton.placeAt(queryBar);
             return queryBar;
         },
 
@@ -125,9 +153,22 @@ define([
         },
 
         _onQuery : function() {
-            this._grid.setQuery({
+            var query = {
                 query : this._queryInput.get("value")
-            });
+            };
+
+            // add additional query if assigned @ 2012-5-19
+            if (this.extQueryInputs != null) {
+                if (lang.isArray(this.extQueryInputs)) {
+                    for ( var i = 0; i < this.extQueryInputs.length; i++) {
+                        query[this.extQueryInputs[i].get("name")] = this.extQueryInputs[i].get("value");
+                    }
+                } else {
+                    query[this.extQueryInputs.get("name")] = this.extQueryInputs.get("value");
+                }
+            }
+
+            this._grid.setQuery(query);
         },
 
         _createGrid : function() {
@@ -149,11 +190,8 @@ define([
             }
 
             this._grid = new EnhancedGrid(option);
-
-            if (this.doModify && lang.isFunction(this.doModify)) {
-                // if modifiable, add the function that it can be modified by double click it. @ 2012-5-14
-                this.connect(this._grid, "onRowDblClick", this._onRowDblClick);
-            }
+            // add the double click action
+            this.connect(this._grid, "onRowDblClick", this._onRowDblClick);
 
             return this._grid;
         },
@@ -161,11 +199,10 @@ define([
         _onRowDblClick : function(evt) {
             // var idx = evt.rowIndex;
             // var item = this._grid.getItem(idx);
-            this.doModify();
-        },
-
-        onRowClick : function(item, idx) {
-
+            if (this.doModify && lang.isFunction(this.doModify)) {
+                // if modifiable, add the function that it can be modified by double click it. @ 2012-5-14
+                this.doModify();
+            }
         },
 
         destroy : function(/* Boolean */preserveDom) {

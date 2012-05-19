@@ -7,10 +7,37 @@
     data-dojo-props="
         id : 'order_list',
         listGrid : 'order_list_grid',
-        storeTarget: 'web/order/',
-        structure: [
+        queryInputProp : {
+            placeHolder : '订单号/姓名/电话'
+        },
+        extQueryInputs : new dijit.form.Select({
+            name : 'state',
+            style : {
+                width: '15em'
+            },
+            options : [
+                {value : '', label : '---'},
+                {value : 'NEW_ORDER', label : '已下单, 等待调度'},
+                {value : 'SCHEDULED', label : '已调度, 正上门收件'},
+                {value : 'FETCHED', label : '已收件, 正派送'},
+                {value : 'TRANSITING', label : '派送中'},
+                {value : 'IN_STORAGE', label : '已入库'},
+                {value : 'OUT_STORAGE', label : '已出库'}
+            ]
+        }),
+        
+        storeTarget : 'web/order/',
+        _onRowDblClick : function(evt) {
+            // 双击进行查看
+            var idx = evt.rowIndex;
+            var item = this._grid.getItem(idx);
+            require(['qiuq/order/order'], function(resource){
+                resource.doView(item['id']);
+            });
+        },
+        structure : [
 <c:if test="${user.type ==  1}"><%--Type.TYPE_SELF--%>
-            {name: '操作', field: 'id', width: '300px', get: function(idx, item){
+            {name : '操作', field : 'id', width : '300px', get : function(idx, item){
                 var div = document.createElement('div');
                 new dijit.form.Button({
                     label : '查看',
@@ -59,7 +86,7 @@
             }},
 </c:if>
 <c:if test="${user.type ==  2}"><%--Type.TYPE_CUSTOMER--%>
-            {name: '操作', field: 'id', width: '150px', get: function(idx, item){
+            {name : '操作', field : 'id', width : '150px', get : function(idx, item){
                 var div = document.createElement('div');
                 
                 new dijit.form.Button({

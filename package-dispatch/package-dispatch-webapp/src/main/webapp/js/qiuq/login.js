@@ -10,8 +10,9 @@ define([
         "dijit/form/TextBox",
         "dijit/form/Button",
         "./widget/MessageDialog",
+        "./order/alarm",
         "dojo/i18n!./nls/login" ], function(parser, dom, string, Deferred, xhr, registry, Dialog, ContentPane, TextBox,
-        Button, MessageDialog, message) {
+        Button, MessageDialog, alarm, message) {
 
     var id = {
         dialogId : "login_dialog",
@@ -163,6 +164,7 @@ define([
 
     function reLogin() {
         registry.byId("appLayout").destroyRecursive();
+        alarm.destroy();
         tryLogin();
     }
 
@@ -189,6 +191,10 @@ define([
             }
             dom.byId(document.body).innerHTML = content;
             parser.parse(document.body);
+            
+            setTimeout(function(){
+                alarm.startCheck();
+            }, 5000);
         });
     }
 

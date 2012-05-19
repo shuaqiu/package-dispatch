@@ -6,7 +6,18 @@
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
         listGrid : 'history_list_grid',
+        queryInputProp : {
+            'placeHolder' : '订单号/姓名/电话'
+        },
         storeTarget: 'web/order/history/',
+        _onRowDblClick : function(evt) {
+            // 双击进行查看
+            var idx = evt.rowIndex;
+            var item = this._grid.getItem(idx);
+            require(['qiuq/order/order'], function(resource){
+                resource.doView(item['id']);
+            });
+        },
         structure: [
             {name: '下单时间', field: 'orderTime', width: '170px', formatter: function(value){
                 var d = new Date();

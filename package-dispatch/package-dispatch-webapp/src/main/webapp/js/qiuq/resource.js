@@ -111,12 +111,14 @@ define([
                 }
                 tab.close(this.editingTab);
             } else {
+                if (result.errCode == "NOT_LOGINED") {
+                    require([ "qiuq/login" ], function(login) {
+                        login.reLogin();
+                    });
+                    return;
+                }
                 MessageDialog.error(message["err." + result.errCode]);
             }
-        },
-
-        _customSaveErrorCallback : function(result) {
-            return true;
         },
 
         doModify : function() {

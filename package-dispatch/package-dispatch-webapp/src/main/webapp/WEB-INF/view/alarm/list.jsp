@@ -6,6 +6,9 @@
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
         listGrid : 'alarm_list_grid',
+        queryInputProp : {
+            placeHolder : '订单号/姓名/电话'
+        },
         storeTarget: 'web/alarm/',
         structure: [
             {name: '收件时间/出库时间', field: 'fetchTime', width: '170px', formatter: function(value){
@@ -17,7 +20,7 @@
                 var c = new Date().getTime();
                 return parseInt((c - item['fetchTime']) / 60 / 1000);
             }},
-            {name: '发件人', field: 'barCode', width: '100px'},
+            {name: '条形码', field: 'barCode', width: '100px'},
             {name: '发件人', field: 'senderName', width: '100px'},
             {name: '发件人电话', field: 'senderTel', width: '120px'},
             {name: '发件人公司', field: 'senderCompany', width: '200px'},

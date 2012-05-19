@@ -6,6 +6,9 @@
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
         listGrid : 'schedule_list_grid',
+        queryInputProp : {
+            placeHolder : '姓名/电话'
+        },
         storeTarget: 'web/schedule/',
         structure: [
             {name: '操作', field: 'id', width: '70px', get: function(idx, item){

@@ -50,11 +50,7 @@
     });
 
     require([ "qiuq/login", "qiuq/order/alarm", "dojo/domReady!" ], function(login, alarm) {
-        login.tryLogin().then(function(){
-            setTimeout(function(){
-                alarm.startCheck();
-            }, 5000);
-        });
+        login.tryLogin();
     });
 
     function showTab(moduleArr, conf, id, forceReload) {

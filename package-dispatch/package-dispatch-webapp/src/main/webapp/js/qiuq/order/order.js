@@ -12,6 +12,7 @@ define([
         "dojo/date/locale",
         "dojo/date/stamp",
         "dijit/form/CheckBox",
+        "dijit/form/Select",
         "dijit/form/Textarea" ], function(string, lang, xhr, registry, resource, suggest, ResourceGrid, MessageDialog,
         LoadingDialog, message) {
 

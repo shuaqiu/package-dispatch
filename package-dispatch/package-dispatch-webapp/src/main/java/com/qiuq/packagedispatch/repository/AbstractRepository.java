@@ -195,7 +195,8 @@ public abstract class AbstractRepository {
      * @param key
      * @param table
      * @param paramMap
-     * @return " and table.key params.get(key + "Op") :key"
+     * @return <span style="font-weight: bold;">" and params.get(key + "Formula") params.get(key + "Op") :key"</span><br/>
+     *         or <span style="font-weight: bold;">" and table.key params.get(key + "Op") :key"</span>
      * @author qiushaohua 2012-5-14
      */
     protected String buildIntCondition(Map<String, Object> params, String key, String table,
@@ -205,10 +206,20 @@ public abstract class AbstractRepository {
             return "";
         }
 
-        String op = Converter.toString(params.get(key + "Op"), "=").toLowerCase();
         paramMap.addValue(key, value);
+
+        String column;
+        String formula = Converter.toString(params.get(key + "Formula"));
+        if (StringUtils.hasText(formula)) {
+            // here, use the formula directly, not append the table.
+            // enhance, the formula should set the table correctly.s
+            column = formula;
+        } else {
+            column = buildColumn(table, key);
+        }
+        String op = Converter.toString(params.get(key + "Op"), "=").toLowerCase();
         // " and table.key op :key"
-        String sql = " and " + buildColumn(table, key) + " " + op + " :" + key;
+        String sql = " and " + column + " " + op + " :" + key;
         return sql;
     }
 
@@ -276,11 +287,20 @@ public abstract class AbstractRepository {
      * @author qiushaohua 2012-5-13
      */
     protected String buildQueryCondition(String query, MapSqlParameterSource paramMap, String...fields) {
-        if(fields == null || fields.length == 0){
-            return "";
-        }
+        return buildQueryCondition(query, paramMap, null, fields);
+    }
 
-        if (!StringUtils.hasText(query)) {
+    /**
+     * @param query
+     * @param paramMap
+     * @param fieldCondition
+     * @param fields
+     * @return
+     * @author qiushaohua 2012-5-19
+     */
+    protected String buildQueryCondition(String query, MapSqlParameterSource paramMap,
+            Map<String, String> fieldCondition, String... fields) {
+        if (fields == null || fields.length == 0 || !StringUtils.hasText(query)) {
             return "";
         }
 
@@ -290,8 +310,12 @@ public abstract class AbstractRepository {
         StringBuilder sql = new StringBuilder();
         sql.append(" and (");
         List<String> s = new ArrayList<String>();
-        for(String field : fields){
-            s.add(field + " like :query");
+        for (String field : fields) {
+            if (fieldCondition != null && StringUtils.hasText(fieldCondition.get(field))) {
+                s.add("(" + field + " like :query and " + fieldCondition.get(field) + ")");
+            } else {
+                s.add(field + " like :query");
+            }
         }
         sql.append(StringUtils.collectionToDelimitedString(s, " or "));
         sql.append(" )");

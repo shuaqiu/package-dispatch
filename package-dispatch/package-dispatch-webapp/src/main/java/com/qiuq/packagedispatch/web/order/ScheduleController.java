@@ -13,8 +13,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -174,7 +172,7 @@ public class ScheduleController extends AbstractResourceController<Order> {
      * @author qiushaohua 2012-5-17
      */
     private int getLastestHandledScheduleId(List<HandleDetail> handleDetail) {
-        if(handleDetail == null || handleDetail.size() == 0){
+        if (handleDetail == null || handleDetail.size() == 0) {
             return -1;
         }
         ListIterator<HandleDetail> iterator = handleDetail.listIterator(handleDetail.size());
@@ -211,12 +209,12 @@ public class ScheduleController extends AbstractResourceController<Order> {
     @ResponseBody
     public OperateResult schedule(WebRequest req, @PathVariable int orderId, @RequestBody Map<String, Object> params) {
         User user = HttpSessionUtil.getLoginedUser(req);
-        if(user == null){
+        if (user == null) {
             return new OperateResult(ErrCode.INVALID, "not logined user");
         }
 
-        //        MultiValueMap<Integer, Integer> handlerMap = getHandlerMap(params);
-        //        List<ScheduleDetail> details = buildScheduleDetails(orderId, handlerMap);
+        // MultiValueMap<Integer, Integer> handlerMap = getHandlerMap(params);
+        // List<ScheduleDetail> details = buildScheduleDetails(orderId, handlerMap);
         List<ScheduleDetail> details = buildScheduleDetails(orderId, params);
         boolean isOk = orderService.schedule(user, orderId, details);
         if (isOk) {
@@ -232,16 +230,13 @@ public class ScheduleController extends AbstractResourceController<Order> {
             @RequestBody Map<String, Object> params) {
         User user = HttpSessionUtil.getLoginedUser(req);
         if (user == null) {
-            return new OperateResult(ErrCode.INVALID, "not logined user");
+            return new OperateResult(ErrCode.NOT_LOGINED, "not logined user");
         }
 
-        //        MultiValueMap<Integer, Integer> handlerMap = getHandlerMap(params);
-        //        List<ScheduleDetail> details = buildScheduleDetails(orderId, handlerMap);
         List<ScheduleDetail> details = buildScheduleDetails(orderId, params);
 
         List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
         List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
-
 
         List<Integer> toDeleteScheduleIdList = new ArrayList<Integer>();
 
@@ -280,50 +275,11 @@ public class ScheduleController extends AbstractResourceController<Order> {
     }
 
     /**
-     * get the handler in each state from the parameter map
-     * 
-     * @param params
-     * @return key is the ordinal of state, and the value is the id of handler
-     * @author qiushaohua 2012-5-18
-     */
-    private MultiValueMap<Integer, Integer> getHandlerMap(Map<String, Object> params) {
-        MultiValueMap<Integer, Integer> handlerMap = new LinkedMultiValueMap<Integer, Integer>();
-
-        handlerMap.add(State.FETCHED.ordinal(), Converter.toInt(params.get("fetcher")));
-
-        List<?> list = (List<?>) params.get("transiter");
-        for (Object obj : list) {
-            handlerMap.add(State.TRANSITING.ordinal(), Converter.toInt(obj));
-        }
-
-        handlerMap.add(State.DELIVERED.ordinal(), Converter.toInt(params.get("deliverer")));
-
-        return handlerMap;
-    }
-
-    /**
      * @param orderId
-     * @param handlerMap
+     * @param params
      * @return
-     * @author qiushaohua 2012-4-7
+     * @author qiushaohua 2012-5-19
      */
-    private List<ScheduleDetail> buildScheduleDetails(int orderId, MultiValueMap<Integer, Integer> handlerMap) {
-        List<ScheduleDetail> details = new ArrayList<ScheduleDetail>();
-
-        for (int state : handlerMap.keySet()) {
-            List<Integer> handlerList = handlerMap.get(state);
-            int index = 1;
-            for (int handlerId : handlerList) {
-                if (handlerId == -1) {
-                    continue;
-                }
-                details.add(buildScheduleDetail(orderId, handlerId, index++, state));
-            }
-        }
-
-        return details;
-    }
-
     private List<ScheduleDetail> buildScheduleDetails(int orderId, Map<String, Object> params) {
         List<ScheduleDetail> details = new ArrayList<ScheduleDetail>();
 

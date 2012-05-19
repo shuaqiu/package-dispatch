@@ -6,6 +6,9 @@
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
         listGrid : 'user_list_grid',
+        queryInputProp : {
+            placeHolder : '编号/登录帐号/姓名/地址'
+        },
         storeTarget: 'web/user/',
         structure: [
             {name: '员工编号', field: 'code', width: '100px'},

@@ -3,8 +3,16 @@
  */
 package com.qiuq.common.sms;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -33,6 +41,8 @@ public class WebRequestSmsSender implements SmsSender {
     private String passwordParameter;
     private String mobileParameter;
     private String contentParameter;
+
+    private String charset;
 
     /** @author qiushaohua 2012-4-28 */
     @Autowired
@@ -88,6 +98,12 @@ public class WebRequestSmsSender implements SmsSender {
         this.contentParameter = contentParameter;
     }
 
+    /** @author qiushaohua 2012-5-19 */
+    @Value("${web.sms.charset}")
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
     @Override
     public OperateResult send(String content, String... numbers) {
         if (numbers.length == 0) {
@@ -109,16 +125,21 @@ public class WebRequestSmsSender implements SmsSender {
      * @author qiushaohua 2012-5-16
      */
     protected OperateResult sendByGet(String content, String... numbers) {
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(address).queryParam(usercodeParameter, usercode)
-                .queryParam(passwordParameter, password).queryParam(contentParameter, content)
-                .queryParam(mobileParameter, (Object[]) numbers).build();
         try {
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(address).queryParam(usercodeParameter, usercode)
+                    .queryParam(passwordParameter, password)
+                    .queryParam(contentParameter, URLEncoder.encode(content, charset))
+                    .queryParam(mobileParameter, (Object[]) numbers).build();
+
             String resp = restTemplate.getForObject(uri.toString(), String.class);
             if (resp.startsWith("1")) {
                 return OperateResult.OK;
             }
             return new OperateResult(ErrCode.OPERATE_FAIL, resp);
         } catch (RestClientException e) {
+            e.printStackTrace();
+            return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
         }
@@ -136,8 +157,16 @@ public class WebRequestSmsSender implements SmsSender {
         restReq.add(passwordParameter, password);
         restReq.add(contentParameter, content);
         restReq.add(mobileParameter, StringUtils.arrayToCommaDelimitedString(numbers));
+
         try {
-            String resp = restTemplate.postForObject(address, restReq, String.class);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            MediaType mediaType = MediaType.parseMediaType("application/x-www-form-urlencoded;charset=" + charset);
+            httpHeaders.setContentType(mediaType);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<MultiValueMap<String, Object>>(
+                    restReq, httpHeaders);
+            ResponseEntity<String> exchange = restTemplate.exchange(address, HttpMethod.POST, requestEntity,
+                    String.class);
+            String resp = exchange.getBody();
             if (resp.startsWith("1")) {
                 return OperateResult.OK;
             }
@@ -146,6 +175,7 @@ public class WebRequestSmsSender implements SmsSender {
             e.printStackTrace();
             return new OperateResult(ErrCode.EXCEPTION, e.getMessage());
         }
+
     }
 
 }
