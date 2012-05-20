@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.packagedispatch.bean.customer.Receiver;
+import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.customer.ReceiverService;
@@ -55,7 +56,9 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
         }
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", user.getId());
+        if (user.getType() == Type.TYPE_CUSTOMER) {
+            params.put("userCompanyId", user.getCompanyId());
+        }
         params.put("query", query);
 
         return doQuery(sort, params, range);

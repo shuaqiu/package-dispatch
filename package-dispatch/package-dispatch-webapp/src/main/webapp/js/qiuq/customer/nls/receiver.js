@@ -4,6 +4,7 @@ define({
         "create" : "新建收件人",
         "modify" : "修改收件人",
 
+        "code" : "编号",
         "name" : "名称",
         "address" : "地址"
     },

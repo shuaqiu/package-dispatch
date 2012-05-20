@@ -11,11 +11,11 @@ public class Receiver {
 
     private int id;
 
-    private int userId;
+    private int userCompanyId;
+    private String userCompany;
 
     private String name;
     private String tel;
-    private int companyId;
     private String company;
     private String address;
 
@@ -29,14 +29,25 @@ public class Receiver {
         this.id = id;
     }
 
+
     /** @author qiushaohua 2012-3-31 */
-    public int getUserId() {
-        return userId;
+    public int getUserCompanyId() {
+        return userCompanyId;
     }
 
     /** @author qiushaohua 2012-3-31 */
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserCompanyId(int userCompanyId) {
+        this.userCompanyId = userCompanyId;
+    }
+
+    /** @author qiushaohua 2012-5-20 */
+    public String getUserCompany() {
+        return userCompany;
+    }
+
+    /** @author qiushaohua 2012-5-20 */
+    public void setUserCompany(String userCompany) {
+        this.userCompany = userCompany;
     }
 
     /** @author qiushaohua 2012-3-31 */
@@ -57,16 +68,6 @@ public class Receiver {
     /** @author qiushaohua 2012-3-31 */
     public void setTel(String tel) {
         this.tel = tel;
-    }
-
-    /** @author qiushaohua 2012-3-31 */
-    public int getCompanyId() {
-        return companyId;
-    }
-
-    /** @author qiushaohua 2012-3-31 */
-    public void setCompanyId(int companyId) {
-        this.companyId = companyId;
     }
 
     /** @author qiushaohua 2012-3-31 */

@@ -58,20 +58,13 @@ create table sys_role_function(
 alter table sys_role_function add constraint pk_sys_role_function primary key (role_id, func_id)
 
 
-create table customer_receiver_company(
-    id int not null identity(1,1),
-    user_id int,
-    name varchar(255),
-    address varchar(255)
-)
-alter table customer_receiver_company add constraint pk_customer_receiver_company primary key (id)
 
 create table customer_receiver(
     id int not null identity(1,1),
-    user_id int,
+    user_company_id int,
+    user_company varchar(255),
     name varchar(255),
     tel varchar(20),
-    company_id int,
     company varchar(255),
     address varchar(255)
 )
@@ -81,12 +74,14 @@ alter table customer_receiver add constraint pk_customer_receiver primary key (i
 create table dispatch_order(
     id int not null identity(1,1),
     
+    -- from sys_user
     sender_id int not null,
     sender_name varchar(255),
     sender_tel varchar(20),
     sender_company varchar(255),
     sender_address varchar(255),
     
+    -- from customer_receiver
     receiver_id int not null,
     receiver_name varchar(255),
     receiver_tel varchar(20),

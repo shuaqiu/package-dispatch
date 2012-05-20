@@ -16,7 +16,7 @@ define([
         "dijit/form/Textarea" ], function(string, lang, xhr, registry, resource, suggest, ResourceGrid, MessageDialog,
         LoadingDialog, message) {
 
-    var order = lang.mixin({}, resource, suggest, {
+    return lang.mixin({}, resource, suggest, {
         resourceUrl : "web/order",
         listGrid : "order_list_grid",
 
@@ -175,53 +175,4 @@ define([
             window.open("web/order/print?orderId=" + orderId, "", "");
         }
     });
-
-    var companySuggestion = lang.mixin({}, suggest, {
-        selectionDialog : "receiver_editing_company_dialog",
-        selectionStoreTarget : "web/receivercompany",
-        selectionStructure : [ {
-            name : message["company"],
-            field : "name",
-            width : "150px"
-        }, {
-            name : message["address"],
-            field : "address",
-            width : "250px"
-        } ],
-
-        doSelect : function(item) {
-            var form = document.forms[order.editingForm];
-
-            registry.byId(form["receiverCompany"].id).set("value", item["name"]);
-            var receiverAddress = registry.byId(form["receiverAddress"].id);
-            if (receiverAddress.get("value") == "") {
-                receiverAddress.set("value", item["address"]);
-            }
-
-            this.updateReceiverId(form);
-        },
-
-        onCompanyKeyUp : function() {
-            var form = document.forms[order.editingForm];
-            this.updateReceiverId(form);
-        },
-
-        updateReceiverId : function(form) {
-            if (order._selectedItem == null) {
-                return;
-            }
-
-            if (registry.byId(form["receiverCompany"].id).get("value") != order._selectedItem["company"]) {
-                form["receiverId"].value = "-1";
-            } else if (registry.byId(form["receiverName"].id).get("value") == order._selectedItem["name"]) {
-                // selected name is the same as current name value, and selected company name is the same as current
-                // company value too.
-                form["receiverId"].value = order._selectedItem["id"];
-            }
-        }
-    });
-
-    order.companySuggestion = companySuggestion;
-
-    return order;
 });

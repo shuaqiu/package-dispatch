@@ -3,6 +3,7 @@ define({
     "create" : "Create Receiver",
     "modify"   : "Modify Receiver",
 
+    "code" : "code",
     "name" : "name",
     "address" : "address"
 });

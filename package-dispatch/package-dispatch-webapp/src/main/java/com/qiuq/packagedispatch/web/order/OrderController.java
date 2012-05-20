@@ -161,7 +161,7 @@ public class OrderController extends AbstractResourceController<Order> {
 
     private int getReceiverId(Order t) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", t.getSenderId());
+        params.put("userCompanyId", t.getSenderCompanyId());
         params.put("name", t.getReceiverName());
         params.put("nameOp", "=");
         params.put("company", t.getReceiverCompany());
@@ -173,10 +173,10 @@ public class OrderController extends AbstractResourceController<Order> {
         }
 
         Receiver receiver = new Receiver();
-        receiver.setUserId(t.getSenderId());
+        receiver.setUserCompanyId(t.getSenderCompanyId());
+        receiver.setUserCompany(t.getSenderCompany());
         receiver.setName(t.getReceiverName());
         receiver.setTel(t.getReceiverTel());
-        receiver.setCompanyId(-1);
         receiver.setCompany(t.getReceiverCompany());
         receiver.setAddress(t.getReceiverAddress());
 

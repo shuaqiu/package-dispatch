@@ -4,7 +4,7 @@
 <html>
 <body>
   <form name="order_editing_form" method="post" data-dojo-type="dijit.form.Form" data-dojo-props="">
-    <input type="hidden" name="senderId" value="${user.id }" /> <input type="hidden" name="receiverId" />
+    <input type="hidden" name="senderId" value="${user.id }" /><input type="hidden" name="senderCompanyId" value="${user.companyId }" /> <input type="hidden" name="receiverId" />
     <fieldset style="display: none;">
       <legend>寄件人信息</legend>
       <div>
@@ -52,16 +52,7 @@
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="order_editing_receiverCompany">公司: </label></td>
-            <td><input id="order_editing_receiverCompany" name="receiverCompany" data-dojo-type="dijit.form.ValidationTextBox"
-              data-dojo-props="value: '', placeHolder: '收件人的公司名称', required: true,
-                    onKeyUp: function(event){
-                        require(['qiuq/order/order'], function(order){
-                            order.companySuggestion.suggest(event.target);
-                            order.companySuggestion.onCompanyKeyUp();
-                        });
-                    }" />
-              <button data-dojo-type="dijit.form.Button"
-                data-dojo-props="label: '选择', onClick: function(){require(['qiuq/order/order'], function(order){order.companySuggestion.showSelectionDialog();});}" /></td>
+            <td><input id="order_editing_receiverCompany" name="receiverCompany" data-dojo-type="dijit.form.ValidationTextBox" data-dojo-props="placeHolder: '收件人的公司名称', required: true" /></td>
           </tr>
           <tr>
             <td class="labelCell"><em>*</em><label for="order_editing_receiverAddress">地址: </label></td>

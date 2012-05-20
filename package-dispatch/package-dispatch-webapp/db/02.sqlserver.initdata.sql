@@ -46,8 +46,6 @@ values (107, 'employer', '员工管理')
 insert into sys_function(id, code, name)
 values (201, 'order', '自主下单')
 insert into sys_function(id, code, name)
-values (202, 'receiverCompany', '收件公司管理')
-insert into sys_function(id, code, name)
 values (203, 'receiver', '收件人管理')
 insert into sys_function(id, code, name)
 values (204, 'account', '账号管理')
@@ -58,9 +56,15 @@ update sys_function set func_index = id
 insert into sys_role_function(role_id, func_id)
 select 0, id from sys_function where id > 100 and id < 200
 
+insert into sys_role_function(role_id, func_id)
+values (0, 203)
+
 -- 值班经理的权限
 insert into sys_role_function(role_id, func_id)
 select 1, id from sys_function where id > 100 and id < 200
+
+insert into sys_role_function(role_id, func_id)
+values (1, 203)
 
 -- 调度员的权限
 insert into sys_role_function(role_id, func_id)

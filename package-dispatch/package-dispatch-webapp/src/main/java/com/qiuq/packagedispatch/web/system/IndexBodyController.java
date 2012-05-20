@@ -80,7 +80,6 @@ public class IndexBodyController {
             }
         } else {
             funcMap.put("order", true);
-            funcMap.put("receiverCompany", true);
             funcMap.put("receiver", true);
             if (user.getCustomerType() == User.CUSTOMER_TYPE_ADMIN) {
                 funcMap.put("account", true);

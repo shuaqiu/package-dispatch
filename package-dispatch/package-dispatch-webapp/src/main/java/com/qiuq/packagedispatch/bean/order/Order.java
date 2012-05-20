@@ -17,6 +17,10 @@ public class Order {
     private int senderId;
     private String senderName;
     private String senderTel;
+    /**
+     * 这个字段不用保存, 只是用来在下单的时候, 获取公司的ID, 便于查找收件人信息
+     */
+    private int senderCompanyId;
     private String senderCompany;
     private String senderAddress;
 
@@ -121,6 +125,16 @@ public class Order {
     /** @author qiushaohua 2012-3-19 */
     public void setSenderTel(String senderTel) {
         this.senderTel = senderTel;
+    }
+
+    /** @author qiushaohua 2012-5-20 */
+    public int getSenderCompanyId() {
+        return senderCompanyId;
+    }
+
+    /** @author qiushaohua 2012-5-20 */
+    public void setSenderCompanyId(int senderCompanyId) {
+        this.senderCompanyId = senderCompanyId;
     }
 
     /** @author qiushaohua 2012-3-19 */

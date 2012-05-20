@@ -6,12 +6,6 @@
     <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/order'], {title: '自主下单', href: 'web/order/edit'}, 'order_editing_tab');}">自主下单</div>
   </c:if>
   <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/order'], {title: '订单查询', href: 'web/order/list'}, 'order_list_tab');}">订单查询</div>
-  <c:if test="${function.receiver }">
-    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/customer/receiver'], {title: '收件人管理', href: 'web/receiver/list'}, this.id);}">收件人管理</div>
-  </c:if>
-  <c:if test="${function.receiverCompany }">
-    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/customer/receivercompany'], {title: '收件公司管理', href: 'web/receivercompany/list'}, this.id);}">收件公司管理</div>
-  </c:if>
   <c:if test="${function.schedule }">
     <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/schedule'], {title: '订单调度', href: 'web/schedule/list'}, this.id);}">订单调度</div>
   </c:if>
@@ -24,9 +18,12 @@
   <c:if test="${function.outStorage }">
     <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/storage'], {title: '快件出库', href: 'web/storage/delete'}, this.id);}">快件出库</div>
   </c:if>
-<%--   <c:if test="${function.history }"> --%>
-    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/history'], {title: '历史订单', href: 'web/order/history/list'}, this.id);}">历史订单</div>
-<%--   </c:if> --%>
+  <%--   <c:if test="${function.history }"> --%>
+  <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/order/history'], {title: '历史订单', href: 'web/order/history/list'}, this.id);}">历史订单</div>
+  <%--   </c:if> --%>
+  <c:if test="${function.receiver }">
+    <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onClick: function(){showTab(['qiuq/customer/receiver'], {title: '收件人管理', href: 'web/receiver/list'}, this.id);}">收件人管理</div>
+  </c:if>
   <div data-dojo-type="dijit.PopupMenuBarItem">
     <span>系统管理</span>
     <div data-dojo-type="dijit.DropDownMenu">

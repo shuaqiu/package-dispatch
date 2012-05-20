@@ -18,8 +18,12 @@ define([
         editingForm : "receiver_editing_form",
 
         selectionDialog : "receiver_editing_company_dialog",
-        selectionStoreTarget : "web/receivercompany",
+        selectionStoreTarget : "web/company",
         selectionStructure : [ {
+            name : message["code"],
+            field : "code",
+            width : "150px"
+        }, {
             name : message["name"],
             field : "name",
             width : "150px"
@@ -30,37 +34,9 @@ define([
         } ],
 
         doSelect : function(item) {
-            this._selectedItem = item;
-
             var form = document.forms[this.editingForm];
-            form["companyId"].value = item["id"];
-            registry.byId(form["company"].id).set("value", item["name"]);
-            registry.byId(form["address"].id).set("value", item["address"]);
+            form["userCompanyId"].value = item["id"];
+            registry.byId(form["userCompany"].id).set("value", item["name"]);
         },
-
-        _selectedItem : null,
-
-        onCompanyKeyUp : function() {
-            if (this._selectedItem == null) {
-                return;
-            }
-
-            var form = document.forms[this.editingForm];
-
-            var company = registry.byId(form["company"].id).get("value");
-            if (company != this._selectedItem["name"]) {
-                form["companyId"].value = "-1";
-            } else {
-                form["companyId"].value = this._selectedItem["id"];
-            }
-        },
-
-        _initForm : function(item) {
-            lang.hitch(this, resource._initForm)(item);
-            this._selectedItem = {
-                id : item.companyId,
-                name : item.company
-            };
-        }
     });
 });

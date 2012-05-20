@@ -38,10 +38,10 @@ public class ReceiverRepository extends AbstractRepository implements ResourceRe
         public Receiver mapRow(ResultSet rs, int rowNum) throws SQLException {
             Receiver user = new Receiver();
             user.setId(rs.getInt("id"));
-            user.setUserId(rs.getInt("user_id"));
+            user.setUserCompanyId(rs.getInt("user_company_id"));
+            user.setUserCompany(rs.getString("user_company"));
             user.setName(rs.getString("name"));
             user.setTel(rs.getString("tel"));
-            user.setCompanyId(rs.getInt("company_id"));
             user.setCompany(rs.getString("company"));
             user.setAddress(rs.getString("address"));
             return user;
@@ -96,16 +96,15 @@ public class ReceiverRepository extends AbstractRepository implements ResourceRe
             return sql;
         }
 
-        sql += buildIntCondition(params, "userId", paramMap);
-
-        sql += buildIntCondition(params, "companyId", paramMap);
+        sql += buildIntCondition(params, "userCompanyId", paramMap);
+        sql += buildStringCondition(params, "userCompany", paramMap);
 
         sql += buildStringCondition(params, "name", paramMap);
         sql += buildStringCondition(params, "company", paramMap);
         sql += buildStringCondition(params, "address", paramMap);
 
         String query = Converter.toString(params.get("query"));
-        sql += buildQueryCondition(query, paramMap, "name", "tel", "company", "address");
+        sql += buildQueryCondition(query, paramMap, "user_company", "name", "tel", "company", "address");
 
         return sql.replaceFirst(" and ", " where ");
     }
@@ -122,8 +121,8 @@ public class ReceiverRepository extends AbstractRepository implements ResourceRe
 
     @Override
     public OperateResult insert(Receiver receiver) {
-        String sql = "insert into customer_receiver(user_id, name, tel, company_id, company, address)"
-                + " values(:userId, :name, :tel, :companyId, :company, :address)";
+        String sql = "insert into customer_receiver(user_company_id, user_company, name, tel, company, address)"
+                + " values(:userCompanyId, :userCompany, :name, :tel, :company, :address)";
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         return doInsert(sql, new BeanPropertySqlParameterSource(receiver), generatedKeyHolder);
@@ -131,8 +130,8 @@ public class ReceiverRepository extends AbstractRepository implements ResourceRe
 
     @Override
     public OperateResult update(Receiver t) {
-        String sql = "update customer_receiver set user_id = :userId, name = :name, tel = :tel,"
-                + " company_id = :companyId, company = :company, address = :address where id = :id";
+        String sql = "update customer_receiver set user_company_id = :userCompanyId, user_company = :userCompany,"
+                + " name = :name, tel = :tel, company = :company, address = :address where id = :id";
 
         SqlParameterSource paramMap = new BeanPropertySqlParameterSource(t);
         OperateResult updateResult = doUpdate(sql, paramMap);
