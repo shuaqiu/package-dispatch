@@ -40,17 +40,6 @@ define([
             conf["id"] = panelId;
         }
 
-        // var confOnLoad = conf["onLoad"] || function() {
-        // };
-        // conf["onLoad"] = function(data) {
-        // if (data == "") {
-        // require([ "qiuq/login", function(login) {
-        // login.reLogin();
-        // } ]);
-        // }
-        // confOnLoad(data);
-        // };
-
         conf["closable"] = true;
         var panel = new ContentPane(conf);
         getTab().addChild(panel);

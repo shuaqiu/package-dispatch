@@ -59,28 +59,36 @@
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td rowspan="3" style="padding-left: 0;">
+      <td rowspan="4" style="padding-left: 0;">
         <table style="height: 100%;">
           <tr>
             <td style="width: 75%;">${order.goodsName }</td>
             <td style="width: 25%;">${order.quantity }</td>
           </tr>
         </table>
-    </td>
-    <td>&nbsp;</td>
+      </td>
+      <td>&nbsp;</td>
     </tr>
     <tr>
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td rowspan="3">&nbsp;</td>
+      <td>&nbsp;</td>
     </tr>
     <tr>
-      <td rowspan="2">&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>${order.senderIdentityCode }</td>
+      <td>&nbsp;</td>
     </tr>
   </table>
   <div class="desc">
-    <button onclick="window.print();">打印 (第一次打印时, 请先通过打印预览调整页面设置, 设置: 1, 上下左右的边距都为0, 2, 不打印背景)</button>
+    <button onclick="window.print();">打印 (请先通过打印预览调整页面设置, 设置: 1, 上下左右的边距都为0, 2, 不打印背景)</button>
   </div>
 </body>
 </html>

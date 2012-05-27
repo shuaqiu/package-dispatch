@@ -9,9 +9,10 @@
         queryInputProp : {
             placeHolder : '姓名/电话'
         },
-        storeTarget: 'web/schedule/',
-        structure: [
-            {name: '操作', field: 'id', width: '70px', get: function(idx, item){
+        autoRefreshInterval : 60 * 1000,
+        storeTarget : 'web/schedule/',
+        structure : [
+            {name : '操作', field : 'id', width : '70px', get : function(idx, item){
                 return new dijit.form.Button({
                     label : '调度',
                     onClick : function(){
@@ -26,16 +27,16 @@
                 d.setTime(value);
                 return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
             }},
-            {name: '发件人', field: 'senderName', width: '100px'},
-            {name: '发件人电话', field: 'senderTel', width: '120px'},
-            {name: '发件人公司', field: 'senderCompany', width: '200px'},
-            {name: '发件人地址', field: 'senderAddress', width: '200px'},
-            {name: '收件人', field: 'receiverName', width: '100px'},
-            {name: '收件人电话', field: 'receiverTel', width: '120px'},
-            {name: '收件人公司', field: 'receiverCompany', width: '200px'},
-            {name: '收件人地址', field: 'receiverAddress', width: '200px'},
-            {name: '物品', field: 'goodsName', width: '150px'},
-            {name: '数量', field: 'quantity', width: '150px'}
+            {name : '发件人', field : 'senderName', width : '100px'},
+            {name : '发件人电话', field : 'senderTel', width : '120px'},
+            {name : '发件人公司', field : 'senderCompany', width : '200px'},
+            {name : '发件人地址', field : 'senderAddress', width : '200px'},
+            {name : '收件人', field : 'receiverName', width : '100px'},
+            {name : '收件人电话', field : 'receiverTel', width : '120px'},
+            {name : '收件人公司', field : 'receiverCompany', width : '200px'},
+            {name : '收件人地址', field : 'receiverAddress', width : '200px'},
+            {name : '物品', field : 'goodsName', width : '150px'},
+            {name : '数量', field : 'quantity', width : '150px'}
         ],
         ">
   </div>

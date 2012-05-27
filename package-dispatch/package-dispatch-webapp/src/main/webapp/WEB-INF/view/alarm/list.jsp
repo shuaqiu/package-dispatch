@@ -9,8 +9,26 @@
         queryInputProp : {
             placeHolder : '订单号/姓名/电话'
         },
+        _onRowDblClick : function(evt) {
+            // 双击进行查看
+            var idx = evt.rowIndex;
+            var item = this._grid.getItem(idx);
+            require(['qiuq/order/order'], function(resource){
+                resource.doView(item['id']);
+            });
+        },
         storeTarget: 'web/alarm/',
         structure: [
+            {name : '操作', field : 'id', width : '70px', get : function(idx, item){
+                return new dijit.form.Button({
+                    label : '查看',
+                    onClick : function(){
+                        require(['qiuq/order/order'], function(resource){
+                            resource.doView(item['id']);
+                        });
+                    }
+                });
+            }},
             {name: '收件时间/出库时间', field: 'fetchTime', width: '170px', formatter: function(value){
                 var d = new Date();
                 d.setTime(value);

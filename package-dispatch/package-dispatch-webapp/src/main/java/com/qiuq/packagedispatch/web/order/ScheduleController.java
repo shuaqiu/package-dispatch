@@ -36,6 +36,7 @@ import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
+import com.qiuq.packagedispatch.web.SimpleMessageQueue;
 
 /**
  * @author qiushaohua 2012-4-5
@@ -49,6 +50,8 @@ public class ScheduleController extends AbstractResourceController<Order> {
 
     private UserService userService;
 
+    private SimpleMessageQueue<Order> messageQueue;
+
     /** @author qiushaohua 2012-4-5 */
     @Autowired
     public void setOrderService(OrderService orderService) {
@@ -59,6 +62,12 @@ public class ScheduleController extends AbstractResourceController<Order> {
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    /** @author qiushaohua 2012-5-26 */
+    @Autowired
+    public void setMessageQueue(SimpleMessageQueue<Order> messageQueue) {
+        this.messageQueue = messageQueue;
     }
 
     @Override
@@ -314,5 +323,42 @@ public class ScheduleController extends AbstractResourceController<Order> {
         detail.setHandleIndex(handleIndex);
         detail.setState(state);
         return detail;
+    }
+
+    @RequestMapping(value = "/monitor", method = RequestMethod.GET)
+    @ResponseBody
+    public OperateResult monitor(WebRequest req) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new OperateResult(ErrCode.NOT_LOGINED, "not logined user");
+        }
+
+        Map<String, Boolean> functionMap = HttpSessionUtil.getFunctionMap(req);
+        if (isNotPermission(functionMap, "schedule")) {
+            return new OperateResult(ErrCode.NOT_PERMISSION, "could not access schedule function");
+        }
+
+        Object t = messageQueue.poll(req.getSessionId());
+
+        // as the poll action may take 1 minute, and the user may be logout, check user again
+        user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new OperateResult(ErrCode.NOT_LOGINED, "not logined user");
+        }
+
+        if (t == null) {
+            return new OperateResult(ErrCode.NULL, "there are not new orderd");
+        }
+        return new OperateResult(true, t);
+
+        // Map<String, Object> params = new HashMap<String, Object>();
+        // params.put("state", State.NEW_ORDER.ordinal());// only these new order need to be scheduled
+        //
+        // long count = orderService.matchedRecordCount(params);
+        // if (count > 0) {
+        // return new OperateResult(true, count);
+        // }
+        //
+        // return new OperateResult(ErrCode.NULL, "not new orderd");
     }
 }

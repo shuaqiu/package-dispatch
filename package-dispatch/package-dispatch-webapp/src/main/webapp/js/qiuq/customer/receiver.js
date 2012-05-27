@@ -4,9 +4,12 @@ define([
         "../resource",
         "../suggest",
         "../widget/DataSelectionDialog",
+        "../widget/UploaderDialog",
         "dojo/i18n!./nls/receiver",
+        "dijit/form/Button",
         "dijit/form/Select",
-        "../widget/ResourceGrid" ], function(lang, registry, resource, suggest, DataSelectionDialog, message) {
+        "../widget/ResourceGrid" ], function(lang, registry, resource, suggest, DataSelectionDialog, UploaderDialog,
+        message) {
 
     return lang.mixin({}, resource, suggest, {
         resourceUrl : "web/receiver",
@@ -38,5 +41,12 @@ define([
             form["userCompanyId"].value = item["id"];
             registry.byId(form["userCompany"].id).set("value", item["name"]);
         },
+
+        doImport : function() {
+            new UploaderDialog({
+                uploaderUrl : "web/receiver/import",
+                acceptType : [ "xls", "xlsx" ]
+            }).show();
+        }
     });
 });

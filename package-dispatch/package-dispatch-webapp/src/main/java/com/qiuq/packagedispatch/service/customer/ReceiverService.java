@@ -3,9 +3,13 @@
  */
 package com.qiuq.packagedispatch.service.customer;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.customer.Receiver;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
 import com.qiuq.packagedispatch.repository.customer.ReceiverRepository;
@@ -29,6 +33,24 @@ public class ReceiverService extends AbstractResourceService<Receiver> {
     @Override
     public ResourceRepository<Receiver> getRepository() {
         return receiveRepository;
+    }
+
+    /**
+     * @param newT
+     * @author qiushaohua 2012-5-21
+     */
+    @Transactional
+    public OperateResult batchInsert(List<Receiver> newT) {
+        return receiveRepository.batchInsert(newT);
+    }
+
+    /**
+     * @param newT
+     * @author qiushaohua 2012-5-21
+     */
+    @Transactional
+    public OperateResult batchUpdate(List<Receiver> newT) {
+        return receiveRepository.batchUpdate(newT);
     }
 
 }

@@ -21,9 +21,15 @@ define([
             xhr.get({
                 url : this.selectionStoreTarget,
                 content : {
-                    query : this._forWidget.get("value")
+                    query : this._forWidget.get("value"),
+                    // add a time parameter to prevent cache
+                    t : new Date().getTime()
                 },
-                handleAs : "json"
+                handleAs : "json",
+                headers : {
+                    // add a range, only query the top 20 record, avoid got a long list of data
+                    "Range" : "items=0-19"
+                }
             }).then(function(result) {
                 self._suggestQueryResult = result;
 

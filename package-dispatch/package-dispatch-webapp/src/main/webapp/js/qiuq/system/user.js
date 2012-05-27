@@ -24,7 +24,10 @@ define([
         _checkAccount : function(isSync) {
             var form = document.forms[this.editingForm];
 
-            var content = {};
+            var content = {
+                // add a time parameter to prevent cache
+                t : new Date().getTime()
+            };
             if (form["id"].value != "") {
                 content["id"] = form["id"].value;
             }

@@ -14,6 +14,12 @@
         <property name="suffix" value=".jsp" />
     </bean>
 
+    <!-- Configure the multipart resolver -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- one of the properties available; the maximum file size in bytes -->
+        <property name="maxUploadSize" value="104857600" />
+    </bean>
+
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -34,6 +40,10 @@
 
     <bean id="codeGeneratorFormatter" class="java.text.DecimalFormat">
         <constructor-arg value="000000"></constructor-arg>
+    </bean>
+
+    <bean class="com.qiuq.common.excel.ExcelUtil">
+<!--         <property name="dateFormant" value="1" /> -->
     </bean>
 </beans>
 

@@ -1,4 +1,5 @@
 define([
+        "require",
         "dojo/string",
         "dojo/json",
         "dojo/_base/xhr",
@@ -8,8 +9,8 @@ define([
         "dijit/form/Button",
         "../widget/DestroyWhenCloseDialog",
         "../widget/MessageDialog",
-        "dojo/i18n!./nls/passwordmodifier" ], function(string, json, xhr, registry, ContentPane, TextBox, Button,
-        DestroyWhenCloseDialog, MessageDialog, message) {
+        "dojo/i18n!./nls/passwordmodifier" ], function(require, string, json, xhr, registry, ContentPane, TextBox,
+        Button, DestroyWhenCloseDialog, MessageDialog, message) {
 
     var id = {
         dialogId : "modifier_dialog",

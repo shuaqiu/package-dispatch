@@ -11,7 +11,7 @@
                 order.doView(${order.id});
             });
         }">刷新</div>
-    <c:if test="${user.type == 1 && order.state >= 1 && order.state <= DELIVERED}">
+    <c:if test="${user.type == 1 && order.state >= 1 && order.state < DELIVERED}">
       <div data-dojo-type="dijit.MenuBarItem"
         data-dojo-props="onClick: function(){
             require(['qiuq/order/schedule'], function(schedule){

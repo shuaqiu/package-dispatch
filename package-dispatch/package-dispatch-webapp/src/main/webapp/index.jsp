@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="js/dojo-1.7.2/dojo/resources/dnd.css" />
 <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/claro/claro.css" />
 <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
+<link rel="stylesheet" href="js/dojo-1.7.2/dojox/form/resources/UploaderFileList.css" />
 <link rel="stylesheet" href="style.css" />
 <script type="text/javascript">
     var dojoConfig = {
@@ -49,7 +50,7 @@
             "qiuq/order/order" ], function() {
     });
 
-    require([ "qiuq/login", "qiuq/order/alarm", "dojo/domReady!" ], function(login, alarm) {
+    require([ "qiuq/login",  "dojo/domReady!" ], function(login) {
         login.tryLogin();
     });
 
@@ -60,7 +61,7 @@
     }
 
     function doQuery(evt) {
-        if (evt.keyCode != "\n") {
+        if (evt.keyCode != "13") {
             return;
         }
         var value = this.get("value");

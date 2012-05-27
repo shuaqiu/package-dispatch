@@ -1,4 +1,5 @@
 define([
+        "require",
         "dojo/dom-form",
         "dojo/_base/xhr",
         "dojo/_base/lang",
@@ -17,8 +18,8 @@ define([
         "dijit/MenuBarItem",
         "dijit/form/Form",
         "dijit/form/ValidationTextBox",
-        "dijit/form/Button" ], function(domform, xhr, lang, Deferred, registry, tab, MessageDialog, LoadingDialog,
-        message) {
+        "dijit/form/Button" ], function(require, domform, xhr, lang, Deferred, registry, tab, MessageDialog,
+        LoadingDialog, message) {
 
     return {
         resourceUrl : null,

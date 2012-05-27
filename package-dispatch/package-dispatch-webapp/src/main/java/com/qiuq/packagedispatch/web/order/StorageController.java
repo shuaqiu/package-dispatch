@@ -3,6 +3,9 @@
  */
 package com.qiuq.packagedispatch.web.order;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
@@ -64,7 +67,7 @@ public class StorageController {
             return new OperateResult(ErrCode.NOT_LOGINED, "no user is logined");
         }
 
-        String[] barcodeArr = splitBarcodes(barcodes);
+        Set<String> barcodeArr = splitBarcodes(barcodes);
 
         MultiValueMap<ErrCode, String> result = new LinkedMultiValueMap<ErrCode, String>();
         for (String barcode : barcodeArr) {
@@ -90,7 +93,7 @@ public class StorageController {
             return new OperateResult(ErrCode.NOT_FOUND, "handler user not found ");
         }
 
-        String[] barcodeArr = splitBarcodes(barcodes);
+        Set<String> barcodeArr = splitBarcodes(barcodes);
 
         MultiValueMap<ErrCode, String> result = new LinkedMultiValueMap<ErrCode, String>();
         for (String barcode : barcodeArr) {
@@ -108,7 +111,17 @@ public class StorageController {
      * @return
      * @author qiushaohua 2012-4-28
      */
-    private String[] splitBarcodes(String barcodes) {
-        return barcodes.split("[\\n|\\r|\\n\\r]");
+    private Set<String> splitBarcodes(String barcodes) {
+        String[] arr = barcodes.split("[\\n|\\r|\\n\\r]");
+
+        // put into a set, to remove the duplication @ 2012-5-24
+        Set<String> set = new LinkedHashSet<String>();
+        for (String str : arr) {
+            if (StringUtils.hasText(str)) {
+                set.add(str);
+            }
+        }
+
+        return set;
     }
 }

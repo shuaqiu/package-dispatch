@@ -1,10 +1,11 @@
 define([
+        "require",
         "dojo/string",
         "dojo/_base/xhr",
         "dijit/registry",
         "../widget/MessageDialog",
         "dojo/i18n!./nls/storage",
-        "dijit/form/Textarea" ], function(string, xhr, registry, MessageDialog, message) {
+        "dijit/form/Textarea" ], function(require, string, xhr, registry, MessageDialog, message) {
 
     return {
         resourceUrl : "web/storage",

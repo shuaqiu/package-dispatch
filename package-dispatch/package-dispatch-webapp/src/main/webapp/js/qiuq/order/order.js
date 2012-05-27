@@ -111,6 +111,10 @@ define([
 
             xhr.get({
                 url : this.resourceUrl + "/" + orderId + "/identity/sender",
+                content : {
+                    // add a time parameter to prevent cache
+                    t : new Date().getTime()
+                },
                 handleAs : "json"
             }).then(function(result) {
                 dialog.hide();
@@ -133,6 +137,10 @@ define([
 
             xhr.get({
                 url : this.resourceUrl + "/" + orderId + "/identity/receiver",
+                content : {
+                    // add a time parameter to prevent cache
+                    t : new Date().getTime()
+                },
                 handleAs : "json"
             }).then(function(result) {
                 dialog.hide();

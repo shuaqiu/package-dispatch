@@ -183,7 +183,8 @@ public abstract class AbstractRepository {
      * @param params
      * @param key
      * @param paramMap
-     * @return " and key params.get(key + "Op") :key"
+     * @return <span style="font-weight: bold;">" and params.get(key + "Formula") params.get(key + "Op") :key"</span><br/>
+     *         or <span style="font-weight: bold;">" and table.key params.get(key + "Op") :key"</span>
      * @author qiushaohua 2012-5-13
      */
     protected String buildIntCondition(Map<String, Object> params, String key, MapSqlParameterSource paramMap) {

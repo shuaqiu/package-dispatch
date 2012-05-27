@@ -8,7 +8,12 @@
         id : 'order_list',
         listGrid : 'order_list_grid',
         queryInputProp : {
-            placeHolder : '订单号/姓名/电话'
+<c:if test="${user.type == 1}"><%--Type.TYPE_SELF--%>
+            'placeHolder' : '条形码/姓名(收/发)/电话(收/发)'
+</c:if>
+<c:if test="${user.type == 2}"><%--Type.TYPE_CUSTOMER--%>
+            'placeHolder' : '条形码/姓名/电话'
+</c:if>
         },
         extQueryInputs : new dijit.form.Select({
             name : 'state',
@@ -17,9 +22,9 @@
             },
             options : [
                 {value : '', label : '---'},
-                {value : 'NEW_ORDER', label : '已下单, 等待调度'},
-                {value : 'SCHEDULED', label : '已调度, 正上门收件'},
-                {value : 'FETCHED', label : '已收件, 正派送'},
+                {value : 'NEW_ORDER', label : '已下单'},
+                {value : 'SCHEDULED', label : '已调度'},
+                {value : 'FETCHED', label : '已收件'},
                 {value : 'TRANSITING', label : '派送中'},
                 {value : 'IN_STORAGE', label : '已入库'},
                 {value : 'OUT_STORAGE', label : '已出库'}
@@ -37,7 +42,7 @@
         },
         structure : [
 <c:if test="${user.type ==  1}"><%--Type.TYPE_SELF--%>
-            {name : '操作', field : 'id', width : '300px', get : function(idx, item){
+            {name : '操作', field : 'id', width : /*'300px'*/ '250px', get : function(idx, item){
                 var div = document.createElement('div');
                 new dijit.form.Button({
                     label : '查看',
@@ -48,6 +53,8 @@
                     }
                 }).placeAt(div);
                 
+                // 2012-05-23 don't need to send it to sender.
+                /*
                 if(item != null && (item['state'] == 0 || item['state'] == 1)){
                     new dijit.form.Button({
                         label : '重发流水号',
@@ -58,6 +65,7 @@
                         }
                     }).placeAt(div);
                 }
+                */
                 if(item != null && item['state'] > 1 && item['state'] < 6) {
                     new dijit.form.Button({
                         label : '重发验证码',

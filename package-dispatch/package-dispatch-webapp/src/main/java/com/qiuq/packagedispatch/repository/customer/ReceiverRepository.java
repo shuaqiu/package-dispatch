@@ -5,6 +5,7 @@ package com.qiuq.packagedispatch.repository.customer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
 import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.customer.Receiver;
@@ -121,29 +123,118 @@ public class ReceiverRepository extends AbstractRepository implements ResourceRe
 
     @Override
     public OperateResult insert(Receiver receiver) {
-        String sql = "insert into customer_receiver(user_company_id, user_company, name, tel, company, address)"
-                + " values(:userCompanyId, :userCompany, :name, :tel, :company, :address)";
-
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        return doInsert(sql, new BeanPropertySqlParameterSource(receiver), generatedKeyHolder);
+        return doInsert(getInsertSql(), new BeanPropertySqlParameterSource(receiver), generatedKeyHolder);
     }
 
     @Override
     public OperateResult update(Receiver t) {
-        String sql = "update customer_receiver set user_company_id = :userCompanyId, user_company = :userCompany,"
-                + " name = :name, tel = :tel, company = :company, address = :address where id = :id";
-
         SqlParameterSource paramMap = new BeanPropertySqlParameterSource(t);
-        OperateResult updateResult = doUpdate(sql, paramMap);
+        OperateResult updateResult = doUpdate(getUpdateSql(), paramMap);
 
         if (updateResult.isOk()) {
             // update the receiver info in processing order
-            sql = "update dispatch_order set receiver_name = :name, receiver_tel = :tel, receiver_company = :company, receiver_address = :address"
-                    + " where receiver_id = :id and state < " + State.DELIVERED.ordinal();
-            jdbcTemplate.update(sql, paramMap);
+            jdbcTemplate.update(getUpdateOrderSql(), paramMap);
         }
 
         return updateResult;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-21
+     */
+    private String getInsertSql() {
+        return "insert into customer_receiver(user_company_id, user_company, name, tel, company, address)"
+                + " values(:userCompanyId, :userCompany, :name, :tel, :company, :address)";
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-21
+     */
+    private String getUpdateSql() {
+        return "update customer_receiver set user_company_id = :userCompanyId, user_company = :userCompany,"
+                + " name = :name, tel = :tel, company = :company, address = :address where id = :id";
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-5-21
+     */
+    private String getUpdateOrderSql() {
+        return "update dispatch_order set receiver_name = :name, receiver_tel = :tel, receiver_company = :company, receiver_address = :address"
+                + " where receiver_id = :id and state < " + State.DELIVERED.ordinal();
+    }
+
+    /**
+     * @param list
+     * @return
+     * @author qiushaohua 2012-5-21
+     */
+    public OperateResult batchInsert(List<Receiver> list) {
+        SqlParameterSource[] batchArgs = buildBatchArgs(list);
+
+        int[] batchUpdate = jdbcTemplate.batchUpdate(getInsertSql(), batchArgs);
+
+        List<Receiver> fails = new ArrayList<Receiver>();
+        for (int i = 0; i < batchUpdate.length; i++) {
+            if (batchUpdate[i] != 1) {
+                fails.add(list.get(i));
+            }
+        }
+
+        if (fails.size() == 0) {
+            return OperateResult.OK;
+        }
+
+        return new OperateResult(ErrCode.INSERT_FAIL, "batch insert with fails", fails);
+    }
+
+    /**
+     * @param list
+     * @return
+     * @author qiushaohua 2012-5-21
+     */
+    public OperateResult batchUpdate(List<Receiver> list) {
+        SqlParameterSource[] batchArgs = buildBatchArgs(list);
+
+        int[] batchUpdate = jdbcTemplate.batchUpdate(getUpdateSql(), batchArgs);
+
+        List<SqlParameterSource> batchOrderArgs = new ArrayList<SqlParameterSource>();
+        List<Receiver> fails = new ArrayList<Receiver>();
+        for (int i = 0; i < batchUpdate.length; i++) {
+            if (batchUpdate[i] != 1) {
+                fails.add(list.get(i));
+            } else {
+                batchOrderArgs.add(batchArgs[i]);
+            }
+        }
+
+        if (batchOrderArgs.size() > 0) {
+            SqlParameterSource[] array = batchOrderArgs.toArray(new SqlParameterSource[batchOrderArgs.size()]);
+            jdbcTemplate.batchUpdate(getUpdateOrderSql(), array);
+        }
+
+        if (fails.size() == 0) {
+            return OperateResult.OK;
+        }
+
+        return new OperateResult(ErrCode.INSERT_FAIL, "batch insert with fails", fails);
+    }
+
+    /**
+     * @param list
+     * @return
+     * @author qiushaohua 2012-5-21
+     */
+    private SqlParameterSource[] buildBatchArgs(List<Receiver> list) {
+        SqlParameterSource[] batchArgs = new SqlParameterSource[list.size()];
+        int index = 0;
+        for (Receiver t : list) {
+            batchArgs[index++] = new BeanPropertySqlParameterSource(t);
+        }
+        return batchArgs;
     }
 
 }

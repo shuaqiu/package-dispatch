@@ -37,15 +37,31 @@ define([
         queryInputProp : null,
         _queryInput : null,
 
+        /**
+         * additional query conditions that would be placed at query bar should be an array of dijit or a single dijit,
+         * which must have the "name" property (for query parameter name)
+         */
         extQueryInputs : null,
+        /**
+         * additional buttons that would be placed at query bar
+         */
+        extButtons : null,
 
         _grid : null,
         _mainContainer : null,
 
+        autoRefreshInterval : null,
+        autoRefreshTimer : null,
+
         postCreate : function() {
             this._mainContainer = new BorderContainer({
-                design : "headline"
+                design : "headline",
+                style : {
+                    width : "100%",
+                    height : "100%"
+                }
             }).placeAt(this.domNode, "after");
+            // not to remove the domNode, as the grid could not be destroy
             // this.domNode.parentNode.removeChild(this.domNode);
 
             this._mainContainer.addChild(new ContentPane({
@@ -57,6 +73,11 @@ define([
                 region : "center",
                 content : this._createGrid()
             }));
+
+            // try to start refresh automatically (if the autoRefreshInterval is assigned).
+            this.startAutoRefresh();
+
+            this.onCreate();
         },
 
         _createOperation : function() {
@@ -74,6 +95,7 @@ define([
         },
 
         _createQuery : function() {
+            // create the query input
             this._queryInput = new TextBox(lang.mixin({}, this.queryInputProp));
             this.connect(this._queryInput, "onKeyUp", function(evt) {
                 if (evt.keyCode == "13") {
@@ -81,6 +103,7 @@ define([
                 }
             });
 
+            // create the query button
             var queryButton = new Button({
                 iconClass : "dijitIconSearch",
                 label : this._queryButtonLabel
@@ -89,6 +112,7 @@ define([
                 this._onQuery();
             });
 
+            // create the refresh button
             var refreshButton = new Button({
                 iconClass : "dijitIconUndo",
                 label : this._refreshButtonLabel
@@ -97,23 +121,36 @@ define([
                 this._onQuery();
             });
 
+            // create the container
             var queryBar = domConstruct.create("div");
+
+            // place the query input into the container
             this._queryInput.placeAt(queryBar);
-
             // add additional query if assigned @ 2012-5-19
-            if (this.extQueryInputs != null) {
-                if (lang.isArray(this.extQueryInputs)) {
-                    for ( var i = 0; i < this.extQueryInputs.length; i++) {
-                        this.extQueryInputs[i].placeAt(queryBar);
-                    }
-                } else {
-                    this.extQueryInputs.placeAt(queryBar);
-                }
-            }
+            this._appendExtElement(this.extQueryInputs, queryBar);
 
+            // place the buttons into the container
             queryButton.placeAt(queryBar);
             refreshButton.placeAt(queryBar);
+            // add additional buttons if assigned @ 2012-5-20
+            this._appendExtElement(this.extButtons, queryBar);
+
             return queryBar;
+        },
+
+        _appendExtElement : function(extElement, container) {
+            if (extElement == null) {
+                return;
+            }
+            if (lang.isArray(extElement)) {
+                // the additional element may be an array of dijit.
+                for ( var i = 0; i < extElement.length; i++) {
+                    extElement[i].placeAt(container);
+                }
+            } else {
+                // the additional element may be just an dijit.
+                extElement.placeAt(container);
+            }
         },
 
         _createMenu : function() {
@@ -182,7 +219,14 @@ define([
                 }),
                 structure : this.structure,
                 plugins : {
-                    pagination : true
+                    pagination : {
+                        defaultPageSize : 20,
+                        pageSizes : [ 10, 20, 30, 50, 100, Infinity ],
+                    }
+                },
+                style : {
+                    width : "100%",
+                    height : "100%"
                 }
             };
             if (this.gridOption) {
@@ -207,11 +251,35 @@ define([
 
         destroy : function(/* Boolean */preserveDom) {
             this.inherited(arguments);
+            this.stopAutoRefresh();
+            this.onDestroy();
         },
 
         destroyRendering : function(/* Boolean? */preserveDom) {
             this.inherited(arguments);
             this._mainContainer.destroyRecursive(preserveDom);
+        },
+
+        startAutoRefresh : function() {
+            if (this.autoRefreshInterval) {
+                var self = this;
+                this.autoRefreshTimer = setTimeout(function() {
+                    self._onQuery();
+                    self.startAutoRefresh();
+                }, this.autoRefreshInterval);
+            }
+        },
+
+        stopAutoRefresh : function() {
+            if (this.autoRefreshTimer != null) {
+                clearTimeout(this.autoRefreshTimer);
+            }
+        },
+
+        onCreate : function() {
+        },
+
+        onDestroy : function() {
         },
 
         queryWith : function(value) {

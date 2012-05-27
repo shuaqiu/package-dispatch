@@ -30,5 +30,7 @@ public enum ErrCode {
 
     DELETE_FAIL,
 
-    EXCEPTION;
+    EXCEPTION,
+    
+    NOT_PERMISSION;
 }

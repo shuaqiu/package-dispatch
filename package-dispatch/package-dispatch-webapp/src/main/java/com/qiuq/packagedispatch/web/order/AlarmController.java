@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
+import com.qiuq.common.ErrCode;
+import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.ResourceService;
@@ -83,16 +85,18 @@ public class AlarmController extends AbstractResourceController<Order> {
 
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     @ResponseBody
-    public List<Order> getNewAlarm(WebRequest req) {
-        Map<String, Boolean> functionMap = HttpSessionUtil.getFunctionMap(req);
-        if (functionMap == null) {
-            return new ArrayList<Order>();
-        }
-        Boolean isHasFunction = functionMap.get("alarm");
-        if (isHasFunction == null || !isHasFunction) {
-            return new ArrayList<Order>();
+    public OperateResult getNewAlarm(WebRequest req) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new OperateResult(ErrCode.NOT_LOGINED, "not logined user");
         }
 
-        return orderService.getNewAlarm();
+        Map<String, Boolean> functionMap = HttpSessionUtil.getFunctionMap(req);
+        if (isNotPermission(functionMap, "alarm")) {
+            return new OperateResult(ErrCode.NOT_PERMISSION, "could not access alarm function");
+        }
+
+        List<Order> newAlarms = orderService.getNewAlarm();
+        return new OperateResult(true, newAlarms);
     }
 }

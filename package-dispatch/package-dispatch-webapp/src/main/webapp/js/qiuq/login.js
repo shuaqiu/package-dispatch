@@ -11,8 +11,9 @@ define([
         "dijit/form/Button",
         "./widget/MessageDialog",
         "./order/alarm",
+        "./order/schedulemonitor",
         "dojo/i18n!./nls/login" ], function(parser, dom, string, Deferred, xhr, registry, Dialog, ContentPane, TextBox,
-        Button, MessageDialog, alarm, message) {
+        Button, MessageDialog, alarm, schedulemonitor, message) {
 
     var id = {
         dialogId : "login_dialog",
@@ -24,11 +25,11 @@ define([
 
     function doLogin() {
         var dialog = new Dialog({
-            "id" : id.dialogId,
+            id : id.dialogId,
             // Dialog title
-            "title" : message["title"],
+            title : message["title"],
             // Create Dialog content
-            "content" : "<div id='" + id.dialogContent + "'></div>"
+            content : "<div id='" + id.dialogContent + "'></div>"
         });
 
         var deferred = new Deferred();
@@ -65,20 +66,20 @@ define([
 
     function _createInput(onPasswordEnter) {
         new ContentPane({
-            "content" : new TextBox({
-                "id" : id.usercode,
-                "placeHolder" : message["inputUsername"]
+            content : new TextBox({
+                id : id.usercode,
+                placeHolder : message["inputUsername"]
             }),
-            "style" : {
+            style : {
                 "padding" : "3px"
             }
         }).placeAt(id.dialogContent);
 
         var password = new TextBox({
-            "id" : id.password,
-            "placeHolder" : message["inputPassword"],
-            "type" : "password",
-            "onKeyPress" : function(evt) {
+            id : id.password,
+            placeHolder : message["inputPassword"],
+            type : "password",
+            onKeyPress : function(evt) {
                 if (evt.keyCode == 13) {
                     // enter
                     onPasswordEnter();
@@ -86,8 +87,8 @@ define([
             }
         });
         new ContentPane({
-            "content" : password,
-            "style" : {
+            content : password,
+            style : {
                 "padding" : "3px"
             }
         }).placeAt(id.dialogContent);
@@ -95,8 +96,8 @@ define([
 
     function _createButton() {
         new ContentPane({
-            "id" : id.buttonPane,
-            "className" : "loginDialogButtonBar"
+            id : id.buttonPane,
+            className : "loginDialogButtonBar"
         }).placeAt(id.dialogContent);
 
         var loginButton = new Button({
@@ -124,11 +125,11 @@ define([
         }
 
         return xhr.post({
-            "url" : "web/login/" + usercode,
-            "content" : {
-                "password" : password
+            url : "web/login/" + usercode,
+            content : {
+                password : password
             },
-            "handleAs" : "json"
+            handleAs : "json"
         });
     }
 
@@ -141,8 +142,12 @@ define([
         var deferred = new Deferred();
 
         xhr.get({
-            "url" : "web/login",
-            "handleAs" : "json"
+            url : "web/login",
+            content : {
+                // add a time parameter to prevent cache
+                t : new Date().getTime()
+            },
+            handleAs : "json"
         }).then(function(json) {
             if (json.ok) {
                 deferred.resolve();
@@ -155,16 +160,19 @@ define([
 
     function doLogout() {
         xhr.del({
-            "url" : "web/login",
-            "handleAs" : "json"
+            url : "web/login",
+            handleAs : "json"
         }).then(function(json) {
             reLogin();
         });
     }
 
     function reLogin() {
-        registry.byId("appLayout").destroyRecursive();
+        // destroy all current widget first
+        destroyAll("");
+
         alarm.destroy();
+        schedulemonitor.stopMonitor();
         tryLogin();
     }
 
@@ -182,20 +190,29 @@ define([
 
     function loadBody() {
         xhr.get({
-            "url" : "web/index/body"
+            url : "web/index/body",
+            content : {
+                // add a time parameter to prevent cache
+                t : new Date().getTime()
+            }
         }).then(function(content) {
             // destroy all current widget first
-            var widgets = registry.findWidgets(document.body);
-            for ( var i = 0; i < widgets.length; i++) {
-                widgets[i].destroyRecursive();
-            }
-            dom.byId(document.body).innerHTML = content;
+            destroyAll(content);
             parser.parse(document.body);
-            
-            setTimeout(function(){
+
+            setTimeout(function() {
                 alarm.startCheck();
+                schedulemonitor.doMonitor();
             }, 5000);
         });
+    }
+
+    function destroyAll(content) {
+        var widgets = registry.findWidgets(document.body);
+        for ( var i = 0; i < widgets.length; i++) {
+            widgets[i].destroyRecursive();
+        }
+        dom.byId(document.body).innerHTML = content;
     }
 
     return {

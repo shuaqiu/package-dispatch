@@ -6,7 +6,6 @@ define([
         "dojo/_base/xhr",
         "dijit/registry",
         "../resource",
-        "../tab",
         "../widget/MessageDialog",
         "dojo/i18n!./nls/schedule",
         "dojo/date/locale",
@@ -14,8 +13,7 @@ define([
         "dojo/dnd/Target",
         "dijit/form/CheckBox",
         "dijit/form/Textarea",
-        "../widget/ResourceGrid" ], function(query, attr, json, lang, xhr, registry, resource, tab, MessageDialog,
-        message) {
+        "../widget/ResourceGrid" ], function(query, attr, json, lang, xhr, registry, resource, MessageDialog, message) {
 
     return lang.mixin({}, resource, {
         resourceUrl : "web/schedule",

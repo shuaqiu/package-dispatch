@@ -7,7 +7,12 @@
     data-dojo-props="
         listGrid : 'history_list_grid',
         queryInputProp : {
-            'placeHolder' : '订单号/姓名/电话'
+<c:if test="${user.type == 1}"><%--Type.TYPE_SELF--%>
+            'placeHolder' : '条形码/姓名(收/发)/电话(收/发)'
+</c:if>
+<c:if test="${user.type == 2}"><%--Type.TYPE_CUSTOMER--%>
+            'placeHolder' : '条形码/姓名/电话'
+</c:if>
         },
         storeTarget: 'web/order/history/',
         _onRowDblClick : function(evt) {
@@ -31,7 +36,7 @@
             {name: '收件人地址', field: 'receiverAddress', width: '200px'},
             {name: '物品', field: 'goodsName', width: '150px'},
             {name: '数量', field: 'quantity', width: '150px'}
-<c:if test="${user.type ==  1}"><%--Type.TYPE_SELF--%>
+<c:if test="${user.type == 1}"><%--Type.TYPE_SELF--%>
             ,
             {name: '发件人', field: 'senderName', width: '100px'},
             {name: '发件人电话', field: 'senderTel', width: '120px'},

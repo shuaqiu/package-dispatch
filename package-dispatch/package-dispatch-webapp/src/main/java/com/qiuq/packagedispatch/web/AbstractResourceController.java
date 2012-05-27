@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;
@@ -26,6 +28,8 @@ import com.qiuq.packagedispatch.service.ResourceService;
  * @version 0.0.1
  */
 public abstract class AbstractResourceController<T> implements ResourceController<T> {
+
+    protected Log logger = LogFactory.getLog(getClass());
 
     protected abstract ResourceService<T> getService();
 
@@ -238,5 +242,25 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         HttpEntity<List<T>> entity = new HttpEntity<List<T>>(list, header);
 
         return entity;
+    }
+
+    /**
+     * @param functionMap
+     * @param permission
+     * @return
+     * @author qiushaohua 2012-5-26
+     */
+    protected boolean isNotPermission(Map<String, Boolean> functionMap, String permission) {
+        if (functionMap == null) {
+            return true;
+        }
+        Boolean isHasFunction = functionMap.get(permission);
+        if (isHasFunction == null) {
+            return true;
+        }
+        if (isHasFunction) {
+            return false;
+        }
+        return true;
     }
 }

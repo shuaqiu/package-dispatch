@@ -40,6 +40,7 @@ import com.qiuq.packagedispatch.service.customer.ReceiverService;
 import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
+import com.qiuq.packagedispatch.web.SimpleMessageQueue;
 
 /**
  * @author qiushaohua 2012-3-18
@@ -59,6 +60,8 @@ public class OrderController extends AbstractResourceController<Order> {
     private MessageFormat notifyTemplateForReceiver;
 
     private DecimalFormat codeGeneratorFormatter = new DecimalFormat("0000");
+
+    private SimpleMessageQueue<Order> messageQueue;
 
     /** @author qiushaohua 2012-4-4 */
     @Autowired
@@ -88,6 +91,12 @@ public class OrderController extends AbstractResourceController<Order> {
     @Value("${order.notify.receiver}")
     public void setNotifyTemplateForReceiver(String notifyTemplateForReceiver) {
         this.notifyTemplateForReceiver = new MessageFormat(notifyTemplateForReceiver);
+    }
+
+    /** @author qiushaohua 2012-5-26 */
+    @Autowired
+    public void setMessageQueue(SimpleMessageQueue<Order> messageQueue) {
+        this.messageQueue = messageQueue;
     }
 
     @Override
@@ -156,6 +165,7 @@ public class OrderController extends AbstractResourceController<Order> {
         if (insertResult.isOk()) {
             new Thread(new SmsNotifier(t)).start();
         }
+        messageQueue.push(t);
         return super.afterInsert(t, insertResult);
     }
 
@@ -240,7 +250,8 @@ public class OrderController extends AbstractResourceController<Order> {
         @Override
         public void run() {
             try {
-                sendIdentityToSender(order);
+                // 2012-05-24 don't need to send to sender
+                // sendIdentityToSender(order);
                 sendIdentityToReceiver(order);
             } catch (Exception e) {
                 e.printStackTrace();

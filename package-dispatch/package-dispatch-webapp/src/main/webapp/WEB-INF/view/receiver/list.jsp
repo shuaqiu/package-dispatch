@@ -9,6 +9,13 @@
         queryInputProp : {
             placeHolder : '姓名/电话/公司/地址'
         },
+        extButtons : new dijit.form.Button({
+            label : '导入',
+            iconClass : 'dijitIconTable',
+            onClick : function(){
+                require(['qiuq/customer/receiver'], function(resource){resource.doImport()});
+            }
+        }),
         storeTarget: 'web/receiver/',
         structure: [
 <c:if test="${user.type == 1 }"><%--Type.TYPE_SELF --%>
@@ -19,13 +26,13 @@
             {name: '收件人公司', field: 'company', width: '250px'},
             {name: '地址', field: 'address', width: '250px'}
         ],
-        doCreate:function(){
+        doCreate : function(){
             require(['qiuq/customer/receiver'], function(resource){resource.doCreate()});
         },
-        doModify:function(){
+        doModify : function(){
             require(['qiuq/customer/receiver'], function(resource){resource.doModify()});
         },
-        doDelete:function(){
+        doDelete : function(){
             require(['qiuq/customer/receiver'], function(resource){resource.doDelete()});
         }
         ">
