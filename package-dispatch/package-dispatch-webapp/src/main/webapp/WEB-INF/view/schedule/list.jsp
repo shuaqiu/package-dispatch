@@ -5,11 +5,12 @@
 <body>
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
+        id : 'schedule_list',
         listGrid : 'schedule_list_grid',
         queryInputProp : {
             placeHolder : '姓名/电话'
         },
-        autoRefreshInterval : 60 * 1000,
+        // autoRefreshInterval : 60 * 1000,
         storeTarget : 'web/schedule/',
         structure : [
             {name : '操作', field : 'id', width : '70px', get : function(idx, item){

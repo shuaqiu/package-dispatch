@@ -7,7 +7,10 @@ define({
 
     "resendIdentityToSenderSucc" : "重發流水號給寄件人成功",
     "resendIdentityToReceiverSucc" : "重發驗證碼給收件人成功",
-    "regenerateReceiverIdentitySucc" : "重新生成驗證碼成功並已經發送給收件人",
+    "regenerateReceiverIdentitySucc" : "重新生成驗證碼成功並已經發送給收件人",,
+    
+    "cancelConfirm" : "確定要取消該訂單?",
+    "closeReason" : "關閉原因: ",
 
     "err.INVALID" : "請填寫必填的字段!",
     "err.NOT_FOUND" : "沒有這個訂單",
@@ -16,5 +19,7 @@ define({
     "err.OPERATE_FAIL.sender" : "重發流水號失敗, 返回值: ",
     "err.OPERATE_FAIL.receiver" : "重發驗證碼失敗, 返回值: ",
     
-    "err.EXCEPTION" : "短信發送接口無法連接"
+    "err.EXCEPTION" : "短信發送接口無法連接",
+    
+    "err.NULL_CLOSE_RESON" : "請輸入關閉訂單的原因!"
 });

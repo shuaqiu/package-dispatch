@@ -139,6 +139,14 @@ em:after {
     float: left;
 }
 
+.details .desc {
+    line-height: 25px;
+}
+
+.bolder {
+    font-weight: bold;
+}
+
 .detail {
     float: left;
     min-width: 200px;

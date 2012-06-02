@@ -78,9 +78,14 @@ define([
                     style : {
                         "color" : color
                     },
-                    title : message["itemRemoveTip"],
-                    ondblclick : function(){
+                    title : message["itemTip"],
+                    ondblclick : function() {
                         ul.removeChild(this);
+                    },
+                    onclick : function() {
+                        require([ 'qiuq/order/order' ], function(resource) {
+                            resource.doView(aOrder["id"]);
+                        });
                     }
                 }, ul);
             }

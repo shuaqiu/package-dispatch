@@ -1,8 +1,11 @@
 define([
+        "dojo/dom-construct",
         "dojo/string",
+        "dojo/json",
         "dojo/_base/lang",
         "dojo/_base/xhr",
         "dijit/registry",
+        "dijit/form/Textarea",
         "../resource",
         "../suggest",
         "../widget/ResourceGrid",
@@ -12,9 +15,8 @@ define([
         "dojo/date/locale",
         "dojo/date/stamp",
         "dijit/form/CheckBox",
-        "dijit/form/Select",
-        "dijit/form/Textarea" ], function(string, lang, xhr, registry, resource, suggest, ResourceGrid, MessageDialog,
-        LoadingDialog, message) {
+        "dijit/form/Select" ], function(domconstruct, string, json, lang, xhr, registry, Textarea, resource, suggest,
+        ResourceGrid, MessageDialog, LoadingDialog, message) {
 
     return lang.mixin({}, resource, suggest, {
         resourceUrl : "web/order",
@@ -181,6 +183,85 @@ define([
 
         showPrint : function(orderId) {
             window.open("web/order/print?orderId=" + orderId, "", "");
+        },
+
+        cancel : function(orderId) {
+            var self = this;
+            MessageDialog.confirm(message["cancelConfirm"], function() {
+                self.doCancel(orderId);
+            });
+        },
+
+        doCancel : function(orderId) {
+            var dialog = new LoadingDialog({});
+            dialog.show();
+
+            var canceledOrClosed = lang.hitch(this, this.canceledOrClosed);
+            xhr.put({
+                url : this.resourceUrl + "/cancel/" + orderId,
+                handleAs : "json"
+            }).then(function(result) {
+                dialog.hide();
+                canceledOrClosed(result, orderId);
+            });
+        },
+
+        close : function(orderId) {
+            var div = domconstruct.create("div", {
+                innerHTML : "<div>" + message["closeReason"] + "</div>"
+            });
+            var reasonInput = new Textarea({
+                style : {
+                    width : "300px"
+                }
+            }).placeAt(div);
+
+            var self = this;
+            MessageDialog.confirm(div, function() {
+                var reason = reasonInput.get("value");
+                if (string.trim(reason) == "") {
+                    MessageDialog.error(message["err.NULL_CLOSE_RESON"]);
+                    return false;
+                }
+
+                self.doClose(orderId, reason);
+            });
+        },
+
+        doClose : function(orderId, reason) {
+            var dialog = new LoadingDialog({});
+            dialog.show();
+
+            var canceledOrClosed = lang.hitch(this, this.canceledOrClosed);
+            xhr.put({
+                url : this.resourceUrl + "/close/" + orderId,
+                putData : json.stringify({
+                    reason : reason
+                }),
+                handleAs : "json",
+                contentType : "application/json"
+            }).then(function(result) {
+                dialog.hide();
+                canceledOrClosed(result, orderId);
+            });
+        },
+
+        canceledOrClosed : function(result, orderId) {
+            if (result.ok) {
+                this.doView(orderId);
+                var grid = registry.byId(this.listGrid);
+                if (grid) {
+                    grid._refresh(true);
+                }
+            } else {
+                if (result.errCode == "NOT_LOGINED") {
+                    require([ "qiuq/login" ], function(login) {
+                        login.reLogin();
+                    });
+                    return;
+                }
+                MessageDialog.error(message["err." + result.errCode]);
+            }
         }
     });
 });

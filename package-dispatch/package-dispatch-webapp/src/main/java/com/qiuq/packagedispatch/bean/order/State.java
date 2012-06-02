@@ -23,7 +23,9 @@ public enum State {
 
     DELIVERED("已送达"),
 
-    CANCELED("已取消");
+    CANCELED("取消"),
+
+    CLOSED("已关闭");
 
     private String describe;
 

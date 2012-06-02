@@ -28,7 +28,11 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -465,6 +469,7 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
             Receiver t = parseData(row, headerMapping);
 
             if (isNullOnNeededField(user, t)) {
+                // as error, the key is negative.
                 map.add(-Err.NULL_NEEDED_FIELD.ordinal(), t);
                 continue;
             }
@@ -472,6 +477,7 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
             if (user.getType() == Type.TYPE_SELF) {
                 Integer userCompanyId = companyMapping.get(t.getUserCompany());
                 if (userCompanyId == null) {
+                    // as err, the key is negative.
                     map.add(-Err.UNCORRECT_USER_COMPANY.ordinal(), t);
                     continue;
                 }
@@ -485,6 +491,12 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
         return map;
     }
 
+    /**
+     * @param user
+     * @param t
+     * @return
+     * @author qiushaohua 2012-5-21
+     */
     private boolean isNullOnNeededField(User user, Receiver t) {
         if (user.getType() == Type.TYPE_SELF && t.getUserCompany() == null) {
             return true;
@@ -645,6 +657,35 @@ public class ReceiverController extends AbstractResourceController<Receiver> {
         /** @author qiushaohua 2012-5-27 */
         public String getDesc() {
             return desc;
+        }
+    }
+
+    /**
+     * @param req
+     * @param ext
+     * @return
+     * @author qiushaohua 2012-5-30
+     */
+    @RequestMapping(value = "/template", method = RequestMethod.GET)
+    public HttpEntity<Resource> template(WebRequest req, @RequestParam String ext) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return null;
+        }
+
+        String filename = "ReceiverTemplate";
+        if (user.getType() == Type.TYPE_SELF) {
+            filename += "Self";
+        }
+        filename += "." + ext + ".zip";
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Disposition", "attachment; filename=\"Template.zip\"");
+            MediaType mediaType = MediaType.parseMediaType("application/zip");
+            headers.setContentType(mediaType);
+            return new HttpEntity<Resource>(new ClassPathResource(filename, getClass()), headers);
+        } finally {
         }
     }
 }

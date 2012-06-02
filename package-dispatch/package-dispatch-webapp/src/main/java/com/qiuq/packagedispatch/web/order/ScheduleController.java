@@ -187,7 +187,7 @@ public class ScheduleController extends AbstractResourceController<Order> {
         ListIterator<HandleDetail> iterator = handleDetail.listIterator(handleDetail.size());
         while (iterator.hasPrevious()) {
             HandleDetail detail = iterator.previous();
-            if (detail.getScheduleId() != null) {
+            if (detail.getScheduleId() != null && detail.getScheduleId() != 0) {
                 return detail.getScheduleId();
             }
         }

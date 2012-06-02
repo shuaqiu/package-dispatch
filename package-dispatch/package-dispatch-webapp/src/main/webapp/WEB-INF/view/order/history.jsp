@@ -14,6 +14,18 @@
             'placeHolder' : '条形码/姓名/电话'
 </c:if>
         },
+        extQueryInputs : new dijit.form.Select({
+            name : 'state',
+            style : {
+                width: '15em'
+            },
+            options : [
+                {value : '', label : '---'},
+                {value : 'DELIVERED', label : '送达'},
+                {value : 'CANCELED', label : '取消'},
+                {value : 'CLOSED', label : '关闭'}
+            ]
+        }),
         storeTarget: 'web/order/history/',
         _onRowDblClick : function(evt) {
             // 双击进行查看
@@ -29,6 +41,7 @@
                 d.setTime(value);
                 return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
             }},
+            {name: '状态', field: 'stateDescribe', width: '150px'},
             {name: '条形码', field: 'barCode', width: '100px'},
             {name: '收件人', field: 'receiverName', width: '100px'},
             {name: '收件人电话', field: 'receiverTel', width: '120px'},

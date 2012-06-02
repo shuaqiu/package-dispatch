@@ -4,6 +4,7 @@
 package com.qiuq.packagedispatch.repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -260,6 +261,106 @@ public abstract class AbstractRepository {
         // " and table.key op :key"
         String sql = " and " + buildColumn(table, key) + " " + op + " :" + key;
         return sql;
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2011-6-1
+     */
+    protected String buildCollectionCondition(Map<String, Object> params, String key, MapSqlParameterSource paramMap) {
+        return buildCollectionCondition(params, key, null, paramMap);
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param table
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2011-6-1
+     */
+    protected String buildCollectionCondition(Map<String, Object> params, String key, String table,
+            MapSqlParameterSource paramMap) {
+        Object object = params.get(key);
+        if (object == null) {
+            return "";
+        }
+
+        if (!(object instanceof Collection)) {
+            return buildCondition(params, key, table, paramMap);
+        }
+
+        Collection<?> collection = (Collection<?>) object;
+        if (collection.size() == 0) {
+            return "";
+        }
+        if (collection.size() == 1) {
+            Object next = collection.iterator().next();
+            params.put(key, next);
+            return buildCondition(params, key, table, paramMap);
+        }
+
+        int count = 0;
+        for (Object obj : collection) {
+            if (obj != null) {
+                count++;
+                paramMap.addValue(key + count, obj);
+            }
+        }
+
+        String op = Converter.toString(params.get(key + "Op"), "in").toLowerCase();
+        StringBuilder sql = new StringBuilder(" and " + buildColumn(table, key) + " " + op + " (");
+        for (int i = 0; i < count; i++) {
+            if (i > 0) {
+                sql.append(", ");
+            }
+            sql.append(":" + key + count);
+        }
+        sql.append(")");
+
+        // " and table.key op :key"
+        // String sql = " and " + buildColumn(table, key) + " " + op + " :" + key;
+        return sql.toString();
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2011-6-1
+     */
+    protected String buildCondition(Map<String, Object> params, String key, MapSqlParameterSource paramMap) {
+        return buildCondition(params, key, null, paramMap);
+    }
+
+    /**
+     * @param params
+     * @param key
+     * @param table
+     * @param paramMap
+     * @return
+     * @author qiushaohua 2011-6-1
+     */
+    protected String buildCondition(Map<String, Object> params, String key, String table, MapSqlParameterSource paramMap) {
+        Object object = params.get(key);
+        if (object == null) {
+            return "";
+        }
+
+        if (object instanceof String) {
+            return buildStringCondition(params, key, table, paramMap);
+        }
+        if (object instanceof Integer) {
+            return buildIntCondition(params, key, table, paramMap);
+        }
+        if (object instanceof Collection<?>) {
+            return buildCollectionCondition(params, key, table, paramMap);
+        }
+        return "";
     }
 
     /**

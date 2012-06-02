@@ -43,8 +43,8 @@ public class SimpleMessageQueue<T> {
             BlockingQueue<T> queue = queues.get(session);
             if (queue != null) {
                 queue.offer(t);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("initilize a new queue with session id : " + session);
+                if (logger.isInfoEnabled()) {
+                    logger.info("offer a new value to queue : " + session);
                 }
             }
         }

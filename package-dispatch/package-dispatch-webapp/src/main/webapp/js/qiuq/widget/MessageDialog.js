@@ -15,13 +15,13 @@ define([
         isShowOkButton : true,
         okButtonLabel : message["okButtonLabel"],
         okButton : null,
-        onOk : function() {
+        doOk : function() {
         },
 
         isShowCancelButton : false,
         cancelButtonLabel : message["cancelButtonLabel"],
         cancelButton : null,
-        onCancel : function() {
+        doCancel : function() {
         },
 
         postCreate : function() {
@@ -63,20 +63,24 @@ define([
 
         _createButtons : function() {
             if (this.isShowOkButton) {
-                this.okButton = this._createButton(this.okButtonLabel, this.onOk);
+                this.okButton = this._createButton(this.okButtonLabel, this.doOk);
             }
 
             if (this.isShowCancelButton) {
-                this.cancelButton = this._createButton(this.cancelButtonLabel, this.onCancel);
+                this.cancelButton = this._createButton(this.cancelButtonLabel, this.doCancel);
             }
         },
 
         _createButton : function(label, clickCallback) {
             var action = lang.hitch(this, function() {
+                var isHide = true;
                 if (clickCallback && lang.isFunction(clickCallback)) {
-                    clickCallback();
+                    // if the callback return none, the value of isHide is undefined.
+                    isHide = clickCallback();
                 }
-                this.hide();
+                if (isHide == null || isHide == true) {
+                    this.hide();
+                }
             });
             return new Button({
                 label : label,
@@ -87,57 +91,59 @@ define([
         }
     });
 
-    function alert(content, onOk) {
+    function alert(content, doOk) {
+        if (doOk == null || !lang.isFunction(doOk)) {
+            doOk = function() {
+            };
+        }
+
         var dialog = new MessageDialog({
             title : message["alertTitle"],
             iconClass : "alertIcon",
-            content : content
+            content : content,
+            doOk : doOk
         });
-
-        if (onOk && lang.isFunction(onOk)) {
-            dialog.onOk = onOk;
-            aspect.before(dialog, "hide", function() {
-                onOk();
-            });
-        }
+        aspect.before(dialog, "onCancel", doOk);
 
         dialog.show();
     }
 
-    function error(content, onOk) {
+    function error(content, doOk) {
+        if (doOk == null || !lang.isFunction(doOk)) {
+            doOk = function() {
+            };
+        }
+
         var dialog = new MessageDialog({
             title : message["errTitle"],
             iconClass : "errorIcon",
-            content : content
+            content : content,
+            doOk : doOk
         });
-
-        if (onOk && lang.isFunction(onOk)) {
-            dialog.onOk = onOk;
-            aspect.before(dialog, "hide", function() {
-                onOk();
-            });
-        }
+        aspect.before(dialog, "onCancel", doOk);
 
         dialog.show();
     }
 
-    function confirm(content, onOk, onCancel) {
+    function confirm(content, doOk, doCancel) {
+        if (doOk == null || !lang.isFunction(doOk)) {
+            doOk = function() {
+            };
+        }
+        if (doCancel == null || !lang.isFunction(doCancel)) {
+            doCancel = function() {
+            };
+        }
+
         var dialog = new MessageDialog({
             title : message["confirmTitle"],
             iconClass : "confirmIcon",
             content : content,
-            isShowCancelButton : true
+            isShowCancelButton : true,
+            doOk : doOk,
+            doCancel : doCancel
         });
-
-        if (onOk && lang.isFunction(onOk)) {
-            dialog.onOk = onOk;
-        }
-        if (onCancel && lang.isFunction(onCancel)) {
-            dialog.onCancel = onCancel;
-            aspect.before(dialog, "hide", function() {
-                onCancel();
-            });
-        }
+        aspect.before(dialog, "onCancel", doCancel);
 
         dialog.show();
     }

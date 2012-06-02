@@ -6,6 +6,7 @@ package com.qiuq.packagedispatch.web.order;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +29,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
+import com.qiuq.common.convert.Converter;
 import com.qiuq.common.sms.SmsSender;
 import com.qiuq.packagedispatch.bean.customer.Receiver;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
@@ -163,7 +166,7 @@ public class OrderController extends AbstractResourceController<Order> {
     @Override
     protected OperateResult afterInsert(Order t, OperateResult insertResult) {
         if (insertResult.isOk()) {
-            new Thread(new SmsNotifier(t)).start();
+            // new Thread(new SmsNotifier(t)).start();
         }
         messageQueue.push(t);
         return super.afterInsert(t, insertResult);
@@ -250,9 +253,10 @@ public class OrderController extends AbstractResourceController<Order> {
         @Override
         public void run() {
             try {
-                // 2012-05-24 don't need to send to sender
+                // 2012-05-24 don't need to send to sender (print it directly)
                 // sendIdentityToSender(order);
-                sendIdentityToReceiver(order);
+                // 2012-06-01 don't need to send to receiver (only send when the order is fetched.)
+                // sendIdentityToReceiver(order);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -280,7 +284,7 @@ public class OrderController extends AbstractResourceController<Order> {
     private OperateResult sendIdentityToReceiver(Order t) {
         String content = notifyTemplateForReceiver.format(new Object[] {
                 t.getReceiverIdentityCode(), t.getSenderName(), t.getSenderTel(), t.getSenderCompany(),
-                t.getSenderAddress(), t.getGoodsName(), t.getQuantity()
+                t.getSenderAddress(), t.getGoodsName(), t.getQuantity(), t.getBarCode()
         });
         return smsSender.send(content, t.getReceiverTel());
     }
@@ -401,14 +405,29 @@ public class OrderController extends AbstractResourceController<Order> {
         if (user.getType() == Type.TYPE_CUSTOMER) {
             params.put("senderId", user.getId());
         }
-        params.put("state", State.DELIVERED.ordinal());
+
+        // 2012-5-20 add a state query
+        String state = req.getParameter("state");
+        if (StringUtils.hasText(state)) {
+            params.put("state", State.valueOf(state).ordinal());
+        } else {
+            // state >= State.DELIVERED, means the finished order or canceled order.
+            params.put("state", State.DELIVERED.ordinal());
+            params.put("stateOp", ">=");
+        }
+
         params.put("query", query);
 
         return doQuery(sort, params, range);
     }
 
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-5-10
+     */
     @RequestMapping(value = "/print", method = RequestMethod.GET)
-    public Map<String, Object> print(int orderId) {
+    public Map<String, Object> print(@RequestParam int orderId) {
         Order t = orderService.query(orderId);
         t.setGoodsName(t.getGoodsName().replaceAll("[\\n|\\r|\\n\\r]", "<br/>"));
         t.setQuantity(t.getQuantity().replaceAll("[\\n|\\r|\\n\\r]", "<br/>"));
@@ -417,4 +436,68 @@ public class OrderController extends AbstractResourceController<Order> {
         rmap.put("order", t);
         return rmap;
     }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    @RequestMapping(value = "/cancel/{orderId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public OperateResult cancel(WebRequest req, @PathVariable int orderId) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new OperateResult(ErrCode.INVALID, "not logined user");
+        }
+
+        Order t = new Order();
+        t.setId(orderId);
+        t.setState(State.CANCELED.ordinal());
+        t.setStateDescribe(State.CANCELED.getDescribe());
+
+        HandleDetail detail = createDetail(user, t);
+        return orderService.cancelOrClose(t, detail);
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    @RequestMapping(value = "/close/{orderId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public OperateResult close(WebRequest req, @PathVariable int orderId, @RequestBody Map<String, Object> params) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user == null) {
+            return new OperateResult(ErrCode.INVALID, "not logined user");
+        }
+
+        Order t = new Order();
+        t.setId(orderId);
+        t.setState(State.CLOSED.ordinal());
+        t.setStateDescribe(State.CLOSED.getDescribe() + ": " + Converter.toString(params.get("reason")));
+
+        HandleDetail detail = createDetail(user, t);
+        return orderService.cancelOrClose(t, detail);
+    }
+
+    /**
+     * @param user
+     * @param t
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    private HandleDetail createDetail(User user, Order t) {
+        HandleDetail detail = new HandleDetail();
+        detail.setOrderId(t.getId());
+        detail.setState(t.getState());
+        detail.setHandleIndex(1);
+        detail.setHandlerId(user.getId());
+        detail.setHandlerName(user.getName());
+        detail.setHandlerTel(user.getTel());
+        detail.setHandleTime(new Date());
+        detail.setDescription(t.getStateDescribe());
+        return detail;
+    }
+
 }

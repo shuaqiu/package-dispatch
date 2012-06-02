@@ -229,4 +229,19 @@ public class OrderService extends AbstractResourceService<Order> {
     public List<Order> getNewAlarm() {
         return orderRepository.getNewAlarm();
     }
+
+    /**
+     * @param user
+     * @param t
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    @Transactional
+    public OperateResult cancelOrClose(Order t, HandleDetail detail) {
+        OperateResult updateResult = orderRepository.cancelOrClose(t);
+        if (updateResult.isOk()) {
+            orderRepository.insertHandleDetail(detail);
+        }
+        return updateResult;
+    }
 }

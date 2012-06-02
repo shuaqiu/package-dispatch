@@ -9,13 +9,21 @@
         queryInputProp : {
             placeHolder : '姓名/电话/公司/地址'
         },
-        extButtons : new dijit.form.Button({
+        extButtons : [
+        new dijit.form.Button({
+            label : '下载模板',
+            iconClass : 'dijitIconTable',
+            onClick : function(){
+                require(['qiuq/customer/receiver'], function(resource){resource.downloadTemplate()});
+            }
+        }),
+        new dijit.form.Button({
             label : '导入',
             iconClass : 'dijitIconTable',
             onClick : function(){
                 require(['qiuq/customer/receiver'], function(resource){resource.doImport()});
             }
-        }),
+        })],
         storeTarget: 'web/receiver/',
         structure: [
 <c:if test="${user.type == 1 }"><%--Type.TYPE_SELF --%>

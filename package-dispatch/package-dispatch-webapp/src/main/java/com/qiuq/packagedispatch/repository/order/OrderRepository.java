@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -69,10 +68,10 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
             order.setDeliverTime(rs.getTimestamp("deliver_time"));
 
             // order.setSchedulerId(rs.getInt("schedule_id"));
-            // order.setSchedulerName(rs.getString("scheduler_name"));
-            // order.setSchedulerTel(rs.getString("scheduler_tel"));
-            // order.setScheduleTime(rs.getTimestamp("schedule_time"));
-            //
+            order.setSchedulerName(rs.getString("scheduler_name"));
+            order.setSchedulerTel(rs.getString("scheduler_tel"));
+            order.setScheduleTime(rs.getTimestamp("schedule_time"));
+
             // order.setHandlerId(rs.getInt("handler_id"));
             // order.setHandlerName(rs.getString("handler_name"));
             // order.setHandlerTel(rs.getString("handler_tel"));
@@ -84,6 +83,52 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         }
     }
 
+    private final class ScheduleDetailRowMapper implements RowMapper<ScheduleDetail> {
+        @Override
+        public ScheduleDetail mapRow(ResultSet rs, int rowNum) throws SQLException {
+            ScheduleDetail detail = new ScheduleDetail();
+
+            detail.setId(rs.getInt("id"));
+            detail.setOrderId(rs.getInt("order_id"));
+
+            detail.setState(rs.getInt("state"));
+            detail.setHandleIndex(rs.getInt("handle_index"));
+
+            detail.setHandlerId(rs.getInt("handler_id"));
+            detail.setHandlerName(rs.getString("handler_name"));
+            detail.setHandlerTel(rs.getString("handler_tel"));
+
+            detail.setMemo(rs.getString("memo"));
+
+            return detail;
+        }
+    }
+
+    private final class HandleDetailRowMapper implements RowMapper<HandleDetail> {
+        @Override
+        public HandleDetail mapRow(ResultSet rs, int rowNum) throws SQLException {
+            HandleDetail detail = new HandleDetail();
+
+            detail.setId(rs.getInt("id"));
+            detail.setOrderId(rs.getInt("order_id"));
+
+            detail.setState(rs.getInt("state"));
+            detail.setHandleIndex(rs.getInt("handle_index"));
+
+            detail.setHandlerId(rs.getInt("handler_id"));
+            detail.setHandlerName(rs.getString("handler_name"));
+            detail.setHandlerTel(rs.getString("handler_tel"));
+
+            detail.setMemo(rs.getString("memo"));
+
+            detail.setHandleTime(rs.getTimestamp("handle_time"));
+            detail.setScheduleId(rs.getInt("schedule_id"));
+            detail.setDescription(rs.getString("description"));
+
+            return detail;
+        }
+    }
+
     @Override
     public OperateResult delete(int id) {
         throw new UnsupportedOperationException("delete an order is not supported");
@@ -91,7 +136,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
 
     @Override
     public OperateResult update(Order t) {
-        throw new UnsupportedOperationException("update an order is not supported");
+        throw new UnsupportedOperationException("delete an order is not supported");
     }
 
     @Override
@@ -158,7 +203,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         }
 
         sql += buildIntCondition(params, "senderId", paramMap);
-        sql += buildIntCondition(params, "state", paramMap);
+        // sql += buildIntCondition(params, "state", paramMap);
+        sql += buildCondition(params, "state", paramMap);
 
         sql += buildIntCondition(params, "fetchTime", paramMap);
 
@@ -278,7 +324,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
     public List<ScheduleDetail> getScheduleDetail(int orderId) {
         String sql = "select * from dispatch_schedule_detail where order_id = :orderId order by state, handle_index";
         SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
-        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(ScheduleDetail.class));
+        return jdbcTemplate.query(sql, paramMap, new ScheduleDetailRowMapper());
     }
 
     /**
@@ -289,7 +335,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
     public List<HandleDetail> getHandleDetail(int orderId) {
         String sql = "select * from dispatch_handle_detail where order_id = :orderId order by state, handle_index";
         SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
-        return jdbcTemplate.query(sql, paramMap, BeanPropertyRowMapper.newInstance(HandleDetail.class));
+        return jdbcTemplate.query(sql, paramMap, new HandleDetailRowMapper());
     }
 
     /**
@@ -414,5 +460,20 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         paramMap.addValue("transitingState", State.TRANSITING.ordinal());
         paramMap.addValue("outStorageState", State.OUT_STORAGE.ordinal());
         return jdbcTemplate.query(sql, paramMap, new OrderRowMapper());
+    }
+
+    /**
+     * @param t
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    public OperateResult cancelOrClose(Order t) {
+        String sql = "update dispatch_order set state = :state, state_describe = :stateDescribe where id = :id";
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("state", t.getState());
+        paramMap.addValue("stateDescribe", t.getStateDescribe());
+        paramMap.addValue("id", t.getId());
+
+        return doUpdate(sql, paramMap);
     }
 }

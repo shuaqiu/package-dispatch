@@ -94,7 +94,7 @@
             }},
 </c:if>
 <c:if test="${user.type ==  2}"><%--Type.TYPE_CUSTOMER--%>
-            {name : '操作', field : 'id', width : '150px', get : function(idx, item){
+            {name : '操作', field : 'id', width : '130px', get : function(idx, item){
                 var div = document.createElement('div');
                 
                 new dijit.form.Button({
@@ -143,7 +143,17 @@
             {name: '发件人', field: 'senderName', width: '100px'},
             {name: '发件人电话', field: 'senderTel', width: '120px'},
             {name: '发件人公司', field: 'senderCompany', width: '200px'},
-            {name: '发件人地址', field: 'senderAddress', width: '200px'}
+            {name: '发件人地址', field: 'senderAddress', width: '200px'},
+            {name: '调度员', field: 'schedulerName', width: '100px'},
+            {name: '调度员电话', field: 'schedulerTel', width: '120px'},
+            {name: '调度时间', field: 'scheduleTime', width: '170px', formatter: function(value){
+                if(value == null){
+                    return '';
+                }
+                var d = new Date();
+                d.setTime(value);
+                return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
+            }}
 </c:if>
         ]
         ">

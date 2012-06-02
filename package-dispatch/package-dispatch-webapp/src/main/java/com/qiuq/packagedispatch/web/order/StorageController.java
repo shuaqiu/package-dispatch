@@ -112,7 +112,7 @@ public class StorageController {
      * @author qiushaohua 2012-4-28
      */
     private Set<String> splitBarcodes(String barcodes) {
-        String[] arr = barcodes.split("[\\n|\\r|\\n\\r]");
+        String[] arr = StringUtils.trimArrayElements(barcodes.split("[\\n|\\r|\\n\\r]"));
 
         // put into a set, to remove the duplication @ 2012-5-24
         Set<String> set = new LinkedHashSet<String>();

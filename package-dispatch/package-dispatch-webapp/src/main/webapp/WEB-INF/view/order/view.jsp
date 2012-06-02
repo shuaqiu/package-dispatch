@@ -11,17 +11,40 @@
                 order.doView(${order.id});
             });
         }">刷新</div>
-    <c:if test="${user.type == 1 && order.state >= 1 && order.state < DELIVERED}">
+    <c:if test="${user.type == 1 && function.schedule && order.state >= 0 && order.state < DELIVERED}">
       <div data-dojo-type="dijit.MenuBarItem"
         data-dojo-props="onClick: function(){
             require(['qiuq/order/schedule'], function(schedule){
                 schedule.doModify(${order.id});
             });
-        }">修改调度</div>
+        }">
+        <c:if test="${order.state == 0 }">调度</c:if>
+        <c:if test="${order.state >=1 }">修改调度</c:if>
+      </div>
+    </c:if>
+    <c:if test="${user.type == 1 && order.state >= 1 && order.state < DELIVERED}">
+      <div data-dojo-type="dijit.MenuBarItem"
+        data-dojo-props="onClick: function(){
+            require(['qiuq/order/order'], function(order){
+                order.close(${order.id});
+            });
+        }">关闭订单</div>
+    </c:if>
+    <c:if test="${user.type == 2 && order.state <= 1}">
+      <div data-dojo-type="dijit.MenuBarItem"
+        data-dojo-props="onClick: function(){
+            require(['qiuq/order/order'], function(order){
+                order.cancel(${order.id});
+            });
+        }">取消订单</div>
     </c:if>
   </div>
   <div class="details">
-    <div class="desc">处理情况</div>
+    <div class="desc">
+      <span>处理情况</span>
+      <c:if test="${order.barCode != null }">: <span class="bolder">${order.barCode }</span>
+      </c:if>
+    </div>
     <div class="detail">
       <div>${order.senderName }(${order.senderTel })</div>
       <div>${order.senderAddress }</div>

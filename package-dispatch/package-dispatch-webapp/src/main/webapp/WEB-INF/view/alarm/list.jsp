@@ -5,6 +5,7 @@
 <body>
   <div data-dojo-type="qiuq.widget.ResourceGrid"
     data-dojo-props="
+        id : 'alarm_list',
         listGrid : 'alarm_list_grid',
         queryInputProp : {
             placeHolder : '订单号/姓名/电话'

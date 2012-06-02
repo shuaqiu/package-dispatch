@@ -105,16 +105,7 @@ define([
                     new Button({
                         label : message["downloadFail"],
                         onClick : function() {
-                            var downloadFrame = window.frames["downloadFrame"];
-                            if (downloadFrame == null) {
-                                downloadFrame = domconstruct.create("iframe", {
-                                    name : "downloadFrame",
-                                    style : {
-                                        display : "none"
-                                    }
-                                }, document.body);
-                            }
-                            downloadFrame.src = "web/download?f=" + result.obj;
+                            window.open("web/download?f=" + result.obj);
                         }
                     }).placeAt(content);
 

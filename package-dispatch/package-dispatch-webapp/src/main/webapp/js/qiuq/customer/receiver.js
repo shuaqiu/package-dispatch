@@ -1,4 +1,5 @@
 define([
+        "dojo/dom-construct",
         "dojo/_base/lang",
         "dijit/registry",
         "../resource",
@@ -8,8 +9,8 @@ define([
         "dojo/i18n!./nls/receiver",
         "dijit/form/Button",
         "dijit/form/Select",
-        "../widget/ResourceGrid" ], function(lang, registry, resource, suggest, DataSelectionDialog, UploaderDialog,
-        message) {
+        "../widget/ResourceGrid" ], function(domconstruct, lang, registry, resource, suggest, DataSelectionDialog,
+        UploaderDialog, message) {
 
     return lang.mixin({}, resource, suggest, {
         resourceUrl : "web/receiver",
@@ -44,9 +45,13 @@ define([
 
         doImport : function() {
             new UploaderDialog({
-                uploaderUrl : "web/receiver/import",
+                uploaderUrl : this.resourceUrl + "/import",
                 acceptType : [ "xls", "xlsx" ]
             }).show();
+        },
+
+        downloadTemplate : function() {
+            window.open(this.resourceUrl + "/template?ext=xls&t=" + new Date().getTime());
         }
     });
 });

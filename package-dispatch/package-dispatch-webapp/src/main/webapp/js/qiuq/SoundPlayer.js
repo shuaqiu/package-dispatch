@@ -7,7 +7,7 @@ define(
                 _player : null,
 
                 name : null,
-                refNode : null,
+                refNode : document.body,
                 position : "last",
 
                 postscript : function(/* Object? */params) {

@@ -20,8 +20,11 @@
             {name: '公司', field: 'company', width: '200px'},
             {name: '部门', field: 'department', width: '150px'},
             {name: '地址', field: 'address', width: '250px'},
-            {name: '客户类型', field: 'type', width: '100px', get: 
+            {name: '客户类型', field: 'customerType', width: '100px', get: 
                 function(idx, item){
+                    if(item == null){
+                        return ''
+                    }
                     if(item['type'] == 1){
                         return ''
                     }

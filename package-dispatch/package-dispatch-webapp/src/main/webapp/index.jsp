@@ -37,23 +37,27 @@
     };
 </script>
 <script src="js/dojo-1.7.2/dojo/dojo.js"></script>
+</head>
+<!-- <body class="tundra"> -->
+<body class="claro">
+</body>
 <script type="text/javascript">
-    require([
-            "dijit/layout/BorderContainer",
-            "dijit/layout/TabContainer",
-            "dijit/MenuBar",
-            "dijit/MenuBarItem",
-            "dijit/PopupMenuBarItem",
-            "dijit/DropDownMenu",
-            "dijit/MenuItem",
-            "dijit/form/TextBox",
-            "qiuq/order/order" ], function() {
-    });
-
-    require([ "qiuq/login",  "dojo/domReady!" ], function(login) {
+    require(["qiuq/login", "dojo/domReady!" ], function(login) {
         login.tryLogin();
     });
 
+    require([
+             "dijit/layout/BorderContainer",
+             "dijit/layout/TabContainer",
+             "dijit/MenuBar",
+             "dijit/MenuBarItem",
+             "dijit/PopupMenuBarItem",
+             "dijit/DropDownMenu",
+             "dijit/MenuItem",
+             "dijit/form/TextBox",
+             "qiuq/order/order" ], function() {
+     });
+    
     function showTab(moduleArr, conf, id, forceReload) {
         require([ "qiuq/tab" ], function(tab) {
             tab.show(moduleArr, conf, id, forceReload);
@@ -86,8 +90,4 @@
         });
     }
 </script>
-</head>
-<!-- <body class="tundra"> -->
-<body class="claro">
-</body>
 </html>
