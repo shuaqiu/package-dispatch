@@ -17,7 +17,10 @@ define([ "require", "dojo/_base/xhr", "dijit/registry" ], function(require, xhr,
             var self = this;
             this.monitorDeferred.then(function(result) {
                 if (result.ok) {
-                    registry.byId("schedule_list")._onQuert();
+                    var scheduleList = registry.byId("schedule_list");
+                    if (scheduleList) {
+                        scheduleList._onQuert();
+                    }
                     self.playSong();
                 } else {
                     if (result.errCode == "NOT_LOGINED") {
