@@ -171,6 +171,9 @@ public class ScheduleController extends AbstractResourceController<Order> {
             r.put("deliverer", deliverer);
         }
 
+        // add a task count
+        r.put("taskCount", getTaskCount());
+
         return "schedule/edit";
     }
 
@@ -212,6 +215,27 @@ public class ScheduleController extends AbstractResourceController<Order> {
 
         map.put("handled", isHandled);
         return map;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    private Map<Integer, Integer> getTaskCount() {
+        Map<Integer, Integer> scheduledTaskCount = orderService.getScheduledTaskCount();
+        Map<Integer, Integer> handledTaskCount = orderService.getHandledTaskCount();
+
+        for (Integer empId : scheduledTaskCount.keySet()) {
+            Integer finished = handledTaskCount.get(empId);
+
+            if (finished != null) {
+                int scheduled = scheduledTaskCount.get(empId);
+                int count = Math.max(scheduled - finished, 0);
+                scheduledTaskCount.put(empId, count);
+            }
+        }
+
+        return scheduledTaskCount;
     }
 
     @RequestMapping(value = "/edit/{orderId}", method = RequestMethod.POST)

@@ -476,4 +476,41 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
 
         return doUpdate(sql, paramMap);
     }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    public Map<Integer, Integer> getScheduledTaskCount() {
+        String sql = "select d.handler_id as handlerId, count(*) as taskCount from dispatch_schedule_detail d, dispatch_order o"
+                + " where d.order_id = o.id and o.state >= 1 and o.state <= 5 group by d.handler_id";
+        return getTaskCount(sql);
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    public Map<Integer, Integer> getHandledTaskCount() {
+        String sql = "select d.handler_id as handlerId, count(*) as taskCount from dispatch_handle_detail d, dispatch_order o"
+                + " where d.order_id = o.id and o.state >= 1 and o.state <= 5 group by d.handler_id";
+        return getTaskCount(sql);
+    }
+
+    /**
+     * @param sql
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    private Map<Integer, Integer> getTaskCount(String sql) {
+        SqlParameterSource paramMap = null;
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, paramMap);
+
+        Map<Integer, Integer> taskCount = new HashMap<Integer, Integer>();
+        for (Map<String, Object> m : list) {
+            taskCount.put(Converter.toInt(m.get("handlerId")), Converter.toInt(m.get("taskCount")));
+        }
+
+        return taskCount;
+    }
 }

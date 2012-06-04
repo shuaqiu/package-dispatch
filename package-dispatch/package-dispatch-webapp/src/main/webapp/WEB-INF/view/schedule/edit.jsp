@@ -46,14 +46,18 @@
             </c:if>
             <ul name="fetcher" class="dndTarget" data-dojo-type="dojo.dnd.Source" data-dojo-id="fetcherTarget" data-dojo-props="accept: ['${fetcherDndType }'], copyState : function(){return false;}">
               <c:if test="${scheduledFetcher != null }">
-                <li data-handler="${scheduledFetcher.id }" class="item ${itemClass }" dndType="${fetcherDndType }">${scheduledFetcher.name } ${scheduledFetcher.tel }</li>
+                <li data-handler="${scheduledFetcher.id }" class="item ${itemClass }" dndType="${fetcherDndType }">${scheduledFetcher.name } ${scheduledFetcher.tel } <c:if
+                    test="${taskCount[scheduledFetcher.id] != null }">(${taskCount[scheduledFetcher.id] })</c:if> <c:if test="${taskCount[scheduledFetcher.id] == null }">(0)</c:if>
+                </li>
               </c:if>
             </ul>
           </div>
           <div class="dndContainer">
             <ul name="fetcherCandidate" class="dndSource" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['fetcher'], copyState : function(){return false;}">
               <c:forEach var="var" items="${fetcher }">
-                <li data-handler="${var.id }" class="item dojoDndItem" dndType="fetcher">${var.name } ${var.tel }</li>
+                <li data-handler="${var.id }" class="item dojoDndItem" dndType="fetcher">${var.name } ${var.tel } <c:if test="${taskCount[var.id] != null }">(${taskCount[var.id] })</c:if> <c:if
+                    test="${taskCount[var.id] == null }">(0)</c:if>
+                </li>
               </c:forEach>
             </ul>
           </div>
@@ -75,7 +79,9 @@
                     <c:set var="transiterDndType" value="handledTransiter" />
                     <c:set var="itemClass" value="handledItem" />
                   </c:if>
-                  <li data-handler="${var.id }" class="item ${itemClass }" dndType="${transiterDndType }">${var.name } ${var.tel }</li>
+                  <li data-handler="${var.id }" class="item ${itemClass }" dndType="${transiterDndType }">${var.name } ${var.tel } <c:if test="${taskCount[var.id] != null }">(${taskCount[var.id] })</c:if>
+                    <c:if test="${taskCount[var.id] == null }">(0)</c:if>
+                  </li>
                 </c:forEach>
               </c:if>
             </ul>
@@ -83,7 +89,9 @@
           <div class="dndContainer">
             <ul name="transiterCandidate" class="dndSource" style="min-height: 90px;" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['transiter'], copyState : function(){return false;}">
               <c:forEach var="var" items="${transiter }">
-                <li data-handler="${var.id }" class="item dojoDndItem" dndType="transiter">${var.name } ${var.tel }</li>
+                <li data-handler="${var.id }" class="item dojoDndItem" dndType="transiter">${var.name } ${var.tel } <c:if test="${taskCount[var.id] != null }">(${taskCount[var.id] })</c:if> <c:if
+                    test="${taskCount[var.id] == null }">(0)</c:if>
+                </li>
               </c:forEach>
             </ul>
           </div>
@@ -97,14 +105,18 @@
           <div class="dndContainer">
             <ul name="deliverer" class="dndTarget" data-dojo-type="dojo.dnd.Source" data-dojo-id="delivererTarget" data-dojo-props="accept: ['deliverer'], copyState : function(){return false;}">
               <c:if test="${scheduledDeliverer != null }">
-                <li data-handler="${scheduledDeliverer.id }" class="item dojoDndItem" dndType="deliverer">${scheduledDeliverer.name } ${scheduledDeliverer.tel }</li>
+                <li data-handler="${scheduledDeliverer.id }" class="item dojoDndItem" dndType="deliverer">${scheduledDeliverer.name } ${scheduledDeliverer.tel } <c:if
+                    test="${taskCount[scheduledDeliverer.id] != null }">(${taskCount[scheduledDeliverer.id] })</c:if> <c:if test="${taskCount[scheduledDeliverer.id] == null }">(0)</c:if>
+                </li>
               </c:if>
             </ul>
           </div>
           <div class="dndContainer">
             <ul name="delivererCandidate" class="dndSource" data-dojo-type="dojo.dnd.Source" data-dojo-props="accept: ['deliverer'], copyState : function(){return false;}">
               <c:forEach var="var" items="${deliverer }">
-                <li data-handler="${var.id }" class="item dojoDndItem" dndType="deliverer">${var.name } ${var.tel }</li>
+                <li data-handler="${var.id }" class="item dojoDndItem" dndType="deliverer">${var.name } ${var.tel } <c:if test="${taskCount[var.id] != null }">(${taskCount[var.id] })</c:if> <c:if
+                    test="${taskCount[var.id] == null }">(0)</c:if>
+                </li>
               </c:forEach>
             </ul>
           </div>

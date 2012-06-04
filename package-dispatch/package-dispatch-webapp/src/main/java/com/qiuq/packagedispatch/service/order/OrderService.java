@@ -5,6 +5,7 @@ package com.qiuq.packagedispatch.service.order;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import com.qiuq.packagedispatch.service.AbstractResourceService;
 @Service
 public class OrderService extends AbstractResourceService<Order> {
 
-    public OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
     /** @author qiushaohua 2012-4-4 */
     @Autowired
@@ -243,5 +244,23 @@ public class OrderService extends AbstractResourceService<Order> {
             orderRepository.insertHandleDetail(detail);
         }
         return updateResult;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    @Transactional(readOnly = true)
+    public Map<Integer, Integer> getScheduledTaskCount() {
+        return orderRepository.getScheduledTaskCount();
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-6-3
+     */
+    @Transactional(readOnly = true)
+    public Map<Integer, Integer> getHandledTaskCount() {
+        return orderRepository.getHandledTaskCount();
     }
 }

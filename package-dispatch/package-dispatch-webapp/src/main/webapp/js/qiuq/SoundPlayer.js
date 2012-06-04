@@ -95,6 +95,8 @@ define(
                 },
 
                 _playByAudio : function() {
+                    this._player.pause();
+                    this._player.currentTime = 0;
                     this._player.play();
                 }
             });
