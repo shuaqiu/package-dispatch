@@ -25,6 +25,7 @@ import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
+import com.qiuq.packagedispatch.bean.order.ScheduleHistory;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.AbstractRepository;
@@ -126,6 +127,22 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
             detail.setDescription(rs.getString("description"));
 
             return detail;
+        }
+    }
+
+    private final class ScheduleHistoryRowMapper implements RowMapper<ScheduleHistory> {
+        @Override
+        public ScheduleHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
+            ScheduleHistory history = new ScheduleHistory();
+
+            history.setId(rs.getInt("id"));
+            history.setOrderId(rs.getInt("order_id"));
+
+            history.setSchedulerName(rs.getString("scheduler_name"));
+            history.setSchedulerTel(rs.getString("scheduler_tel"));
+            history.setScheduleTime(rs.getTimestamp("schedule_time"));
+
+            return history;
         }
     }
 
@@ -279,6 +296,32 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
                 + " where order_id = :orderId";
         SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
         return jdbcTemplate.update(sql, paramMap);
+    }
+
+    /**
+     * update the scheduler info in order
+     * 
+     * @param orderId
+     * @param user
+     * @return
+     * @author qiushaohua 2012-6-5
+     */
+    public boolean updateOrderSchedulerInfo(int orderId, User user) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update dispatch_order set");
+        sql.append("  scheduler_id = :schedulerId");
+        sql.append(", scheduler_name = :schedulerName");
+        sql.append(", scheduler_tel = :schedulerTel");
+        sql.append(", schedule_time = :scheduleTime");
+        sql.append(" where id = :id");
+
+        MapSqlParameterSource paramMap = new MapSqlParameterSource();
+        paramMap.addValue("id", orderId);
+        paramMap.addValue("schedulerId", user.getId());
+        paramMap.addValue("schedulerName", user.getName());
+        paramMap.addValue("schedulerTel", user.getTel());
+        paramMap.addValue("scheduleTime", new Timestamp(System.currentTimeMillis()));
+        return jdbcTemplate.update(sql.toString(), paramMap) == 1;
     }
 
     /**
@@ -512,5 +555,31 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
         }
 
         return taskCount;
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-6-8
+     */
+    public boolean insertScheduleHistory(int orderId) {
+        String sql = "insert into dispatch_schedule_history (order_id, scheduler_name, scheduler_tel, schedule_time)"
+                + " select id, scheduler_name, scheduler_tel, schedule_time from dispatch_order where id = :orderId";
+
+        SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
+        int batchUpdate = jdbcTemplate.update(sql, paramMap);
+
+        return batchUpdate == 1;
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-6-8
+     */
+    public List<ScheduleHistory> getScheduleHistory(int orderId) {
+        String sql = "select * from dispatch_schedule_history where order_id = :orderId order by id";
+        SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
+        return jdbcTemplate.query(sql, paramMap, new ScheduleHistoryRowMapper());
     }
 }

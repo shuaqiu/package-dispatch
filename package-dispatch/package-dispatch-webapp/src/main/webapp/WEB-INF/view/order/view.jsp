@@ -92,6 +92,18 @@
         <div>${order.receiverAddress }</div>
       </div>
     </div>
+    <div class="details schedule">
+      <div class="desc">调度历史</div>
+      <c:forEach var="var" items="${scheduleHistory }">
+        <div class="detail">
+          <div>${var.schedulerName }(${var.schedulerTel })</div>
+          <div>
+            <fmt:formatDate value="${var.scheduleTime }" pattern="yyyy-MM-dd HH:mm:ss" />
+          </div>
+        </div>
+        <div class="arrow" style="background-image: none; height: 10px;"></div>
+      </c:forEach>
+    </div>
   </c:if>
   <div>
     <!-- 加上这一个div, 是为了使得外层的ContentPane 不是只有一个子结点, 不增加overflow: hidden 的样式, 从而可以出现滚动条 -->

@@ -179,7 +179,7 @@ em:after {
 }
 
 /***************************detail style***************************************/
-.alarmPopup {
+.popupTip {
     position: absolute;
     top: 0;
     right: 0;

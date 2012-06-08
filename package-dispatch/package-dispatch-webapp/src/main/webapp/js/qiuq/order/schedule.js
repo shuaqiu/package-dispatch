@@ -1,4 +1,5 @@
 define([
+        "require",
         "dojo/query",
         "dojo/dom-attr",
         "dojo/json",
@@ -13,7 +14,8 @@ define([
         "dojo/dnd/Target",
         "dijit/form/CheckBox",
         "dijit/form/Textarea",
-        "../widget/ResourceGrid" ], function(query, attr, json, lang, xhr, registry, resource, MessageDialog, message) {
+        "../widget/ResourceGrid" ], function(require, query, attr, json, lang, xhr, registry, resource, MessageDialog,
+        message) {
 
     return lang.mixin({}, resource, {
         resourceUrl : "web/schedule",
@@ -129,6 +131,16 @@ define([
                 handleAs : "json",
                 contentType : "application/json"
             });
+        },
+
+        _saved : function(result) {
+            if (result.ok) {
+                var form = document.forms[this.editingForm];
+                require([ "./schedulemonitor" ], function(schedulemonitor) {
+                    schedulemonitor.removeItem(form["orderId"].value);
+                });
+            }
+            lang.hitch(this, resource._saved)(result);
         }
     });
 });

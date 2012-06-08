@@ -1,10 +1,29 @@
-define([ "require", "dojo/_base/xhr", "dijit/registry" ], function(require, xhr, registry) {
+define([
+        "require",
+        "dojo/dom",
+        "dojo/dom-construct",
+        "dojo/string",
+        "dojo/_base/lang",
+        "dojo/_base/xhr",
+        "dijit/registry",
+        "../PopupTip",
+        "dojo/i18n!./nls/schedulemonitor" ], function(require, dom, domconstruct, string, lang, xhr, registry,
+        PopupTip, message) {
 
-    return {
+    return lang.mixin({}, PopupTip, {
         resourceUrl : "web/schedule",
 
         monitorDeferred : null,
-        audio : null,
+
+        title : message["title"],
+        audioName : "schedule",
+        popupProp : {
+            className : "dijitDialog popupTip",
+            style : {
+                width : "300px",
+                right : "400px"
+            }
+        },
 
         doMonitor : function() {
             this.monitorDeferred = xhr.get({
@@ -17,11 +36,12 @@ define([ "require", "dojo/_base/xhr", "dijit/registry" ], function(require, xhr,
             var self = this;
             this.monitorDeferred.then(function(result) {
                 if (result.ok) {
-                    var scheduleList = registry.byId("schedule_list");
-                    if (scheduleList) {
-                        scheduleList._onQuert();
+                    self.popup([ result.obj ]);
+
+                    var resourceGrid = registry.byId("schedule_list");
+                    if (resourceGrid) {
+                        resourceGrid._onQuery();
                     }
-                    self.playSong();
                 } else {
                     if (result.errCode == "NOT_LOGINED") {
                         return;
@@ -34,28 +54,45 @@ define([ "require", "dojo/_base/xhr", "dijit/registry" ], function(require, xhr,
             });
         },
 
-        playSong : function() {
+        _createItem : function(aOrder) {
+            var desc = string.substitute(message["desc"], {
+                senderName : aOrder["senderName"] || "",
+                senderTel : aOrder["senderTel"] || "",
+                receiverName : aOrder["receiverName"] || "",
+                receiverTel : aOrder["receiverTel"] || ""
+            });
+
             var self = this;
-            require([ "../SoundPlayer" ], function(SoundPlayer) {
-                if (self.audio == null) {
-                    self.audio = new SoundPlayer({
-                        name : "schedule",
-                        refNode : document.body
+            domconstruct.create("li", {
+                id : "schedule_item_" + aOrder["id"],
+                innerHTML : desc,
+                title : message["itemTip"],
+                onclick : function() {
+                    require([ 'qiuq/order/schedule' ], function(resource) {
+                        resource.doModify(aOrder["id"]);
                     });
                 }
-                self.audio.play();
-            })
+            }, this._itemContainer);
+        },
+
+        removeItem : function(itemId) {
+            if (this._itemContainer && dom.byId(this._itemContainer)) {
+                var item = dom.byId("schedule_item_" + itemId);
+                if (item) {
+                    this._itemContainer.removeChild(item);
+                }
+            }
         },
 
         stopMonitor : function() {
+            this.removePopup();
             if (this.monitorDeferred) {
                 try {
                     this.monitorDeferred.cancel();
-                    this.monitorDeferred = null;
-                    this.audio = null;
+                    delete this.monitorDeferred;
                 } catch (e) {
                 }
             }
         }
-    };
+    });
 });

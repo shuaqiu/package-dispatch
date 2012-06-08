@@ -101,9 +101,17 @@ define([
         },
 
         doView : function(orderId) {
+            var self = this;
+            var timeout = setTimeout(function() {
+                self.doView(orderId);
+            }, 15 * 1000);
             showTab([], {
                 title : this.viewTabName,
                 href : this.resourceUrl + "/view/" + orderId,
+                onClose : function() {
+                    clearTimeout(timeout);
+                    return true;
+                }
             }, this.viewTab, true);
         },
 

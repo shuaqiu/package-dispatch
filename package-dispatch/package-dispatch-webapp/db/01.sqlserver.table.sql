@@ -140,3 +140,12 @@ create table dispatch_handle_detail(
     description varchar(255)
 )
 alter table dispatch_handle_detail add constraint pk_dispatch_handle_detail primary key (id)
+
+create table dispatch_schedule_history(
+    id int not null identity(1,1),
+    order_id int not null,
+    scheduler_name varchar(255),
+    scheduler_tel varchar(20),
+    schedule_time datetime
+)
+alter table dispatch_schedule_history add constraint pk_dispatch_schedule_history primary key (id)

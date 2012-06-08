@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ import com.qiuq.packagedispatch.bean.customer.Receiver;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
+import com.qiuq.packagedispatch.bean.order.ScheduleHistory;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Type;
 import com.qiuq.packagedispatch.bean.system.User;
@@ -167,8 +169,9 @@ public class OrderController extends AbstractResourceController<Order> {
     protected OperateResult afterInsert(Order t, OperateResult insertResult) {
         if (insertResult.isOk()) {
             // new Thread(new SmsNotifier(t)).start();
+            t.setId(((KeyHolder) insertResult.getObj()).getKey().intValue());
+            messageQueue.push(t);
         }
-        messageQueue.push(t);
         return super.afterInsert(t, insertResult);
     }
 
@@ -362,16 +365,25 @@ public class OrderController extends AbstractResourceController<Order> {
     }
 
     @RequestMapping(value = "/view/{orderId}", method = RequestMethod.GET)
-    public String view(@PathVariable int orderId, Map<String, Object> r) {
-        r.put("DELIVERED", State.DELIVERED.ordinal());
+    public String view(WebRequest req, @PathVariable int orderId, Map<String, Object> r) {
+        User user = HttpSessionUtil.getLoginedUser(req);
+        if (user != null) {
+            r.put("DELIVERED", State.DELIVERED.ordinal());
 
-        Order order = orderService.query(orderId);
-        r.put("order", order);
+            Order order = orderService.query(orderId);
+            r.put("order", order);
 
-        List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
-        r.put("handleDetail", handleDetail);
-        List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
-        r.put("scheduleDetail", scheduleDetail);
+            List<HandleDetail> handleDetail = orderService.getHandleDetail(orderId);
+            r.put("handleDetail", handleDetail);
+
+            if (user.getType() == Type.TYPE_SELF && order.getState() >= State.SCHEDULED.ordinal()) {
+                List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
+                r.put("scheduleDetail", scheduleDetail);
+
+                List<ScheduleHistory> scheduleHistory = orderService.getScheduleHistory(orderId);
+                r.put("scheduleHistory", scheduleHistory);
+            }
+        }
 
         return "order/view";
     }

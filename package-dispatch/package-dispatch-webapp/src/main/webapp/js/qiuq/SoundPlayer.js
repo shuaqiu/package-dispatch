@@ -95,9 +95,16 @@ define(
                 },
 
                 _playByAudio : function() {
-                    this._player.pause();
-                    this._player.currentTime = 0;
-                    this._player.play();
+                    if (this._player.readyState == 4) {
+                        this._player.pause();
+                        this._player.currentTime = 0;
+                        this._player.play();
+                    } else {
+                        this._player.addEventListener("loadeddata", function() {
+                            this.currentTime = 0;
+                            this.play();
+                        });
+                    }
                 }
             });
         });

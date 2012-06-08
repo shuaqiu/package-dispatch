@@ -18,6 +18,7 @@ import com.qiuq.common.OperateResult;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
+import com.qiuq.packagedispatch.bean.order.ScheduleHistory;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.repository.ResourceRepository;
@@ -58,6 +59,7 @@ public class OrderService extends AbstractResourceService<Order> {
 
         Integer fetcherId = details.get(0).getHandlerId();
         boolean isUpdated = orderRepository.updateOrderInfo(orderId, user, fetcherId);
+        orderRepository.insertScheduleHistory(orderId);
 
         return isSaved && updated == details.size() && isUpdated;
     }
@@ -70,11 +72,15 @@ public class OrderService extends AbstractResourceService<Order> {
      * @return
      * @author qiushaohua 2012-5-19
      */
+    @Transactional
     public boolean schedule(User user, int orderId, List<ScheduleDetail> details, List<Integer> toDeleteScheduleIdList) {
         boolean isDeleted = orderRepository.deleteScheduleDetail(toDeleteScheduleIdList);
         if (isDeleted) {
             boolean isSaved = orderRepository.insertScheduleDetails(details);
             orderRepository.updateHandlerInfo(orderId);
+            // added @ 2012-6-5 update the schedule info in order
+            orderRepository.updateOrderSchedulerInfo(orderId, user);
+            orderRepository.insertScheduleHistory(orderId);
             return isSaved;
         }
         return false;
@@ -262,5 +268,15 @@ public class OrderService extends AbstractResourceService<Order> {
     @Transactional(readOnly = true)
     public Map<Integer, Integer> getHandledTaskCount() {
         return orderRepository.getHandledTaskCount();
+    }
+
+    /**
+     * @param orderId
+     * @return
+     * @author qiushaohua 2012-6-8
+     */
+    @Transactional(readOnly = true)
+    public List<ScheduleHistory> getScheduleHistory(int orderId) {
+        return orderRepository.getScheduleHistory(orderId);
     }
 }

@@ -3,16 +3,17 @@ define([
         "dojo/dom",
         "dojo/dom-construct",
         "dojo/string",
+        "dojo/_base/lang",
         "dojo/_base/xhr",
-        "../SoundPlayer",
-        "dojo/i18n!./nls/alarm" ], function(require, dom, domconstruct, string, xhr, SoundPlayer, message) {
+        "dijit/registry",
+        "../PopupTip",
+        "dojo/i18n!./nls/alarm" ], function(require, dom, domconstruct, string, lang, xhr, registry, PopupTip, message) {
 
-    return {
+    return lang.mixin({}, PopupTip, {
+        checkInterval : 60 * 1000,
         timeout : null,
-
-        alarmPopup : null,
-
-        alarmAudio : null,
+        title : message["title"],
+        audioName : "alarm",
 
         startCheck : function() {
             var self = this;
@@ -25,7 +26,12 @@ define([
                 handleAs : "json"
             }).then(function(result) {
                 if (result.ok) {
-                    self._showAlarmPopup(result.obj);
+                    self.popup(result.obj);
+                    
+                    var resourceGrid = registry.byId("alarm_list");
+                    if (resourceGrid) {
+                        resourceGrid._onQuery();
+                    }
                 } else {
                     if (result.errCode == "NOT_LOGINED") {
                         require([ "qiuq/login" ], function(login) {
@@ -37,102 +43,43 @@ define([
 
             self.timeout = setTimeout(function() {
                 self.startCheck();
-            }, 60 * 1000);
+            }, self.checkInterval);
         },
 
-        _showAlarmPopup : function(list) {
-            if (list == null || list.length == 0) {
-                return;
+        _createItem : function(aOrder) {
+            var itemId = "alarm_item_" + aOrder["id"];
+            var sameIdItem = dom.byId(itemId);
+            if (sameIdItem) {
+                this._itemContainer.removeChild(sameIdItem);
             }
 
-            var ul = dom.byId("alarmList");
-            if (ul == null) {
-                ul = this._createContainer();
-            }
-
-            if (this.alarmAudio) {
-                this.alarmAudio.play();
-            }
-
-            for ( var i = 0; i < list.length; i++) {
-                var aOrder = list[i];
-                var itemId = "alarm_item_" + aOrder["id"];
-                var sameIdItem = dom.byId(itemId);
-                if (sameIdItem) {
-                    ul.removeChild(sameIdItem);
-                }
-
-                var expentTime = parseInt((new Date().getTime() - aOrder["fetchTime"]) / 60 / 1000);
-                var desc = string.substitute(message["desc"], {
-                    barCode : aOrder["barCode"] || "",
-                    senderName : aOrder["senderName"] || "",
-                    senderTel : aOrder["senderTel"] || "",
-                    receiverName : aOrder["receiverName"] || "",
-                    receiverTel : aOrder["receiverTel"] || "",
-                    expentTime : expentTime + ""
-                });
-                var color = expentTime >= 60 ? "red" : "#FF6200";
-                domconstruct.create("li", {
-                    id : itemId,
-                    innerHTML : desc,
-                    style : {
-                        "color" : color
-                    },
-                    title : message["itemTip"],
-                    ondblclick : function() {
-                        ul.removeChild(this);
-                    },
-                    onclick : function() {
-                        require([ 'qiuq/order/order' ], function(resource) {
-                            resource.doView(aOrder["id"]);
-                        });
-                    }
-                }, ul);
-            }
-        },
-
-        _createContainer : function() {
-            this.alarmPopup = domconstruct.create("div", {
-                className : "dijitDialog alarmPopup",
-            }, document.body);
-
-            var title = domconstruct.create("div", {
-                className : "dijitDialogTitleBar",
-                style : {
-                    cursor : "default"
-                }
-            }, this.alarmPopup);
-
-            domconstruct.create("span", {
-                className : "dijitDialogTitle",
-                innerHTML : message["title"]
-            }, title);
-            var self = this;
-            domconstruct.create("span", {
-                className : "dijitDialogCloseIcon",
-                innerHTML : "<span class='closeText'>x</span>",
-                click : function() {
-                    self.removePopup();
-                }
-            }, title);
-
-            this.alarmAudio = new SoundPlayer({
-                name : "alarm",
-                refNode : this.alarmPopup
+            var expentTime = parseInt((new Date().getTime() - aOrder["fetchTime"]) / 60 / 1000);
+            var desc = string.substitute(message["desc"], {
+                barCode : aOrder["barCode"] || "",
+                senderName : aOrder["senderName"] || "",
+                senderTel : aOrder["senderTel"] || "",
+                receiverName : aOrder["receiverName"] || "",
+                receiverTel : aOrder["receiverTel"] || "",
+                expentTime : expentTime + ""
             });
 
-            var ul = domconstruct.create("ul", {
-                id : "alarmList",
-            }, this.alarmPopup);
-
-            return ul;
-        },
-
-        removePopup : function() {
-            if (this.alarmPopup != null && dom.byId(this.alarmPopup) != null) {
-                document.body.removeChild(this.alarmPopup);
-                this.alarmPopup = null;
-            }
+            var self = this;
+            domconstruct.create("li", {
+                id : itemId,
+                innerHTML : desc,
+                style : {
+                    "color" : expentTime >= 60 ? "red" : "#FF6200"
+                },
+                title : message["itemTip"],
+                ondblclick : function() {
+                    self._itemContainer.removeChild(this);
+                },
+                onclick : function() {
+                    require([ 'qiuq/order/order' ], function(resource) {
+                        resource.doView(aOrder["id"]);
+                    });
+                }
+            }, this._itemContainer);
         },
 
         destroy : function() {
@@ -140,5 +87,5 @@ define([
             clearTimeout(this.timeout);
         }
 
-    };
+    });
 });
