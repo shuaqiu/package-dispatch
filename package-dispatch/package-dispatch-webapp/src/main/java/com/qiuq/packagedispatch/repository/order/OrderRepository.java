@@ -214,32 +214,35 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @author qiushaohua 2012-4-4
      */
     private String buildCondition(Map<String, Object> params, MapSqlParameterSource paramMap) {
-        String sql = "";
         if (params == null || params.size() == 0) {
-            return sql;
+            return "";
         }
 
-        sql += buildIntCondition(params, "senderId", paramMap);
-        // sql += buildIntCondition(params, "state", paramMap);
-        sql += buildCondition(params, "state", paramMap);
+        StringBuilder sql = new StringBuilder();
+        sql.append(buildIntCondition(params, "senderId", paramMap));
+        sql.append(buildCondition(params, "state", paramMap));
 
-        sql += buildIntCondition(params, "fetchTime", paramMap);
-
-        int transiting = Converter.toInt(params.get("transiting"), -1);
-        if (transiting != -1) {
-            sql += " and (state = :fetchedState or state = :transitingState or state = :outStorageState)";
+        int alarm = Converter.toInt(params.get("alarm"), -1);
+        if (alarm != -1) {
+            sql.append(" and (");
+            sql.append("  (state in (:fetchedState, :transitingState, :outStorageState)"
+                    + buildIntCondition(params, "fetchTime", paramMap) + ")");
+            sql.append("  or ");
+            sql.append("  (state = :scheduledState" + buildIntCondition(params, "scheduleTime", paramMap) + ")");
+            sql.append(" )");
             paramMap.addValue("fetchedState", State.FETCHED.ordinal());
             paramMap.addValue("transitingState", State.TRANSITING.ordinal());
             paramMap.addValue("outStorageState", State.OUT_STORAGE.ordinal());
+            paramMap.addValue("scheduledState", State.SCHEDULED.ordinal());
         }
 
         String query = Converter.toString(params.get("query"));
         Map<String, String> fieldCondition = new HashMap<String, String>();
         fieldCondition.put("sender_identity_code", "state < 2");
-        sql += buildQueryCondition(query, paramMap, fieldCondition, "sender_identity_code", "bar_code", "sender_name",
-                "sender_tel", "receiver_name", "receiver_tel");
+        sql.append(buildQueryCondition(query, paramMap, fieldCondition, "sender_identity_code", "bar_code",
+                "sender_name", "sender_tel", "receiver_name", "receiver_tel"));
 
-        return sql.replaceFirst(" and ", " where ");
+        return sql.toString().replaceFirst(" and ", " where ");
     }
 
     /**
@@ -493,16 +496,22 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @return
      * @author qiushaohua 2012-4-29
      */
-    public List<Order> getNewAlarm() {
-        String sql = "select * from dispatch_order"
-                + " where (state = :fetchedState or state = :transitingState or state = :outStorageState)"
-                + "   and datediff(mi, fetch_time, getdate()) in (45, 60, 75) order by fetch_time";
+    public List<Order> getNewAlarm(String timeToNoteNotDeliveredAlarm, String timeToNoteNotFetchAlarm) {
+        StringBuilder sql = new StringBuilder("select * from dispatch_order");
+        sql.append(" where (");
+        sql.append("  (state in (:fetchedState, :transitingState, :outStorageState)");
+        sql.append("   and datediff(mi, fetch_time, getdate()) in (" + timeToNoteNotDeliveredAlarm + "))");
+        sql.append(" or ");
+        sql.append("  (state = :scheduleState and datediff(mi, schedule_time, getdate()) in ("
+                + timeToNoteNotFetchAlarm + "))");
+        sql.append(") order by fetch_time, schedule_time");
         // + "   and datediff(mi, fetch_time, getdate()) > 45 order by fetch_time"; // for test
         MapSqlParameterSource paramMap = new MapSqlParameterSource();
         paramMap.addValue("fetchedState", State.FETCHED.ordinal());
         paramMap.addValue("transitingState", State.TRANSITING.ordinal());
         paramMap.addValue("outStorageState", State.OUT_STORAGE.ordinal());
-        return jdbcTemplate.query(sql, paramMap, new OrderRowMapper());
+        paramMap.addValue("scheduleState", State.SCHEDULED.ordinal());
+        return jdbcTemplate.query(sql.toString(), paramMap, new OrderRowMapper());
     }
 
     /**

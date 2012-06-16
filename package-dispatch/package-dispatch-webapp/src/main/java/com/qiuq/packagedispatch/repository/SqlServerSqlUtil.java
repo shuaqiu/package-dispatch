@@ -35,4 +35,9 @@ public class SqlServerSqlUtil implements SqlUtil {
         }
         return sql;
     }
+
+    @Override
+    public String getPinyinFunction() {
+        return "dbo.fun_getPY";
+    }
 }

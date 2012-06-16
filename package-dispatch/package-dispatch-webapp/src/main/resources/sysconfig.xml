@@ -45,6 +45,13 @@
     <!-- {7}: 条形码(订单号) -->
     <entry key="order.notify.receiver">你有新的快件, 验证码为: {0}</entry>
 
-    <!-- 超时时间定义(单位: 分钟)(产生告警的时间) -->
-    <entry key="alarm.time">45</entry>
+    <!-- 超时时间定义(单位: 分钟)(收件后, 经过这个时间还未送达, 则产生告警) -->
+    <entry key="alarm.notdelivered.time">45</entry>
+    <!-- 收件后, 经过下列时间(单位: 分钟)还未送达时, 将弹出警报窗口(多个时间用"," 号分隔) -->
+    <entry key="alarm.notdelivered.time.note">45,60,75</entry>
+
+    <!-- 超时时间定义(单位: 分钟)(调度后, 经过这个时间还未上门收件, 则产生告警) -->
+    <entry key="alarm.notfetch.time">60</entry>
+    <!-- 调度后, 经过下列时间(单位: 分钟)还未上门收件时, 将弹出警报窗口(多个时间用"," 号分隔) -->
+    <entry key="alarm.notfetch.time.note">60</entry>
 </properties>

@@ -5,13 +5,13 @@
 <head>
 <meta charset="UTF-8">
 <title>慧信企业配送服务系统</title>
-<!-- <link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/tundra/tundra.css" /> -->
-<!-- <link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" /> -->
-<link rel="stylesheet" href="js/dojo-1.7.2/dojo/resources/dojo.css" />
-<link rel="stylesheet" href="js/dojo-1.7.2/dojo/resources/dnd.css" />
-<link rel="stylesheet" href="js/dojo-1.7.2/dijit/themes/claro/claro.css" />
-<link rel="stylesheet" href="js/dojo-1.7.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
-<link rel="stylesheet" href="js/dojo-1.7.2/dojox/form/resources/UploaderFileList.css" />
+<!-- <link rel="stylesheet" href="js/dojo-release-1.7.2/dijit/themes/tundra/tundra.css" /> -->
+<!-- <link rel="stylesheet" href="js/dojo-release-1.7.2/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css" /> -->
+<link rel="stylesheet" href="js/dojo-release-1.7.2/dojo/resources/dojo.css" />
+<link rel="stylesheet" href="js/dojo-release-1.7.2/dojo/resources/dnd.css" />
+<link rel="stylesheet" href="js/dojo-release-1.7.2/dijit/themes/claro/claro.css" />
+<link rel="stylesheet" href="js/dojo-release-1.7.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css" />
+<link rel="stylesheet" href="js/dojo-release-1.7.2/dojox/form/resources/UploaderFileList.css" />
 <link rel="stylesheet" href="style.css" />
 <script type="text/javascript">
     var dojoConfig = {
@@ -21,13 +21,13 @@
         /// tlmSiblingOfDojo: false,
         packages : [ {
             name : "dojo",
-            location : "dojo-1.7.2/dojo"
+            location : "dojo-release-1.7.2/dojo"
         }, {
             name : "dijit",
-            location : "dojo-1.7.2/dijit"
+            location : "dojo-release-1.7.2/dijit"
         }, {
             name : "dojox",
-            location : "dojo-1.7.2/dojox"
+            location : "dojo-release-1.7.2/dojox"
         }, {
             name : "qiuq",
             location : "qiuq"
@@ -36,7 +36,7 @@
     //, extraLocale : [ "en", "zh-tw" ]
     };
 </script>
-<script src="js/dojo-1.7.2/dojo/dojo.js"></script>
+<script src="js/dojo-release-1.7.2/dojo/dojo.js"></script>
 </head>
 <!-- <body class="tundra"> -->
 <body class="claro">
@@ -45,18 +45,6 @@
     require(["qiuq/login", "dojo/domReady!" ], function(login) {
         login.tryLogin();
     });
-
-    require([
-             "dijit/layout/BorderContainer",
-             "dijit/layout/TabContainer",
-             "dijit/MenuBar",
-             "dijit/MenuBarItem",
-             "dijit/PopupMenuBarItem",
-             "dijit/DropDownMenu",
-             "dijit/MenuItem",
-             "dijit/form/TextBox",
-             "qiuq/order/order" ], function() {
-     });
     
     function showTab(moduleArr, conf, id, forceReload) {
         require([ "qiuq/tab" ], function(tab) {

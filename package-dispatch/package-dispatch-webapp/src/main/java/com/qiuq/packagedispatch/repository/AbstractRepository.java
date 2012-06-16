@@ -50,11 +50,19 @@ public abstract class AbstractRepository {
      */
     protected String orderBy(String sort) {
         if (StringUtils.hasText(sort) && sort.length() > 1) {
-            if (sort.startsWith("+") || sort.startsWith(" ")) {
-                return " order by " + underscoreName(sort.substring(1));
-            } else if (sort.startsWith("-")) {
-                return " order by " + underscoreName(sort.substring(1)) + " desc";
+            String[] arr = sort.split(",");
+
+            List<String> orderby = new ArrayList<String>(arr.length);
+            for (String str : arr) {
+                if (StringUtils.hasText(str) && str.length() > 1) {
+                    if (str.startsWith("+") || str.startsWith(" ")) {
+                        orderby.add(underscoreName(str.substring(1)));
+                    } else if (str.startsWith("-")) {
+                        orderby.add(underscoreName(str.substring(1)) + " desc");
+                    }
+                }
             }
+            return "order by " + StringUtils.collectionToCommaDelimitedString(orderby);
         }
         return "";
     }
@@ -413,10 +421,14 @@ public abstract class AbstractRepository {
         sql.append(" and (");
         List<String> s = new ArrayList<String>();
         for (String field : fields) {
-            if (fieldCondition != null && StringUtils.hasText(fieldCondition.get(field))) {
-                s.add("(" + field + " like :query and " + fieldCondition.get(field) + ")");
-            } else {
-                s.add(field + " like :query");
+            if (StringUtils.hasText(field)) {
+                // field like :query or dbo.func_getPY(field) like :query
+                String c = field + " like :query or " + sqlUtil.getPinyinFunction() + "(" + field + ") like :query";
+                if (fieldCondition != null && StringUtils.hasText(fieldCondition.get(field))) {
+                    s.add("((" + c + ") and " + fieldCondition.get(field) + ")");
+                } else {
+                    s.add(c);
+                }
             }
         }
         sql.append(StringUtils.collectionToDelimitedString(s, " or "));

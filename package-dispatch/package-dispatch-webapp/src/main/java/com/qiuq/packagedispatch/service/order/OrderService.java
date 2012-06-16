@@ -233,8 +233,8 @@ public class OrderService extends AbstractResourceService<Order> {
      * @author qiushaohua 2012-4-29
      */
     @Transactional(readOnly = true)
-    public List<Order> getNewAlarm() {
-        return orderRepository.getNewAlarm();
+    public List<Order> getNewAlarm(String timeToNoteNotDeliveredAlarm, String timeToNoteNotFetchAlarm) {
+        return orderRepository.getNewAlarm(timeToNoteNotDeliveredAlarm, timeToNoteNotFetchAlarm);
     }
 
     /**

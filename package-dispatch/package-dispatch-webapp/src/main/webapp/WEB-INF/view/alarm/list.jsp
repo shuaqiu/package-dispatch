@@ -30,15 +30,31 @@
                     }
                 });
             }},
-            {name: '收件时间/出库时间', field: 'fetchTime', width: '170px', formatter: function(value){
+            {name: '收件时间/出库时间', field: 'fetchTime', width: '155px', formatter: function(value){
+                if(value == null) {
+                    return '';
+                }
+                var d = new Date();
+                d.setTime(value);
+                return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
+            }},
+            {name: '调度时间', field: 'scheduleTime', width: '155px', formatter: function(value){
+                if(value == null) {
+                    return '';
+                }
                 var d = new Date();
                 d.setTime(value);
                 return dojo.date.locale.format(d, {datePattern: 'yyyy-MM-dd', timePattern: 'HH:mm:ss'});
             }},
             {name: '用时 (分钟)', field: 'fetchTime', width: '100px', get: function(idx, item){
+                if(item == null) {
+                    return '';
+                }
+                var time = item['fetchTime'] || item['scheduleTime'] || 0;
                 var c = new Date().getTime();
-                return parseInt((c - item['fetchTime']) / 60 / 1000);
+                return parseInt((c - time) / 60 / 1000);
             }},
+            {name: '状态', field: 'stateDescribe', width: '150px'},
             {name: '条形码', field: 'barCode', width: '100px'},
             {name: '发件人', field: 'senderName', width: '100px'},
             {name: '发件人电话', field: 'senderTel', width: '120px'},

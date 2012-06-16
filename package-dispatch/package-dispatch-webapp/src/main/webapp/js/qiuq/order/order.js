@@ -102,28 +102,28 @@ define([
 
         doView : function(orderId) {
             var self = this;
-            var timeout = null;
             showTab([], {
                 title : this.viewTabName,
                 href : this.resourceUrl + "/view/" + orderId,
                 onClose : function() {
-                    if (timeout) {
-                        clearTimeout(timeout);
+                    if (self.viewTimeout) {
+                        clearTimeout(self.viewTimeout);
                     }
                     return true;
                 },
                 onShow : function() {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                    }
-                    timeout = setTimeout(function() {
+                    this.onHide();
+                    self.viewTimeout = setTimeout(function() {
                         self.doView(orderId);
                     }, 15 * 1000);
                 },
                 onHide : function() {
-                    if (timeout) {
-                        clearTimeout(timeout);
+                    if (self.viewTimeout) {
+                        clearTimeout(self.viewTimeout);
                     }
+                },
+                uninitialize : function() {
+                    this.onHide();
                 }
             }, this.viewTab, true);
         },

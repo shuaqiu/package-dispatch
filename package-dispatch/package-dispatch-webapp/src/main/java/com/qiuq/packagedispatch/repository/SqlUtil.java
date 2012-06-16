@@ -23,4 +23,10 @@ public interface SqlUtil {
      * @author qiushaohua 2012-4-2
      */
     String toRangeQuerySql(String sql, long[] range);
+
+    /**
+     * @return
+     * @author qiushaohua 2012-6-16
+     */
+    String getPinyinFunction();
 }

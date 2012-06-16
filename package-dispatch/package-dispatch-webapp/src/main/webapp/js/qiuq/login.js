@@ -1,4 +1,5 @@
 define([
+        "require",
         "dojo/parser",
         "dojo/dom",
         "dojo/string",
@@ -12,8 +13,8 @@ define([
         "./widget/MessageDialog",
         "./order/alarm",
         "./order/schedulemonitor",
-        "dojo/i18n!./nls/login" ], function(parser, dom, string, Deferred, xhr, registry, Dialog, ContentPane, TextBox,
-        Button, MessageDialog, alarm, schedulemonitor, message) {
+        "dojo/i18n!./nls/login" ], function(require, parser, dom, string, Deferred, xhr, registry, Dialog, ContentPane,
+        TextBox, Button, MessageDialog, alarm, schedulemonitor, message) {
 
     var id = {
         dialogId : "login_dialog",
@@ -169,10 +170,10 @@ define([
 
     function reLogin() {
         // destroy all current widget first
-        destroyAll("");
-
         alarm.destroy();
         schedulemonitor.stopMonitor();
+        
+        destroyAll("");
         tryLogin();
     }
 
@@ -189,21 +190,32 @@ define([
     }
 
     function loadBody() {
-        xhr.get({
-            url : "web/index/body",
-            content : {
-                // add a time parameter to prevent cache
-                t : new Date().getTime()
-            }
-        }).then(function(content) {
-            // destroy all current widget first
-            destroyAll(content);
-            parser.parse(document.body);
+        require([
+                "dijit/layout/BorderContainer",
+                "dijit/layout/TabContainer",
+                "dijit/MenuBar",
+                "dijit/MenuBarItem",
+                "dijit/PopupMenuBarItem",
+                "dijit/DropDownMenu",
+                "dijit/MenuItem",
+                "dijit/form/TextBox",
+                "qiuq/order/order" ], function() {
+            xhr.get({
+                url : "web/index/body",
+                content : {
+                    // add a time parameter to prevent cache
+                    t : new Date().getTime()
+                }
+            }).then(function(content) {
+                // destroy all current widget first
+                destroyAll(content);
+                parser.parse(document.body);
 
-            setTimeout(function() {
-                alarm.startCheck();
-                schedulemonitor.doMonitor();
-            }, 5000);
+                setTimeout(function() {
+                    alarm.startCheck();
+                    schedulemonitor.doMonitor();
+                }, 5000);
+            });
         });
     }
 
