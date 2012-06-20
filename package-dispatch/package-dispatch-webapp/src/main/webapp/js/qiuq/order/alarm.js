@@ -65,9 +65,6 @@ define([
                             receiverTel : aOrder["receiverTel"] || "",
                             expentTime : expentTime + ""
                         });
-                        style = {
-                            "color" : "blue"
-                        };
                     } else {
                         expentTime = parseInt((new Date().getTime() - aOrder["fetchTime"]) / 60 / 1000);
                         desc = string.substitute(message["desc.notdelivered"], {
@@ -78,16 +75,15 @@ define([
                             receiverTel : aOrder["receiverTel"] || "",
                             expentTime : expentTime + ""
                         });
-                        style = {
-                            "color" : expentTime >= 60 ? "red" : "#FF6200"
-                        };
                     }
 
                     var self = this;
                     domconstruct.create("li", {
                         id : itemId,
                         innerHTML : desc,
-                        style : style,
+                        style : {
+                            "color" : this.getColor(aOrder, expentTime)
+                        },
                         title : message["itemTip"],
                         ondblclick : function() {
                             self._itemContainer.removeChild(this);
@@ -98,6 +94,22 @@ define([
                             });
                         }
                     }, this._itemContainer);
+                },
+
+                getColor : function(aOrder, expentTime) {
+                    if (aOrder["state"] == 1) {
+                        // just scheduled, and not fetch
+                        return "green";
+                    }
+
+                    // already fetched
+                    if (expentTime < 50) {
+                        return "blue";
+                    }
+                    if (expentTime >= 50) {
+                        return "#FF6200";
+                    }
+                    return "red";
                 },
 
                 destroy : function() {

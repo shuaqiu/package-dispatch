@@ -1,7 +1,10 @@
-define([ "dojo/dom", "dojo/dom-construct", "./SoundPlayer" ], function(dom, domconstruct, SoundPlayer) {
+define([ "dojo/dom", "dojo/dom-construct", "dojo/dnd/Moveable", "./SoundPlayer" ], function(dom, domconstruct,
+        Moveable, SoundPlayer) {
 
     return {
         title : null,
+
+        draggable : true,
 
         _popup : null,
         _itemContainer : null,
@@ -43,6 +46,11 @@ define([ "dojo/dom", "dojo/dom-construct", "./SoundPlayer" ], function(dom, domc
                 }
             }, this._popup);
 
+            this._moveable = new Moveable(this._popup, {
+                handle : title
+            });
+            // this.connect(this._moveable, "onMoveStop", "_endDrag");
+
             domconstruct.create("span", {
                 className : "dijitDialogTitle",
                 innerHTML : this.title
@@ -73,6 +81,9 @@ define([ "dojo/dom", "dojo/dom-construct", "./SoundPlayer" ], function(dom, domc
                 delete this._popup;
                 delete this._itemContainer;
                 delete this._audio;
+            }
+            if (this._moveable) {
+                this._moveable.destroy();
             }
         }
     };

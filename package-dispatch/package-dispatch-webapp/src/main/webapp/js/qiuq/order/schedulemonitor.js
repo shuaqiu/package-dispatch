@@ -21,7 +21,7 @@ define([
             className : "dijitDialog popupTip",
             style : {
                 width : "300px",
-                right : "400px"
+                right : "300px"
             }
         },
 

@@ -95,7 +95,7 @@ define(
                 },
 
                 _playByAudio : function() {
-                    if (this._player.readyState == 4) {
+                    if (this._player.readyState >= 2) {
                         this._player.pause();
                         this._player.currentTime = 0;
                         this._player.play();
