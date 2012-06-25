@@ -106,8 +106,8 @@ public class WebRequestSmsSender implements SmsSender {
 
     @Override
     public OperateResult send(String content, String... numbers) {
-        if (numbers.length == 0) {
-            return new OperateResult(ErrCode.NULL, "not number to send");
+        if (numbers.length == 0 || !StringUtils.hasText(content)) {
+            return new OperateResult(ErrCode.NULL, "not number or not content to send");
         }
 
         if (method == null || "GET".equals(method.toUpperCase())) {

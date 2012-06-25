@@ -5,6 +5,7 @@ package com.qiuq.common.excel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -16,12 +17,19 @@ import org.springframework.util.StringUtils;
  */
 public class ExcelUtil {
 
+    private final ReentrantLock formatLock = new ReentrantLock();
+
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     /** @author qiushaohua 2012-5-21 */
     public void setDateFormat(DateFormat dateFormat) {
         if (dateFormat != null) {
-            this.dateFormat = dateFormat;
+            formatLock.lock();
+            try {
+                this.dateFormat = dateFormat;
+            } finally {
+                formatLock.unlock();
+            }
         }
     }
 
@@ -32,7 +40,13 @@ public class ExcelUtil {
 
     public void setDatePattern(String pattern) {
         if (StringUtils.hasText(pattern)) {
-            dateFormat = new SimpleDateFormat(pattern);
+
+            formatLock.lock();
+            try {
+                dateFormat = new SimpleDateFormat(pattern);
+            } finally {
+                formatLock.unlock();
+            }
         }
     }
 
@@ -89,7 +103,12 @@ public class ExcelUtil {
         case Cell.CELL_TYPE_NUMERIC:
             // cell.get
             if (DateUtil.isCellDateFormatted(cell)) {
-                return dateFormat.format(cell.getDateCellValue());
+                formatLock.lock();
+                try {
+                    return dateFormat.format(cell.getDateCellValue());
+                } finally {
+                    formatLock.unlock();
+                }
             }
             return "" + cell.getNumericCellValue();
 

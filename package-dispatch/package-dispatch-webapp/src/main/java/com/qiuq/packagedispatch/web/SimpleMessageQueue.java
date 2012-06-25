@@ -3,10 +3,10 @@
  */
 package com.qiuq.packagedispatch.web;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -28,8 +28,8 @@ public class SimpleMessageQueue<T> {
 
     protected final Log logger = LogFactory.getLog(getClass());
 
-    private Map<String, BlockingQueue<T>> queues = new HashMap<String, BlockingQueue<T>>();
-    private Map<String, Long> lastAccessTime = new HashMap<String, Long>();
+    private Map<String, BlockingQueue<T>> queues = new ConcurrentHashMap<String, BlockingQueue<T>>();
+    private Map<String, Long> lastAccessTime = new ConcurrentHashMap<String, Long>();
 
     /**
      * @param t

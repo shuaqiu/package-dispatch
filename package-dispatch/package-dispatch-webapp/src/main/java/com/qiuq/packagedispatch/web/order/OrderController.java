@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +61,10 @@ public class OrderController extends AbstractResourceController<Order> {
     private ReceiverService receiverService;
 
     private SmsSender smsSender;
+
+    private final ReentrantLock senderTemplateLock = new ReentrantLock();
+    private final ReentrantLock receiverTemplateLock = new ReentrantLock();
+    private final ReentrantLock formatLock = new ReentrantLock();
 
     private MessageFormat notifyTemplateForSender;
     private MessageFormat notifyTemplateForReceiver;
@@ -239,32 +244,39 @@ public class OrderController extends AbstractResourceController<Order> {
      */
     private String generateIdentityCode() {
         int code = (int) (Math.random() * 10000);
-        return codeGeneratorFormatter.format(code);
+
+        formatLock.lock();
+        try {
+            return codeGeneratorFormatter.format(code);
+        } finally {
+            formatLock.unlock();
+        }
     }
 
     /**
      * @author qiushaohua 2012-4-28
      * @version 0.0.1
      */
-    private class SmsNotifier implements Runnable {
-        private Order order;
-
-        public SmsNotifier(Order order) {
-            this.order = order;
-        }
-
-        @Override
-        public void run() {
-            try {
-                // 2012-05-24 don't need to send to sender (print it directly)
-                // sendIdentityToSender(order);
-                // 2012-06-01 don't need to send to receiver (only send when the order is fetched.)
-                // sendIdentityToReceiver(order);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    // not need to send sms when create new order
+    // private class SmsNotifier implements Runnable {
+    // private Order order;
+    //
+    // public SmsNotifier(Order order) {
+    // this.order = order;
+    // }
+    //
+    // @Override
+    // public void run() {
+    // try {
+    // // 2012-05-24 don't need to send to sender (print it directly)
+    // // sendIdentityToSender(order);
+    // // 2012-06-01 don't need to send to receiver (only send when the order is fetched.)
+    // // sendIdentityToReceiver(order);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // }
+    // }
 
     /**
      * @param t
@@ -272,10 +284,17 @@ public class OrderController extends AbstractResourceController<Order> {
      * @return
      */
     private OperateResult sendIdentityToSender(Order t) {
-        String content = notifyTemplateForSender.format(new Object[] {
-                t.getSenderIdentityCode(), t.getReceiverName(), t.getReceiverTel(), t.getReceiverCompany(),
-                t.getReceiverAddress(), t.getGoodsName(), t.getQuantity()
-        });
+        String content = null;
+
+        senderTemplateLock.lock();
+        try {
+            content = notifyTemplateForSender.format(new Object[] {
+                    t.getSenderIdentityCode(), t.getReceiverName(), t.getReceiverTel(), t.getReceiverCompany(),
+                    t.getReceiverAddress(), t.getGoodsName(), t.getQuantity()
+            });
+        } finally {
+            senderTemplateLock.unlock();
+        }
         return smsSender.send(content, t.getSenderTel());
     }
 
@@ -285,10 +304,17 @@ public class OrderController extends AbstractResourceController<Order> {
      * @return
      */
     private OperateResult sendIdentityToReceiver(Order t) {
-        String content = notifyTemplateForReceiver.format(new Object[] {
-                t.getReceiverIdentityCode(), t.getSenderName(), t.getSenderTel(), t.getSenderCompany(),
-                t.getSenderAddress(), t.getGoodsName(), t.getQuantity(), t.getBarCode()
-        });
+        String content = null;
+
+        receiverTemplateLock.lock();
+        try {
+            content = notifyTemplateForReceiver.format(new Object[] {
+                    t.getReceiverIdentityCode(), t.getSenderName(), t.getSenderTel(), t.getSenderCompany(),
+                    t.getSenderAddress(), t.getGoodsName(), t.getQuantity(), t.getBarCode()
+            });
+        } finally {
+            receiverTemplateLock.unlock();
+        }
         return smsSender.send(content, t.getReceiverTel());
     }
 
