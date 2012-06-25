@@ -36,18 +36,27 @@ define([
                 var query = document.createElement("div");
 
                 this._queryInput = new TextBox({}).placeAt(query);
+
+                var timeout = null;
+                var self = this;
                 this.connect(this._queryInput, "onKeyUp", function(evt) {
-                    if (evt.keyCode == "13") {
-                        this._onQuery();
+                    // if (evt.keyCode == "13") {
+                    // this._onQuery();
+                    // }
+                    if (timeout) {
+                        clearTimeout(timeout);
                     }
+                    timeout = setTimeout(function() {
+                        self._onQuery();
+                    }, 500);
                 });
 
-                this._queryButton = new Button({
-                    label : message["query"]
-                }).placeAt(query);
-                this.connect(this._queryButton, "onClick", function() {
-                    this._onQuery();
-                });
+                // this._queryButton = new Button({
+                // label : message["query"]
+                // }).placeAt(query);
+                // this.connect(this._queryButton, "onClick", function() {
+                // this._onQuery();
+                // });
 
                 div.appendChild(query);
             }
