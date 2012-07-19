@@ -14,7 +14,8 @@
     <div id="panel_order_list_tab" data-dojo-type="dijit.layout.ContentPane"
       data-dojo-props="
       title : '订单查询', 
-      href : 'web/order/list',
+      href : 'web/order/list'
+      /*,
       onShow : function(){
           var self = this;
           require(['dijit/registry'], function(registry){
@@ -36,7 +37,7 @@
       },
       uninitialize : function(){
           this.onHide();
-      }"></div>
+      }*/"></div>
   </div>
   <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" style="text-align: center;">Copyright © 2012-2012 慧信</div>
 </div>

@@ -166,12 +166,19 @@ define([
 
         doDelete : function() {
             var grid = registry.byId(this.listGrid);
-            if (grid.selection.getSelected().length == 0) {
+
+            var selected = grid.selection.getSelected();
+            if (selected.length == 0) {
                 return;
             }
 
+            for ( var i = 0; i < selected.length; i++) {
+                xhr.del({
+                    url : this.resourceUrl + "/" + grid.store.getIdentity(selected[i]),
+                });
+            }
+
             grid.removeSelectedRows();
-            grid.store.save();
         }
     };
 });

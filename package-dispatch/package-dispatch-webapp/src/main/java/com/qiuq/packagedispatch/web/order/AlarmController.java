@@ -28,6 +28,7 @@ import com.qiuq.packagedispatch.service.ResourceService;
 import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
+import com.qiuq.packagedispatch.web.PermissionHelper;
 
 /**
  * @author qiushaohua 2012-4-29
@@ -38,6 +39,8 @@ import com.qiuq.packagedispatch.web.HttpSessionUtil;
 public class AlarmController extends AbstractResourceController<Order> {
 
     private OrderService orderService;
+
+    private PermissionHelper permissionHelper;
 
     private int timeToNotDeliveredAlarm;
     private int timeToNotFetchAlarm;
@@ -55,6 +58,12 @@ public class AlarmController extends AbstractResourceController<Order> {
     @Autowired
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    /** @author qiushaohua 2012-7-11 */
+    @Autowired
+    public void setPermissionHelper(PermissionHelper permissionHelper) {
+        this.permissionHelper = permissionHelper;
     }
 
     /** @author qiushaohua 2012-5-19 */
@@ -133,7 +142,7 @@ public class AlarmController extends AbstractResourceController<Order> {
         }
 
         Map<String, Boolean> functionMap = HttpSessionUtil.getFunctionMap(req);
-        if (isNotPermission(functionMap, "alarm")) {
+        if (permissionHelper.isNotPermit(functionMap, "alarm")) {
             return new OperateResult(ErrCode.NOT_PERMISSION, "could not access alarm function");
         }
 

@@ -12,9 +12,9 @@ define([
         "dijit/form/Button",
         "./widget/MessageDialog",
         "./order/alarm",
-        "./order/schedulemonitor",
+        "./monitor",
         "dojo/i18n!./nls/login" ], function(require, parser, dom, string, Deferred, xhr, registry, Dialog, ContentPane,
-        TextBox, Button, MessageDialog, alarm, schedulemonitor, message) {
+        TextBox, Button, MessageDialog, alarm, monitor, message) {
 
     var id = {
         dialogId : "login_dialog",
@@ -171,7 +171,7 @@ define([
     function reLogin() {
         // destroy all current widget first
         alarm.destroy();
-        schedulemonitor.stopMonitor();
+        monitor.stopMonitor();
         
         destroyAll("");
         tryLogin();
@@ -213,7 +213,7 @@ define([
 
                 setTimeout(function() {
                     alarm.startCheck();
-                    schedulemonitor.doMonitor();
+                    monitor.doMonitor();
                 }, 5000);
             });
         });

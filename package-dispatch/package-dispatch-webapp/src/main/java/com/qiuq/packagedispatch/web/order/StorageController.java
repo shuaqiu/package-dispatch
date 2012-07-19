@@ -19,11 +19,13 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.qiuq.common.ErrCode;
 import com.qiuq.common.OperateResult;
+import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.User;
 import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
+import com.qiuq.packagedispatch.web.monitor.NotifyController;
 
 /**
  * @author qiushaohua 2012-4-24
@@ -37,6 +39,8 @@ public class StorageController {
 
     private OrderService orderService;
 
+    private NotifyController notifyController;
+
     /** @author qiushaohua 2012-4-28 */
     @Autowired
     public void setUserService(UserService userService) {
@@ -49,6 +53,12 @@ public class StorageController {
     @Autowired
     public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    /** @author qiushaohua 2012-6-28 */
+    @Autowired
+    public void setNotifyController(NotifyController notifyController) {
+        this.notifyController = notifyController;
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
@@ -73,6 +83,10 @@ public class StorageController {
         for (String barcode : barcodeArr) {
             if (StringUtils.hasText(barcode)) {
                 OperateResult handleResult = orderService.handleStorage(user, barcode, State.IN_STORAGE, null);
+                if (handleResult.isOk()) {
+                    // do notify
+                    notifyController.handle(barcode, (HandleDetail) handleResult.getObj());
+                }
                 result.add(handleResult.getErrCode(), barcode);
             }
         }
@@ -99,6 +113,10 @@ public class StorageController {
         for (String barcode : barcodeArr) {
             if (StringUtils.hasText(barcode)) {
                 OperateResult handleResult = orderService.handleStorage(user, barcode, State.OUT_STORAGE, handlerUser);
+                if (handleResult.isOk()) {
+                    // do notify
+                    notifyController.handle(barcode, (HandleDetail) handleResult.getObj());
+                }
                 result.add(handleResult.getErrCode(), barcode);
             }
         }

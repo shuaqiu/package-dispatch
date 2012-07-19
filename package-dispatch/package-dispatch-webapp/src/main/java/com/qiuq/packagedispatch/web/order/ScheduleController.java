@@ -28,6 +28,7 @@ import com.qiuq.common.convert.Converter;
 import com.qiuq.packagedispatch.bean.order.HandleDetail;
 import com.qiuq.packagedispatch.bean.order.Order;
 import com.qiuq.packagedispatch.bean.order.ScheduleDetail;
+import com.qiuq.packagedispatch.bean.order.ScheduleHistory;
 import com.qiuq.packagedispatch.bean.order.State;
 import com.qiuq.packagedispatch.bean.system.Role;
 import com.qiuq.packagedispatch.bean.system.User;
@@ -36,7 +37,10 @@ import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.service.system.UserService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
+import com.qiuq.packagedispatch.web.PermissionHelper;
 import com.qiuq.packagedispatch.web.SimpleMessageQueue;
+import com.qiuq.packagedispatch.web.monitor.MonitorType;
+import com.qiuq.packagedispatch.web.monitor.NotifyController;
 
 /**
  * @author qiushaohua 2012-4-5
@@ -51,6 +55,10 @@ public class ScheduleController extends AbstractResourceController<Order> {
     private UserService userService;
 
     private SimpleMessageQueue<Order> messageQueue;
+
+    private PermissionHelper permissionHelper;
+
+    private NotifyController notifyController;
 
     /** @author qiushaohua 2012-4-5 */
     @Autowired
@@ -68,6 +76,18 @@ public class ScheduleController extends AbstractResourceController<Order> {
     @Autowired
     public void setMessageQueue(SimpleMessageQueue<Order> messageQueue) {
         this.messageQueue = messageQueue;
+    }
+
+    /** @author qiushaohua 2012-7-11 */
+    @Autowired
+    public void setPermissionHelper(PermissionHelper permissionHelper) {
+        this.permissionHelper = permissionHelper;
+    }
+
+    /** @author qiushaohua 2012-7-15 */
+    @Autowired
+    public void setNotifyController(NotifyController notifyController) {
+        this.notifyController = notifyController;
     }
 
     @Override
@@ -179,7 +199,7 @@ public class ScheduleController extends AbstractResourceController<Order> {
 
     /**
      * 获取最后的已经处理的调度ID, 这里直接从处理明细中, 判断是否有对应的调度ID, 如果有, 则返回最后的
-     * 
+     *
      * @param handleDetail
      * @author qiushaohua 2012-5-17
      */
@@ -251,10 +271,26 @@ public class ScheduleController extends AbstractResourceController<Order> {
         List<ScheduleDetail> details = buildScheduleDetails(orderId, params);
         boolean isOk = orderService.schedule(user, orderId, details);
         if (isOk) {
+            fireNotification(orderId);
             return OperateResult.OK;
         } else {
             return new OperateResult(ErrCode.INSERT_FAIL, "add new resource fail");
         }
+    }
+
+    /**
+     * @param orderId
+     * @author qiushaohua 2012-7-16
+     */
+    private void fireNotification(int orderId) {
+        Order order = orderService.query(orderId);
+        List<ScheduleDetail> scheduleDetail = orderService.getScheduleDetail(orderId);
+        List<ScheduleHistory> scheduleHistory = orderService.getScheduleHistory(orderId);
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("scheduleDetail", scheduleDetail);
+        map.put("scheduleHistory", scheduleHistory);
+        notifyController.fire(MonitorType.SCHEDULE_ORDER, order, map);
     }
 
     @RequestMapping(value = "/edit/{orderId}", method = RequestMethod.PUT)
@@ -297,10 +333,11 @@ public class ScheduleController extends AbstractResourceController<Order> {
             }
         }
 
-        details = details.subList(index, details.size());
+        List<ScheduleDetail> newDetails = details.subList(index, details.size());
 
-        boolean isOk = orderService.schedule(user, orderId, details, toDeleteScheduleIdList);
+        boolean isOk = orderService.schedule(user, orderId, newDetails, toDeleteScheduleIdList);
         if (isOk) {
+            fireNotification(orderId);
             return OperateResult.OK;
         } else {
             return new OperateResult(ErrCode.INSERT_FAIL, "add new resource fail");
@@ -358,7 +395,7 @@ public class ScheduleController extends AbstractResourceController<Order> {
         }
 
         Map<String, Boolean> functionMap = HttpSessionUtil.getFunctionMap(req);
-        if (isNotPermission(functionMap, "schedule")) {
+        if (permissionHelper.isNotPermit(functionMap, "schedule")) {
             return new OperateResult(ErrCode.NOT_PERMISSION, "could not access schedule function");
         }
 

@@ -54,4 +54,7 @@
     <entry key="alarm.notfetch.time">60</entry>
     <!-- 调度后, 经过下列时间(单位: 分钟)还未上门收件时, 将弹出警报窗口(多个时间用"," 号分隔) -->
     <entry key="alarm.notfetch.time.note">60</entry>
+
+    <!-- 消息推送的长轮询超时时间(单位: 秒), 在超过这个时间时, 如果还没有消息, 则重新进行连接 -->
+    <entry key="poll.waiting.second">300</entry>
 </properties>

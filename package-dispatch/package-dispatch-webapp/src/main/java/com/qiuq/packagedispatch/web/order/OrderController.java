@@ -46,7 +46,8 @@ import com.qiuq.packagedispatch.service.customer.ReceiverService;
 import com.qiuq.packagedispatch.service.order.OrderService;
 import com.qiuq.packagedispatch.web.AbstractResourceController;
 import com.qiuq.packagedispatch.web.HttpSessionUtil;
-import com.qiuq.packagedispatch.web.SimpleMessageQueue;
+import com.qiuq.packagedispatch.web.monitor.MonitorType;
+import com.qiuq.packagedispatch.web.monitor.NotifyController;
 
 /**
  * @author qiushaohua 2012-3-18
@@ -62,6 +63,8 @@ public class OrderController extends AbstractResourceController<Order> {
 
     private SmsSender smsSender;
 
+    private NotifyController notifyController;
+
     private final ReentrantLock senderTemplateLock = new ReentrantLock();
     private final ReentrantLock receiverTemplateLock = new ReentrantLock();
     private final ReentrantLock formatLock = new ReentrantLock();
@@ -71,7 +74,7 @@ public class OrderController extends AbstractResourceController<Order> {
 
     private DecimalFormat codeGeneratorFormatter = new DecimalFormat("0000");
 
-    private SimpleMessageQueue<Order> messageQueue;
+    // private SimpleMessageQueue<Order> messageQueue;
 
     /** @author qiushaohua 2012-4-4 */
     @Autowired
@@ -91,6 +94,12 @@ public class OrderController extends AbstractResourceController<Order> {
         this.smsSender = smsSender;
     }
 
+    /** @author qiushaohua 2012-7-13 */
+    @Autowired
+    public void setNotifyController(NotifyController notifyController) {
+        this.notifyController = notifyController;
+    }
+
     /** @author qiushaohua 2012-4-28 */
     @Value("${order.notify.sender}")
     public void setNotifyTemplateForSender(String notifyTemplateForSender) {
@@ -103,11 +112,11 @@ public class OrderController extends AbstractResourceController<Order> {
         this.notifyTemplateForReceiver = new MessageFormat(notifyTemplateForReceiver);
     }
 
-    /** @author qiushaohua 2012-5-26 */
-    @Autowired
-    public void setMessageQueue(SimpleMessageQueue<Order> messageQueue) {
-        this.messageQueue = messageQueue;
-    }
+    // /** @author qiushaohua 2012-5-26 */
+    // @Autowired
+    // public void setMessageQueue(SimpleMessageQueue<Order> messageQueue) {
+    // this.messageQueue = messageQueue;
+    // }
 
     @Override
     protected ResourceService<Order> getService() {
@@ -175,7 +184,8 @@ public class OrderController extends AbstractResourceController<Order> {
         if (insertResult.isOk()) {
             // new Thread(new SmsNotifier(t)).start();
             t.setId(((KeyHolder) insertResult.getObj()).getKey().intValue());
-            messageQueue.push(t);
+            // messageQueue.push(t);
+            notifyController.fire(MonitorType.NEW_ORDER, t);
         }
         return super.afterInsert(t, insertResult);
     }
@@ -494,7 +504,11 @@ public class OrderController extends AbstractResourceController<Order> {
         t.setStateDescribe(State.CANCELED.getDescribe());
 
         HandleDetail detail = createDetail(user, t);
-        return orderService.cancelOrClose(t, detail);
+        OperateResult result = orderService.cancelOrClose(t, detail);
+        if (result.isOk()) {
+            notifyController.handle(orderId, detail);
+        }
+        return result;
     }
 
     /**
@@ -516,7 +530,11 @@ public class OrderController extends AbstractResourceController<Order> {
         t.setStateDescribe(State.CLOSED.getDescribe() + ": " + Converter.toString(params.get("reason")));
 
         HandleDetail detail = createDetail(user, t);
-        return orderService.cancelOrClose(t, detail);
+        OperateResult result = orderService.cancelOrClose(t, detail);
+        if (result.isOk()) {
+            notifyController.handle(orderId, detail);
+        }
+        return result;
     }
 
     /**

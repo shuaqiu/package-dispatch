@@ -303,7 +303,7 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
 
     /**
      * update the scheduler info in order
-     * 
+     *
      * @param orderId
      * @param user
      * @return
@@ -379,7 +379,8 @@ public class OrderRepository extends AbstractRepository implements ResourceRepos
      * @author qiushaohua 2012-4-9
      */
     public List<HandleDetail> getHandleDetail(int orderId) {
-        String sql = "select * from dispatch_handle_detail where order_id = :orderId order by state, handle_index";
+        // String sql = "select * from dispatch_handle_detail where order_id = :orderId order by state, handle_index";
+        String sql = "select * from dispatch_handle_detail where order_id = :orderId order by handle_time";
         SqlParameterSource paramMap = new MapSqlParameterSource("orderId", orderId);
         return jdbcTemplate.query(sql, paramMap, new HandleDetailRowMapper());
     }

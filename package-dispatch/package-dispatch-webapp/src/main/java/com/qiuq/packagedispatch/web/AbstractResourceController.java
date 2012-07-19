@@ -3,7 +3,6 @@
  */
 package com.qiuq.packagedispatch.web;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -162,11 +160,29 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
     }
 
     /**
+     * @return
+     * @author qiushaohua 2012-4-3
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public Map<String, Object> list() {
+        return null;
+    }
+
+    /**
+     * @return
+     * @author qiushaohua 2012-4-3
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public Map<String, Object> edit() {
+        return null;
+    }
+
+    /**
      * @param range
      * @return
      * @author qiushaohua 2012-4-2
      */
-    protected long[] range(String range) {
+    public long[] range(String range) {
         if (StringUtils.hasText(range) && range.length() > 1) {
             // items=0-24
             String[] arr = range.split("=");
@@ -188,40 +204,6 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
         return null;
     }
 
-    protected Map<String, Object> parseParameter(MultiValueMap<String, String> params) {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-
-        for (String key : params.keySet()) {
-            List<String> list = params.get(key);
-            if (list == null || list.size() == 0) {
-            } else if (list.size() == 1) {
-                map.put(key, list.get(0));
-            } else {
-                map.put(key, list);
-            }
-        }
-
-        return map;
-    }
-
-    /**
-     * @return
-     * @author qiushaohua 2012-4-3
-     */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Map<String, Object> list() {
-        return null;
-    }
-
-    /**
-     * @return
-     * @author qiushaohua 2012-4-3
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.GET)
-    public Map<String, Object> edit() {
-        return null;
-    }
-
     /**
      * @param sort
      * @param params
@@ -238,29 +220,10 @@ public abstract class AbstractResourceController<T> implements ResourceControlle
             header.set("Content-Range", " items " + (rangeArr[0] - 1) + "-" + (rangeArr[1] - 1) + "/" + count);
         }
 
-        List<T> list = getService().query(sort, params, range(range));
+        List<T> list = getService().query(sort, params, rangeArr);
         HttpEntity<List<T>> entity = new HttpEntity<List<T>>(list, header);
 
         return entity;
     }
 
-    /**
-     * @param functionMap
-     * @param permission
-     * @return
-     * @author qiushaohua 2012-5-26
-     */
-    protected boolean isNotPermission(Map<String, Boolean> functionMap, String permission) {
-        if (functionMap == null) {
-            return true;
-        }
-        Boolean isHasFunction = functionMap.get(permission);
-        if (isHasFunction == null) {
-            return true;
-        }
-        if (isHasFunction) {
-            return false;
-        }
-        return true;
-    }
 }

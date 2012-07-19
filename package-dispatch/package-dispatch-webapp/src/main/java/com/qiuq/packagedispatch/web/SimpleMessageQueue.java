@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,8 +29,16 @@ public class SimpleMessageQueue<T> {
 
     protected final Log logger = LogFactory.getLog(getClass());
 
-    private Map<String, BlockingQueue<T>> queues = new ConcurrentHashMap<String, BlockingQueue<T>>();
-    private Map<String, Long> lastAccessTime = new ConcurrentHashMap<String, Long>();
+    private final Map<String, BlockingQueue<T>> queues = new ConcurrentHashMap<String, BlockingQueue<T>>();
+    private final Map<String, Long> lastAccessTime = new ConcurrentHashMap<String, Long>();
+
+    private int pollWaitingSecond = 60;
+
+    /** @author qiushaohua 2012-6-26 */
+    @Value("${poll.waiting.second}")
+    public void setPollWaitingSecond(int pollWaitingSecond) {
+        this.pollWaitingSecond = pollWaitingSecond;
+    }
 
     /**
      * @param t
@@ -72,13 +81,13 @@ public class SimpleMessageQueue<T> {
         removeUnused();
 
         try {
-            T t = queue.poll(1, TimeUnit.MINUTES);
+            T t = queue.poll(pollWaitingSecond, TimeUnit.SECONDS);
             if (logger.isInfoEnabled()) {
                 logger.info("poll return : " + t);
             }
             return t;
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.info("poll interrupted : " + session);
         }
         return null;
     }

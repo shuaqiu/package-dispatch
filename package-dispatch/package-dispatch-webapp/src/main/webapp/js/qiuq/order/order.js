@@ -104,27 +104,28 @@ define([
             var self = this;
             showTab([], {
                 title : this.viewTabName,
-                href : this.resourceUrl + "/view/" + orderId,
-                onClose : function() {
-                    if (self.viewTimeout) {
-                        clearTimeout(self.viewTimeout);
-                    }
-                    return true;
-                },
-                onShow : function() {
-                    this.onHide();
-                    self.viewTimeout = setTimeout(function() {
-                        self.doView(orderId);
-                    }, 15 * 1000);
-                },
-                onHide : function() {
-                    if (self.viewTimeout) {
-                        clearTimeout(self.viewTimeout);
-                    }
-                },
-                uninitialize : function() {
-                    this.onHide();
-                }
+                href : this.resourceUrl + "/view/" + orderId
+            // ,
+            // onClose : function() {
+            // if (self.viewTimeout) {
+            // clearTimeout(self.viewTimeout);
+            // }
+            // return true;
+            // },
+            // onShow : function() {
+            // this.onHide();
+            // self.viewTimeout = setTimeout(function() {
+            // self.doView(orderId);
+            // }, 15 * 1000);
+            // },
+            // onHide : function() {
+            // if (self.viewTimeout) {
+            // clearTimeout(self.viewTimeout);
+            // }
+            // },
+            // uninitialize : function() {
+            // this.onHide();
+            // }
             }, this.viewTab, true);
         },
 
@@ -269,11 +270,11 @@ define([
 
         canceledOrClosed : function(result, orderId) {
             if (result.ok) {
-                this.doView(orderId);
-                var grid = registry.byId(this.listGrid);
-                if (grid) {
-                    grid._refresh(true);
-                }
+                // this.doView(orderId);
+                // var grid = registry.byId(this.listGrid);
+                // if (grid) {
+                // grid._refresh(true);
+                // }
             } else {
                 if (result.errCode == "NOT_LOGINED") {
                     require([ "qiuq/login" ], function(login) {

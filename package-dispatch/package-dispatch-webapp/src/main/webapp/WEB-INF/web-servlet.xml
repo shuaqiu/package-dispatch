@@ -45,5 +45,7 @@
     <bean class="com.qiuq.common.excel.ExcelUtil">
 <!--         <property name="dateFormant" value="1" /> -->
     </bean>
+    
+    <bean class="org.codehaus.jackson.map.ObjectMapper"></bean>
 </beans>
 

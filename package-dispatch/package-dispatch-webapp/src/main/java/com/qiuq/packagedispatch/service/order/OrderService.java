@@ -119,7 +119,7 @@ public class OrderService extends AbstractResourceService<Order> {
 
     /**
      * 处理入库/出库
-     * 
+     *
      * @param user
      * @param barcode
      * @param state
@@ -140,12 +140,11 @@ public class OrderService extends AbstractResourceService<Order> {
         }
 
         try {
-            doHandleStorage(user, order, state, handler);
+            HandleDetail detail = doHandleStorage(user, order, state, handler);
+            return new OperateResult(true, detail);
         } catch (Exception e) {
             return new OperateResult(ErrCode.UPDATE_FAIL, "fail to handle storage ");
         }
-
-        return OperateResult.OK;
     }
 
     /**
@@ -156,17 +155,17 @@ public class OrderService extends AbstractResourceService<Order> {
      * @author qiushaohua 2012-4-30
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public boolean doHandleStorage(User user, Order order, State state, User handler) {
+    public HandleDetail doHandleStorage(User user, Order order, State state, User handler) {
         // 创建处理明细, 这里处理人始终为当前用户("值班经理")
         HandleDetail detail = createHandleDetail(order.getId(), user, state);
         boolean inserted = orderRepository.insertHandleDetail(detail);
         if (!inserted) {
-            return false;
+            return null;
         }
 
         User nextCircleHandler = handler == null ? user : handler;
         boolean updated = orderRepository.updateOrderState(order.getId(), nextCircleHandler, state);
-        return updated;
+        return updated ? detail : null;
     }
 
     /**
@@ -278,5 +277,15 @@ public class OrderService extends AbstractResourceService<Order> {
     @Transactional(readOnly = true)
     public List<ScheduleHistory> getScheduleHistory(int orderId) {
         return orderRepository.getScheduleHistory(orderId);
+    }
+
+    /**
+     * @param barcode
+     * @return
+     * @author qiushaohua 2012-7-17
+     */
+    @Transactional(readOnly = true)
+    public Order getOrder(String barcode) {
+        return orderRepository.getOrder(barcode);
     }
 }
